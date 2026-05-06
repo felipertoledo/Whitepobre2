@@ -132,6 +132,9 @@ footer{border-top:3px solid var(--accent-red);background:var(--bg-dark);color:#a
 .foot-inner{max-width:64rem;margin:0 auto;padding:0 16px;font-size:11px;color:#71717a;font-family:'JetBrains Mono',monospace;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .foot-inner .light{color:#52525b}
 .foot-credito{max-width:64rem;margin:18px auto 0;padding:14px 16px 0;border-top:1px solid #1c1917;text-align:center}
+.foot-disclaimer{max-width:64rem;margin:18px auto 0;padding:14px 16px;border:1px solid #7c2128;background:#1f0d0e;border-radius:6px}
+.foot-disclaimer p{font-size:11.5px;line-height:1.55;color:#fca5a5;letter-spacing:.01em;margin:0;text-align:left}
+.foot-disclaimer p b{color:#fef2f2;font-weight:600}
 .foot-credito-titulo{font-family:'Fraunces',Georgia,serif;font-size:13px;color:#fafaf9;font-style:italic;letter-spacing:.02em;margin-bottom:4px}
 .foot-credito-titulo span{color:var(--accent-red-light)}
 .foot-credito-nome{font-size:11.5px;color:#a1a1aa;font-weight:500;letter-spacing:.04em}
@@ -159,6 +162,10 @@ footer{border-top:3px solid var(--accent-red);background:var(--bg-dark);color:#a
 .apr-int{font-size:13px;color:var(--ink-2)}
 .apr-card-bloq{font-size:12px;color:#7c2128;font-weight:500;margin-top:4px}
 .apr-card-inviavel{margin-top:6px;padding:6px 8px;background:#fef0c8;border-left:3px solid #d97706;font-size:11.5px;color:#7c2d12;line-height:1.4;border-radius:3px;font-weight:500}
+.apr-min-aviso{margin:10px 0 6px;padding:10px 12px;background:#fef2f2;border-left:4px solid #9b1c1c;border-radius:4px;font-size:12px;line-height:1.5;color:#7f1d1d}
+.apr-min-aviso b{color:#9b1c1c}
+.apr-int-topico{font-size:13px;color:var(--ink-2);font-style:italic;line-height:1.4}
+.apr-card-res.topico{align-items:flex-start;padding-top:2px}
 .apr-card-diluicao{margin-top:6px;padding:6px 8px;background:#e8f0f7;border-left:3px solid #1f5a78;font-size:11.5px;color:#1c3a52;line-height:1.4;border-radius:3px}
 .apr-card-diluicao b{color:#0a0a0a}
 .apr-vol.inviavel{color:#a8a29e !important;text-decoration:line-through;text-decoration-thickness:1.5px;font-weight:500}
@@ -167,6 +174,19 @@ footer{border-top:3px solid var(--accent-red);background:var(--bg-dark);color:#a
 .apr-card.nebul{border-left-color:#7c5a3a}
 .apr-card.nebul .apr-vol{color:#7c5a3a}
 .apr-card-alerta{margin-top:6px;padding:6px 8px;background:#fef4dc;border-left:3px solid #c69a3e;font-size:11.5px;color:#5e4a18;line-height:1.4;border-radius:3px}
+
+/* Botões de copiar receita */
+.btn-copiar-mini{margin-top:8px;background:transparent;border:1px solid #c2b89e;color:#6b6048;padding:5px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:.02em;border-radius:4px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn-copiar-mini:hover{background:#0a0a0a;color:#fafaf9;border-color:#0a0a0a}
+.btn-copiar-mini.copiou{background:#15803d;color:white;border-color:#15803d}
+.btn-copiar-mini.falhou{background:#9b1c1c;color:white;border-color:#9b1c1c}
+
+.btn-copiar-receita{display:block;width:100%;margin-top:14px;background:#0a0a0a;color:#fafaf9;border:none;padding:12px 16px;font-size:13px;font-weight:600;font-family:'Fraunces',Georgia,serif;letter-spacing:.01em;border-radius:8px;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(10,10,10,.15)}
+.btn-copiar-receita:hover{background:#9b1c1c;box-shadow:0 4px 12px rgba(155,28,28,.25)}
+.btn-copiar-receita.copiou{background:#15803d;box-shadow:0 4px 12px rgba(21,128,61,.3)}
+.btn-copiar-receita.falhou{background:#9b1c1c}
+.btn-copiar-receita.disabled{background:#e7e5e4;color:#a8a29e;cursor:not-allowed;box-shadow:none;font-style:italic}
+.btn-copiar-receita.disabled:hover{background:#e7e5e4;color:#a8a29e;box-shadow:none}
 
 /* WATCHDOG: tela de fallback se interface não carregar em 8s */
 #wp-watchdog{position:fixed;inset:0;background:#0a0a0a;color:#fafaf9;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:ui-sans-serif,sans-serif}
@@ -292,7 +312,7 @@ window.addEventListener('unhandledrejection', function(e) {
   <div class="hdr-inner">
     <div class="hdr-row">
       <div>
-        <p class="hdr-eyebrow">Manual de Bolso · v.2026.05.05.8</p>
+        <p class="hdr-eyebrow">Manual de Bolso · v.2026.05.06.1</p>
         <h1 class="hdr-title">White<em>Pobre</em></h1>
         <p class="hdr-subtitle">Pediatria de Emergência · UBS / UPA / PS</p>
       </div>
@@ -360,10 +380,12 @@ window.addEventListener('unhandledrejection', function(e) {
     <span>WhitePobre · 2026</span>
     <span class="light">PCDT-MS · SBP · ANVISA · AHA-PALS 2025 · GINA 2025</span>
   </div>
+  <div class="foot-disclaimer">
+    <p><b>⚠ Aviso médico-legal:</b> As doses e condutas apresentadas neste aplicativo são <b>referência educacional</b>, baseadas em fontes oficiais (PCDT-MS, SBP, ANVISA, AHA-PALS, GINA), mas <b>não substituem o julgamento clínico</b> do profissional médico. O autor e o aplicativo <b>se isentam de qualquer responsabilidade por erros de prescrição, decisões terapêuticas ou desfechos clínicos</b> decorrentes do uso destas informações. Toda dose deve ser <b>conferida em fonte primária</b> (bula, protocolo institucional, sociedade médica) antes da administração. O médico prescritor é o único responsável pela decisão clínica.</p>
+  </div>
   <div class="foot-credito">
     <p class="foot-credito-titulo">Idealizado por <span>Felipe Ribeiro Toledo</span></p>
-    <p class="foot-credito-nome">Médico de Família e Comunidade</p>
-    <p class="foot-credito-crm">CRM-SP 216.986 · UBS Estiva Gerbi</p>
+    <p class="foot-credito-nome">Médico de Família e Comunidade · UBS Estiva Gerbi</p>
     <p style="margin-top:14px"><button onclick="if(confirm('Limpar cache e recarregar?')){window.wpLimparTudo()}" style="background:transparent;border:1px solid #3f3f46;color:#71717a;padding:5px 12px;font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;border-radius:4px;cursor:pointer">↻ limpar cache</button></p>
   </div>
 </footer>
@@ -373,9 +395,12 @@ window.addEventListener('unhandledrejection', function(e) {
 // === ped-app-v2.js ===
 const MEDICACOES = [
   {id:'adrenalina-pcr',nome:'Adrenalina (Epinefrina)',classe:'reanimacao',apresentacao:'Ampola 1 mg/mL (1:1.000)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:1,volume_ml:1,desc:'Amp 1 mg/mL (1:1.000) — 1 mL',sus:true,diluicao:'PCR: diluir 1 mL + 9 mL SF (=0,1 mg/mL) e usar 0,1 mL/kg. Anafilaxia: SEM diluir, IM coxa.'}
+   ],
    indicacoes:[
     {nome:'PCR (FV/TV/AESP/assistolia)',dose:0.01,unidade:'mg/kg',via:'IV/IO',max:1,intervalo:'cada 3-5 min',diluicao:'Diluir 1:10 (1 mL adrenalina + 9 mL SF) → usar 0,1 mL/kg da solução',velocidade:'Bolus + flush 5 mL SF'},
-    {nome:'Anafilaxia',dose:0.01,unidade:'mg/kg',via:'IM',max:0.5,intervalo:'repetir 5-15 min',diluicao:'Sem diluir (1:1.000)',velocidade:'Vasto lateral da coxa',minNota:'máx 0,3 mg <12a; 0,5 mg ≥12a'},
+    {nome:'Anafilaxia',dose:0.01,unidade:'mg/kg',via:'IM',max:0.5,maxPorIdade:[{idade_max:12,max:0.3},{idade_min:12,max:0.5}],intervalo:'repetir 5-15 min',diluicao:'Sem diluir (1:1.000)',velocidade:'Vasto lateral da coxa',minNota:'máx 0,3 mg <12a; 0,5 mg ≥12a (AAP 2017/2024 + SBP-DC Alergia 2021)'},
     {nome:'Crupe moderado/grave (NEB)',dose:0.5,unidade:'mL/kg',via:'NEB',max:5,intervalo:'dose única, observar 3-4h',diluicao:'L-adrenalina 1:1.000 em SF qsp 5 mL',velocidade:'Nebulizar com O₂ 6-8 L/min'}
    ],idadeMinima:'Sem idade mínima',
    contraindicacoes:['Nenhuma absoluta em emergência'],
@@ -384,9 +409,13 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'NÃO confundir 1:1.000 com 1:10.000 — erro fatal em PCR'},{tipo:'info',texto:'IM em anafilaxia > SC (absorção mais rápida e previsível)'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[AHA-PALS, 2025] + [SBP-DC Alergia, 2021]'},
   {id:'atropina',nome:'Atropina',classe:'reanimacao',apresentacao:'Ampola 0,25 mg/mL ou 0,5 mg/mL',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:0.25,volume_ml:1,desc:'Amp 0,25 mg/mL (1 mL = 0,25 mg)',sus:true,diluicao:'IV/IO sem diluir, bolus rápido'},
+     {tipo:'amp',mg_ml:0.5,volume_ml:1,desc:'Amp 0,5 mg/mL (1 mL = 0,5 mg)',sus:true,diluicao:'IV/IO sem diluir, bolus rápido'}
+   ],
    indicacoes:[
-    {nome:'Bradicardia sintomática',dose:0.02,unidade:'mg/kg',via:'IV/IO',max:0.5,intervalo:'pode repetir 1×',diluicao:'Sem diluir',velocidade:'Bolus rápido',minNota:'mín 0,1 mg/dose (evitar bradicardia paradoxal)'},
-    {nome:'Pré-IOT (lactente)',dose:0.02,unidade:'mg/kg',via:'IV',max:0.5,intervalo:'2-3 min antes do tubo',diluicao:'Sem diluir',velocidade:'Bolus'},
+    {nome:'Bradicardia sintomática',dose:0.02,unidade:'mg/kg',via:'IV/IO',max:0.5,doseMinAbs:0.1,intervalo:'pode repetir 1×',diluicao:'Sem diluir',velocidade:'Bolus rápido',minNota:'mín 0,1 mg/dose (evitar bradicardia paradoxal)'},
+    {nome:'Pré-IOT (lactente)',dose:0.02,unidade:'mg/kg',via:'IV',max:0.5,doseMinAbs:0.1,intervalo:'2-3 min antes do tubo',diluicao:'Sem diluir',velocidade:'Bolus',minNota:'mín 0,1 mg/dose'},
     {nome:'Intoxicação organofosforado',dose:0.05,unidade:'mg/kg',via:'IV',max:5,intervalo:'repetir até atropinização',diluicao:'Sem diluir',velocidade:'Bolus'}
    ],idadeMinima:'Sem idade mínima',
    contraindicacoes:['Glaucoma de ângulo fechado','Taquiarritmia'],
@@ -395,6 +424,9 @@ const MEDICACOES = [
    alertas:[{tipo:'aviso',texto:'Dose mínima 0,1 mg — doses menores podem causar bradicardia paradoxal'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[AHA-PALS, 2025]'},
   {id:'amiodarona',nome:'Amiodarona',classe:'reanimacao',apresentacao:'Ampola 50 mg/mL (3 mL = 150 mg)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:50,volume_ml:3,desc:'Amp 150 mg/3 mL (50 mg/mL)',sus:true,diluicao:'PCR: bolus puro. Pós-RCE: diluir em SG5% para 1-6 mg/mL'}
+   ],
    indicacoes:[
     {nome:'PCR (FV/TVsp refratária)',dose:5,unidade:'mg/kg',via:'IV/IO',max:300,intervalo:'até 2× (total 15 mg/kg)',diluicao:'Bolus em PCR',velocidade:'Bolus em PCR'},
     {nome:'TV/TSV com pulso',dose:5,unidade:'mg/kg',via:'IV',max:300,intervalo:'dose única',diluicao:'Diluir em 100 mL SG5%',velocidade:'Infundir em 20-60 min'}
@@ -425,6 +457,10 @@ const MEDICACOES = [
    alertas:[{tipo:'aviso',texto:'Antídoto de hipermagnesemia: gluconato de cálcio 10% 60-100 mg/kg IV'}],
    ajusteRenal:'Reduzir dose 50% se ClCr <30',ajusteHepatico:'Sem ajuste',fonte:'[GINA, 2025] + [SBP]'},
   {id:'midazolam',nome:'Midazolam',classe:'sedacao',apresentacao:'Ampola 5 mg/mL ou 1 mg/mL',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:5,volume_ml:3,desc:'Amp 15 mg/3 mL (5 mg/mL)',sus:true,diluicao:'IV: diluir em SF para 1 mg/mL. IM: sem diluir. Intranasal: sem diluir, dividir narinas.'},
+     {tipo:'amp',mg_ml:1,volume_ml:5,desc:'Amp 5 mg/5 mL (1 mg/mL)',sus:true,diluicao:'IV: pode aplicar sem diluir, lento'}
+   ],
    indicacoes:[
     {nome:'Sedação procedimento (IV)',dose:0.05,unidade:'mg/kg',via:'IV',max:4,intervalo:'titular cada 2-3 min',diluicao:'Diluir em SF 1:10',velocidade:'Lento 2-3 min'},
     {nome:'Status epilepticus (IM)',dose:0.2,unidade:'mg/kg',via:'IM',max:10,intervalo:'pode repetir 1× em 5 min',diluicao:'Sem diluir',velocidade:'IM profundo'},
@@ -437,6 +473,10 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'Antídoto: flumazenil 0,01 mg/kg IV (cuidado em uso crônico)'},{tipo:'aviso',texto:'1ª linha em status pré-hospitalar (American Epilepsy Society)'}],
    ajusteRenal:'Reduzir em IRC grave',ajusteHepatico:'Reduzir 50% em hepatopatia',fonte:'[AES] + [SBP-DC Neuro]'},
   {id:'cetamina',nome:'Cetamina',classe:'sedacao',apresentacao:'Ampola 50 mg/mL ou 10 mg/mL',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:50,volume_ml:10,desc:'Frasco 500 mg/10 mL (50 mg/mL)',sus:true,diluicao:'IV: diluir em SF/SG5% para 10 mg/mL. IM: sem diluir.'},
+     {tipo:'amp',mg_ml:10,volume_ml:5,desc:'Amp 50 mg/5 mL (10 mg/mL)',sus:true,diluicao:'IV pode aplicar sem diluir'}
+   ],
    indicacoes:[
     {nome:'Sedação dissociativa (IV)',dose:1,unidade:'mg/kg',via:'IV',max:100,intervalo:'pode complementar 0,5 mg/kg',diluicao:'Diluir em SF',velocidade:'Lento 1-2 min'},
     {nome:'Sedação IM',dose:4,unidade:'mg/kg',via:'IM',max:200,intervalo:'dose única',diluicao:'Sem diluir',velocidade:'IM profundo'},
@@ -449,6 +489,10 @@ const MEDICACOES = [
    alertas:[{tipo:'info',texto:'Pré-medicação com atropina é OPCIONAL — considerar em <1 ano'},{tipo:'aviso',texto:'Mantém reflexos protetores — ideal para sedação sem IOT'}],
    ajusteRenal:'Sem ajuste em dose única',ajusteHepatico:'Reduzir em hepatopatia grave',fonte:'[SBP-DC Emergência] + [ABRAMEDE]'},
   {id:'fentanil',nome:'Fentanil',classe:'sedacao',apresentacao:'Ampola 50 mcg/mL',
+   apresentacoes:[
+     {tipo:'amp',mcg_ml:50,volume_ml:5,desc:'Amp 250 mcg/5 mL (50 mcg/mL)',sus:true,diluicao:'IV: diluir em SF para 10 mcg/mL. Aplicação muito lenta.'},
+     {tipo:'amp',mcg_ml:50,volume_ml:10,desc:'Amp 500 mcg/10 mL (50 mcg/mL)',sus:false,diluicao:'IV: diluir em SF para 10 mcg/mL'}
+   ],
    indicacoes:[
     {nome:'Analgesia/sedação (IV)',dose:1,unidade:'mcg/kg',via:'IV',max:100,intervalo:'cada 30-60 min',diluicao:'Sem diluir ou SF',velocidade:'Lento 2-3 min'},
     {nome:'Indução IOT',dose:2,unidade:'mcg/kg',via:'IV',max:200,intervalo:'pré-IOT',diluicao:'Sem diluir',velocidade:'Lento (rigidez torácica)'},
@@ -460,6 +504,9 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'Rigidez torácica em bolus rápido — INFUNDIR LENTO. Antídoto: naloxona'},{tipo:'info',texto:'Mais estável hemodinamicamente que morfina — preferir em choque'}],
    ajusteRenal:'Sem ajuste relevante',ajusteHepatico:'Reduzir em hepatopatia grave',fonte:'[SBP]'},
   {id:'rocuronio',nome:'Rocurônio',classe:'sedacao',apresentacao:'Ampola 10 mg/mL (5 mL = 50 mg)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:10,volume_ml:5,desc:'Amp 50 mg/5 mL (10 mg/mL)',sus:true,diluicao:'IV: bolus rápido sem diluir'}
+   ],
    indicacoes:[
     {nome:'Bloqueio neuromuscular (SRI)',dose:1.2,unidade:'mg/kg',via:'IV',max:100,intervalo:'dose única',diluicao:'Sem diluir',velocidade:'Bolus'},
     {nome:'Manutenção',dose:0.6,unidade:'mg/kg',via:'IV',max:50,intervalo:'cada 30-45 min',diluicao:'Sem diluir',velocidade:'Bolus'}
@@ -470,9 +517,13 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'SEM SUGAMADEX = paciente paralisado 45-60 min se IOT falhar. Plano B obrigatório'},{tipo:'aviso',texto:'Dose para SRI é 1,2 mg/kg (não 0,6) — início mais rápido'}],
    ajusteRenal:'Sem ajuste em dose única',ajusteHepatico:'Prolongamento do efeito',fonte:'[SBP] + [ABRAMEDE]'},
   {id:'succinilcolina',nome:'Succinilcolina',classe:'sedacao',apresentacao:'Frasco 100/500 mg (reconstituir)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:10,volume_ml:10,desc:'Frasco 100 mg reconstituído em 10 mL SF (10 mg/mL)',sus:true,diluicao:'Reconstituir 100 mg em 10 mL SF = 10 mg/mL. Bolus rápido.'},
+     {tipo:'amp',mg_ml:50,volume_ml:10,desc:'Frasco 500 mg reconstituído em 10 mL SF (50 mg/mL)',sus:true,diluicao:'Reconstituir 500 mg em 10 mL SF = 50 mg/mL. Para crianças, preferir diluir mais.'}
+   ],
    indicacoes:[
     {nome:'Bloqueio neuromuscular (SRI)',dose:2,unidade:'mg/kg',via:'IV',max:150,intervalo:'dose única',diluicao:'Reconstituir SF',velocidade:'Bolus rápido',minNota:'RN/lactente: 2-3 mg/kg'},
-    {nome:'IM (sem acesso)',dose:4,unidade:'mg/kg',via:'IM',max:200,intervalo:'dose única',diluicao:'Sem diluir',velocidade:'IM profundo'}
+    {nome:'IM (sem acesso)',dose:4,unidade:'mg/kg',via:'IM',max:150,intervalo:'dose única',diluicao:'Sem diluir',velocidade:'IM profundo',minNota:'Cap IM total = 150 mg (FDA label)'}
    ],idadeMinima:'Sem idade mínima',
    contraindicacoes:['Hipercalemia','Distrofia muscular (Duchenne)','Queimadura/trauma >48h','Hipertermia maligna familiar','Lesão medular >48h'],
    efeitosFreq:['Fasciculações','Mialgia pós','Bradicardia (especialmente <5a)'],
@@ -498,7 +549,7 @@ const MEDICACOES = [
    contraindicacoes:['<3 meses ou <5 kg','Discrasia sanguínea','Deficiência G6PD','Porfiria','Asma induzida por AINE','Hipersensibilidade a pirazolonas'],
    efeitosFreq:['Hipotensão (IV rápido)','Sudorese'],
    efeitosGraves:['Agranulocitose (rara mas fatal)','Anemia aplásica','Reações cutâneas graves (SSJ, NET)'],
-   alertas:[{tipo:'critico',texto:'IV: infundir em ≥5 min — hipotensão grave em bolus rápido'},{tipo:'aviso',texto:'Evitar prescrição em "gotas" pelo risco de erro de gotejamento (SBP)'}],
+   alertas:[{tipo:'critico',texto:'GOTAS: 1 gota = 25 mg — NÃO use a regra popular "1 gota/kg" (gera SOBREDOSE de 25 mg/kg). Calcular pelo peso: ~0,4-0,6 gota/kg = 10-15 mg/kg'},{tipo:'critico',texto:'IV: infundir em ≥5 min — hipotensão grave em bolus rápido'},{tipo:'aviso',texto:'Evitar prescrição em "gotas" pelo risco de erro de gotejamento (SBP)'}],
    ajusteRenal:'Cautela em IRC grave',ajusteHepatico:'Cautela em hepatopatia grave',fonte:'[ANVISA] + [SBP-DC Febre, 2021]',
    apresentacoes:[{tipo:'liq',mg_ml:500,gotas_ml:20,desc:'Gotas 500 mg/mL (1 gota = 25 mg)',sus:true,alerta:'NÃO usar regra "1 gota/kg" — cada gota tem 25 mg'},{tipo:'liq',mg_ml:50,desc:'Solução oral 50 mg/mL (250 mg/5 mL)',sus:true},{tipo:'sol',mg_un:500,idade_min:15,desc:'Comp 500 mg',sus:true},{tipo:'sol',mg_un:1000,idade_min:15,desc:'Comp 1 g'},{tipo:'amp',mg_ml:500,volume_ml:2,desc:'Amp 500 mg/mL (1 g/2 mL)',sus:true,diluicao:'Diluir em 10 mL SF — IV LENTO ≥5 min (hipotensão se rápido)'}]},
   {id:'ibuprofeno',nome:'Ibuprofeno',classe:'analgesico',apresentacao:'Susp 50 mg/mL ou 20 mg/mL | Comp 200/300/400/600 mg',
@@ -512,6 +563,10 @@ const MEDICACOES = [
    ajusteRenal:'Evitar se ClCr <30',ajusteHepatico:'Cautela',fonte:'[SBP-DC Febre, 2021]',
    apresentacoes:[{tipo:'liq',mg_ml:50,gotas_ml:10,desc:'Gotas 50 mg/mL (1 gota = 5 mg)',sus:true,alerta:'CONFERIR concentração — 50 vs 100 mg/mL é fonte de erro 2x'},{tipo:'liq',mg_ml:100,gotas_ml:10,desc:'Gotas 100 mg/mL (1 gota = 10 mg)'},{tipo:'liq',mg_ml:20,desc:'Suspensão 100 mg/5 mL (Advil)'},{tipo:'sol',mg_un:200,idade_min:6,desc:'Comp 200 mg'},{tipo:'sol',mg_un:300,idade_min:6,desc:'Comp 300 mg',sus:true},{tipo:'sol',mg_un:600,idade_min:6,desc:'Comp 600 mg',sus:true}]},
   {id:'morfina',nome:'Morfina',classe:'analgesico',apresentacao:'Ampola 1 mg/mL ou 10 mg/mL',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:1,volume_ml:1,desc:'Amp 1 mg/mL (1 mL)',sus:true,diluicao:'IV: diluir em SF para 0,1-0,5 mg/mL e aplicar lento (>2 min)'},
+     {tipo:'amp',mg_ml:10,volume_ml:1,desc:'Amp 10 mg/mL (1 mL)',sus:true,diluicao:'IV: diluir 1:10 com SF (= 1 mg/mL) — aplicar lento'}
+   ],
    indicacoes:[
     {nome:'Dor moderada/grave',dose:0.1,unidade:'mg/kg',via:'IV/IM/SC',max:10,intervalo:'2-4 h',diluicao:'Diluir em SF',velocidade:'Lento ≥5 min IV'},
     {nome:'Sedação paliativa / dispneia',dose:0.05,unidade:'mg/kg',via:'SC/IV',max:5,intervalo:'4/4 h ou BIC',diluicao:'10-30 mg/24h em BIC',velocidade:'BIC'}
@@ -545,10 +600,17 @@ const MEDICACOES = [
    ajusteRenal:'Reduzir em IRC',ajusteHepatico:'Cautela',fonte:'[SBP]',
    apresentacoes:[{tipo:'liq',mg_ml:50,desc:'Susp 250 mg + 62,5 mg / 5 mL (50 mg/mL amox)',componente:'amox'},{tipo:'liq',mg_ml:80,desc:'Susp 400 mg + 57 mg / 5 mL (80 mg/mL amox) ≥2 m',componente:'amox'},{tipo:'sol',mg_un:500,idade_min:6,desc:'Comp 500/125 mg (500 mg amox)',componente:'amox'},{tipo:'sol',mg_un:875,idade_min:6,desc:'Comp 875/125 mg (875 mg amox)',componente:'amox'}],componenteCalc:'amox'},
   {id:'ceftriaxona',nome:'Ceftriaxona',classe:'antibiotico',apresentacao:'Frasco 250/500/1000 mg',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:100,volume_ml:2.5,desc:'Frasco 250 mg + 2,5 mL diluente (100 mg/mL) — IM',sus:true,diluicao:'IM: reconstituir 250 mg em 2,5 mL lidocaína 1% (sem epi)'},
+     {tipo:'amp',mg_ml:100,volume_ml:5,desc:'Frasco 500 mg + 5 mL diluente (100 mg/mL) — IM',sus:true,diluicao:'IM: reconstituir 500 mg em 5 mL lidocaína 1% (sem epi)'},
+     {tipo:'amp',mg_ml:100,volume_ml:10,desc:'Frasco 1 g + 10 mL SF (100 mg/mL) — IV',sus:true,diluicao:'IV: reconstituir 1 g em 10 mL SF, depois diluir em 50-100 mL e infundir 30 min'}
+   ],
    indicacoes:[
-    {nome:'Infecção grave (sepse, PAC, ITU complicada)',dose:75,unidade:'mg/kg/dia',via:'IV/IM',max:2000,intervalo:'1×/dia ou 12/12 h',diluicao:'IV: SG5%/SF (NÃO Ringer) | IM: lidocaína 1%',velocidade:'IV: 30 min'},
-    {nome:'Meningite bacteriana',dose:100,unidade:'mg/kg/dia',via:'IV',max:4000,intervalo:'12/12 h',diluicao:'Em SF/SG5%',velocidade:'IV: 30 min'},
-    {nome:'Gonococcia',dose:50,unidade:'mg/kg',via:'IM',max:1000,intervalo:'dose única',diluicao:'Lidocaína 1%',velocidade:'IM profundo'}
+    {nome:'Sepse (1ª dose UBS antes da referência)',dose:100,unidade:'mg/kg',via:'IV/IM',max:4000,intervalo:'dose única (depois ref hospital)',diluicao:'IV: SG5%/SF (NÃO Ringer) | IM: lidocaína 1%',velocidade:'IV: 30 min',minNota:'Em adolescente >40 kg, dose meníngea/séptica de adulto = 2-4 g'},
+    {nome:'PAC / ITU complicada / pielonefrite',dose:75,unidade:'mg/kg/dia',via:'IV/IM',max:2000,intervalo:'1×/dia ou 12/12 h',diluicao:'IV: SG5%/SF (NÃO Ringer) | IM: lidocaína 1%',velocidade:'IV: 30 min'},
+    {nome:'Meningite bacteriana',dose:100,unidade:'mg/kg/dia',via:'IV',max:4000,intervalo:'12/12 h',diluicao:'Em SF/SG5%',velocidade:'IV: 30 min',minNota:'Cap meníngeo 4 g/dia (adolescente >40 kg) — IDSA/AAP Red Book 2024'},
+    {nome:'Gonococcia',dose:50,unidade:'mg/kg',via:'IM',max:1000,intervalo:'dose única',diluicao:'Lidocaína 1%',velocidade:'IM profundo'},
+    {nome:'Profilaxia meningocócica (contato)',dose:125,unidade:'mg',via:'IM',max:250,intervalo:'dose única',diluicao:'Lidocaína 1%',velocidade:'IM profundo',minNota:'<15 anos: 125 mg | ≥15 anos: 250 mg (PCDT-MS / SES Brasil)'}
    ],idadeMinima:'Sem idade mínima (cautela em RN — ver alertas)',
    contraindicacoes:['RN <28d com hiperbilirrubinemia','RN com soluções de cálcio (Ringer)','Alergia a cefalosporinas'],
    efeitosFreq:['Dor no local','Diarreia','Eosinofilia'],
@@ -556,6 +618,9 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'NÃO administrar com soluções com cálcio em <28 dias — precipitação fatal'},{tipo:'critico',texto:'NÃO usar em RN com hiperbilirrubinemia (kernicterus)'}],
    ajusteRenal:'Sem ajuste se ClCr >10',ajusteHepatico:'Cautela em hepato+nefropatia',fonte:'[SBP] + [AAP]'},
   {id:'oxacilina',nome:'Oxacilina',classe:'antibiotico',apresentacao:'Frasco 500 mg',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:100,volume_ml:5,desc:'Frasco 500 mg + 5 mL AD (100 mg/mL) — IV',sus:true,diluicao:'IV: reconstituir 500 mg em 5 mL AD, depois diluir em 50-100 mL SF e infundir 30 min'}
+   ],
    indicacoes:[
     {nome:'S. aureus sensível (celulite, osteo, endocardite)',dose:150,unidade:'mg/kg/dia',via:'IV',max:12000,intervalo:'6/6 h',diluicao:'Reconstituir + diluir 50-100 mL SF',velocidade:'30 min'},
     {nome:'Sepse neonatal',dose:100,unidade:'mg/kg/dia',via:'IV',max:4000,intervalo:'6-12/12 h',diluicao:'Diluir',velocidade:'30 min'}
@@ -566,6 +631,10 @@ const MEDICACOES = [
    alertas:[{tipo:'aviso',texto:'Trocar acesso periférico cada 48-72 h (alta taxa de flebite)'}],
    ajusteRenal:'Sem ajuste relevante',ajusteHepatico:'Cautela em hepatopatia',fonte:'[SBP]'},
   {id:'vancomicina',nome:'Vancomicina',classe:'antibiotico',apresentacao:'Frasco 500 mg ou 1 g',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:50,volume_ml:10,desc:'Frasco 500 mg + 10 mL AD (50 mg/mL) — concentrado',sus:true,diluicao:'Diluir mais para 5 mg/mL (em SF/SG5%). Infundir ≥60 min (>1h em <12kg) — risco de Red Man Syndrome'},
+     {tipo:'amp',mg_ml:50,volume_ml:20,desc:'Frasco 1 g + 20 mL AD (50 mg/mL) — concentrado',sus:true,diluicao:'Diluir mais para 5 mg/mL. Infundir ≥60 min'}
+   ],
    indicacoes:[
     {nome:'Infecção grave por MRSA / Gram+ resistente',dose:60,unidade:'mg/kg/dia',via:'IV',max:4000,intervalo:'6/6 h (15 mg/kg/dose)',diluicao:'Concentração final ≤5 mg/mL em SF/SG5%',velocidade:'≥60 min'},
     {nome:'Meningite (alvo vale 15-20)',dose:60,unidade:'mg/kg/dia',via:'IV',max:4000,intervalo:'6/6 h',diluicao:'Considerar ataque 20-25 mg/kg',velocidade:'≥60 min'}
@@ -586,6 +655,10 @@ const MEDICACOES = [
    ajusteRenal:'Sem ajuste se ClCr >10',ajusteHepatico:'Evitar em hepatopatia grave',fonte:'[SBP]',
    apresentacoes:[{tipo:'liq',mg_ml:40,desc:'Susp 200 mg/5 mL (frasco 600 mg → 15 mL)',sus:true},{tipo:'liq',mg_ml:40,desc:'Susp 200 mg/5 mL (frasco 900 mg → 22,5 mL)'},{tipo:'liq',mg_ml:40,desc:'Susp 200 mg/5 mL (frasco 1500 mg → 37,5 mL)'},{tipo:'sol',mg_un:500,idade_min:6,desc:'Comp 500 mg',sus:true}]},
   {id:'hidrocortisona',nome:'Hidrocortisona',classe:'corticoide',apresentacao:'Frasco 100/500 mg',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:50,volume_ml:2,desc:'Frasco 100 mg + 2 mL diluente (50 mg/mL)',sus:true,diluicao:'Reconstituir com diluente próprio. IV bolus lento ou diluir em 50-100 mL SF.'},
+     {tipo:'amp',mg_ml:100,volume_ml:5,desc:'Frasco 500 mg + 5 mL diluente (100 mg/mL)',sus:true,diluicao:'Reconstituir com diluente próprio. IV diluir em 100 mL SF.'}
+   ],
    indicacoes:[
     {nome:'Anafilaxia (após adrenalina)',dose:5,unidade:'mg/kg',via:'IV',max:200,intervalo:'6/6 h × 24 h',diluicao:'Reconstituir + diluir em 50 mL SF',velocidade:'5-10 min'},
     {nome:'Asma grave / status asmaticus',dose:5,unidade:'mg/kg',via:'IV',max:200,intervalo:'6/6 h',diluicao:'Diluir',velocidade:'5-10 min'},
@@ -608,7 +681,7 @@ const MEDICACOES = [
      {tipo:'amp',mg_ml:2,volume_ml:1,desc:'Amp 2 mg/1 mL (apresentação infantil)',sus:false}
    ],
    indicacoes:[
-    {nome:'Crupe (qualquer gravidade)',dose:0.15,unidade:'mg/kg',via:'VO/IM/IV',max:10,intervalo:'dose única',diluicao:'—',velocidade:'—',minNota:'Crupe leve: 0,15 mg/kg | mod-grave: 0,6 mg/kg'},
+    {nome:'Crupe (qualquer gravidade)',dose:0.15,unidade:'mg/kg',via:'VO/IM/IV',max:16,intervalo:'dose única',diluicao:'—',velocidade:'—',minNota:'Crupe leve: 0,15 mg/kg | mod-grave: 0,6 mg/kg | máx 16 mg (AAP/NEJM 2004)'},
     {nome:'Crise asma',dose:0.6,unidade:'mg/kg',via:'VO/IM/IV',max:16,intervalo:'dose única (ou 2 dias)',diluicao:'—',velocidade:'—'},
     {nome:'Antiemético (CINV)',dose:0.15,unidade:'mg/kg',via:'IV',max:8,intervalo:'pré-quimio',diluicao:'Sem diluir',velocidade:'Lento'},
     {nome:'Edema cerebral / HIC',dose:0.5,unidade:'mg/kg',via:'IV',max:16,intervalo:'6/6 h',diluicao:'Sem diluir',velocidade:'Lento'}
@@ -638,8 +711,8 @@ const MEDICACOES = [
      {tipo:'amp',mg_ml:0.5,volume_ml:1,desc:'Amp 0,5 mg/mL (uso IV refratário — UTI)',diluicao:'Diluir em SG5% — bolus 10 min, depois BIC'}
    ],
    indicacoes:[
-    {nome:'Crise asma — spray (preferencial)',dose:4,unidade:'jatos',via:'INAL',max:10,intervalo:'cada 20 min × 3 (1ª h)',diluicao:'Espaçador obrigatório',velocidade:'1 jato cada 30s, 5-10 respirações'},
-    {nome:'Crise asma — nebulização',dose:0.15,unidade:'mg/kg',via:'NEB',max:5,intervalo:'cada 20 min × 3',diluicao:'0,03 mL/kg (gotas) em 3 mL SF',velocidade:'O₂ 6-8 L/min',minNota:'mín 2,5 mg | máx 5 mg/dose'},
+    {nome:'Crise asma — spray (preferencial)',dose:4,unidade:'jatos',via:'INAL',max:10,intervalo:'cada 20 min × 3 (1ª h)',diluicao:'Espaçador obrigatório',velocidade:'1 jato cada 30s, 5-10 respirações',minNota:'<20 kg: 4 jatos | 20-30 kg: 6 jatos | >30 kg: 8-10 jatos (até 1000 mcg/dose)'},
+    {nome:'Crise asma — nebulização',dose:0.15,unidade:'mg/kg',via:'NEB',max:5,doseMinAbs:2.5,intervalo:'cada 20 min × 3',diluicao:'0,03 mL/kg (gotas) em 3 mL SF',velocidade:'O₂ 6-8 L/min',minNota:'mín 2,5 mg | máx 5 mg/dose'},
     {nome:'Crise asma — IV (refratária)',dose:5,unidade:'mcg/kg',via:'IV',max:250,intervalo:'em 10 min, depois BIC',diluicao:'Diluir em SG5%',velocidade:'Bolus 10 min, BIC 0,1-1 mcg/kg/min'}
    ],idadeMinima:'Sem idade mínima (cuidado <2 anos: resposta paradoxal)',
    contraindicacoes:['Hipersensibilidade','Taquiarritmia grave'],
@@ -660,6 +733,9 @@ const MEDICACOES = [
    alertas:[{tipo:'aviso',texto:'Proteger olhos durante nebulização — risco de glaucoma agudo'},{tipo:'info',texto:'Benefício adicional ao salbutamol APENAS na 1ª hora de crise grave'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[GINA, 2025] + [SBP]'},
   {id:'fenitoina',nome:'Fenitoína',classe:'anticonvulsivante',apresentacao:'Ampola 50 mg/mL (5 mL = 250 mg)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:50,volume_ml:5,desc:'Amp 250 mg/5 mL (50 mg/mL)',sus:true,diluicao:'IV: diluir APENAS em SF (precipita em SG5%). Lavar acesso antes/depois. Infundir ≤1 mg/kg/min com monitor cardíaco.'}
+   ],
    indicacoes:[
     {nome:'Status epilepticus (2ª linha)',dose:20,unidade:'mg/kg',via:'IV',max:1500,intervalo:'dose de ataque',diluicao:'SF (NÃO SG — precipita)',velocidade:'≤1 mg/kg/min com monitor'},
     {nome:'Manutenção',dose:5,unidade:'mg/kg/dia',via:'IV/VO',max:300,intervalo:'12/12 h',diluicao:'SF',velocidade:'Lento'}
@@ -670,6 +746,10 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'INFUSÃO LENTA com monitor cardíaco — bradiarritmia em infusão rápida'},{tipo:'critico',texto:'NÃO diluir em SG (precipita). Apenas SF. Lavar acesso antes/depois'}],
    ajusteRenal:'Cautela',ajusteHepatico:'Reduzir dose',fonte:'[SBP-DC Neuro] + [AES]'},
   {id:'fenobarbital',nome:'Fenobarbital',classe:'anticonvulsivante',apresentacao:'Ampola 100 mg/mL ou 200 mg/mL',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:100,volume_ml:1,desc:'Amp 100 mg/mL (1 mL)',sus:true,diluicao:'IV: diluir em SF/SG5% para 10 mg/mL e infundir ≤2 mg/kg/min'},
+     {tipo:'amp',mg_ml:200,volume_ml:1,desc:'Amp 200 mg/mL (1 mL)',sus:true,diluicao:'IV: diluir em SF/SG5% para 10 mg/mL e infundir ≤2 mg/kg/min'}
+   ],
    indicacoes:[
     {nome:'Status (3ª linha) / 1ª linha em RN',dose:20,unidade:'mg/kg',via:'IV',max:1000,intervalo:'pode complementar 5-10 mg/kg',diluicao:'Diluir em SF',velocidade:'≤1 mg/kg/min'}
    ],idadeMinima:'Sem idade mínima (1ª linha em convulsão neonatal)',
@@ -679,6 +759,12 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'Sedação prolongada — preparar via aérea'},{tipo:'aviso',texto:'1ª linha em convulsão neonatal'}],
    ajusteRenal:'Reduzir intervalo se ClCr <30',ajusteHepatico:'Reduzir dose',fonte:'[AES] + [SBP-DC Neonatologia]'},
   {id:'ondansetrona',nome:'Ondansetrona',classe:'antiemetico',apresentacao:'Comp 4/8 mg | Amp 2 mg/mL',
+   apresentacoes:[
+     {tipo:'sol',mg_un:4,desc:'Comp 4 mg',sus:false,idade_min:4},
+     {tipo:'sol',mg_un:8,desc:'Comp 8 mg',sus:false,idade_min:4},
+     {tipo:'amp',mg_ml:2,volume_ml:2,desc:'Amp 4 mg/2 mL (2 mg/mL)',sus:true,diluicao:'IV: pode aplicar sem diluir, lento (2-5 min) ou em 50 mL SF/SG5%'},
+     {tipo:'amp',mg_ml:2,volume_ml:4,desc:'Amp 8 mg/4 mL (2 mg/mL)',sus:true,diluicao:'IV: aplicar em 2-5 min'}
+   ],
    indicacoes:[
     {nome:'Vômito por gastroenterite',dose:0.15,unidade:'mg/kg',via:'VO/IV',max:8,intervalo:'pode repetir 2× (8/8 h)',diluicao:'IV: diluir em 50 mL SF',velocidade:'IV: 15 min'},
     {nome:'PONV (pós-operatório)',dose:0.1,unidade:'mg/kg',via:'IV',max:4,intervalo:'dose única',diluicao:'Diluir',velocidade:'IV: 15 min'}
@@ -686,9 +772,12 @@ const MEDICACOES = [
    contraindicacoes:['QTc longo','Hipersensibilidade','Uso de apomorfina'],
    efeitosFreq:['Cefaleia','Constipação','Tontura'],
    efeitosGraves:['Prolongamento QT','Torsades (raro)','Reação extrapiramidal (raro)'],
-   alertas:[{tipo:'aviso',texto:'Alerta ANVISA out/2019: risco de fenda palatina no 1º trimestre gestacional'},{tipo:'info',texto:'NNT ~5 para evitar 1 hospitalização por gastroenterite'}],
+   alertas:[{tipo:'critico',texto:'Risco de prolongamento QT — evitar dose >16 mg ou bolus IV rápido (>8 mg deve ser infundido em 15 min). NÃO associar a outros prolongadores de QT'},{tipo:'aviso',texto:'Alerta ANVISA out/2019: risco de fenda palatina no 1º trimestre gestacional'},{tipo:'info',texto:'NNT ~5 para evitar 1 hospitalização por gastroenterite'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Máx 8 mg/dia em hepatopatia grave',fonte:'[ANVISA] + [SBP]'},
   {id:'naloxona',nome:'Naloxona',classe:'antidoto',apresentacao:'Ampola 0,4 mg/mL',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:0.4,volume_ml:1,desc:'Amp 0,4 mg/mL (1 mL)',sus:true,diluicao:'IV/IM/IN: pode aplicar sem diluir. Para titulação fina, diluir 1 mL em 9 mL SF (= 0,04 mg/mL)'}
+   ],
    indicacoes:[
     {nome:'Reversão opioide (depressão respiratória)',dose:0.1,unidade:'mg/kg',via:'IV/IO/IM/IN',max:2,intervalo:'repetir 2-3 min até resposta',diluicao:'Sem diluir',velocidade:'Bolus'},
     {nome:'Reversão sedação leve',dose:0.01,unidade:'mg/kg',via:'IV',max:0.4,intervalo:'titular',diluicao:'Diluir 1:10',velocidade:'Lento — evitar abstinência aguda'}
@@ -699,6 +788,9 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'Meia-vida CURTA (30-90 min) — vigiar re-sedação, especialmente metadona/fentanil'},{tipo:'info',texto:'IN é alternativa válida sem acesso (atomizador)'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[AHA-PALS, 2025]'},
   {id:'flumazenil',nome:'Flumazenil',classe:'antidoto',apresentacao:'Ampola 0,1 mg/mL',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:0.1,volume_ml:5,desc:'Amp 0,5 mg/5 mL (0,1 mg/mL)',sus:true,diluicao:'IV: pode aplicar sem diluir, lento (15 segundos)'}
+   ],
    indicacoes:[
     {nome:'Reversão BZD (intoxicação)',dose:0.01,unidade:'mg/kg',via:'IV',max:0.2,intervalo:'repetir 1 min até total 1 mg',diluicao:'Sem diluir',velocidade:'15 s'}
    ],idadeMinima:'≥1 ano',
@@ -718,6 +810,9 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'EM RN: usar SG 10% (NUNCA SG 25/50% — hemorragia intracraniana)'},{tipo:'info',texto:'Após bolus, manter VIG 6-8 mg/kg/min em RN'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[SBP-DC Neonatologia]'},
   {id:'adenosina',nome:'Adenosina',classe:'cardio',apresentacao:'Ampola 3 mg/mL (2 mL = 6 mg)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:3,volume_ml:2,desc:'Amp 6 mg/2 mL (3 mg/mL)',sus:true,diluicao:'IV: SEM diluir. Bolus RÁPIDO em <1-2 segundos seguido de FLUSH 10-20 mL SF imediato. Acesso de grosso calibre o mais próximo do coração possível.'}
+   ],
    indicacoes:[
     {nome:'TSV estável (1ª dose)',dose:0.1,unidade:'mg/kg',via:'IV',max:6,intervalo:'—',diluicao:'Sem diluir + flush 5-10 mL SF',velocidade:'BOLUS RÁPIDO (≤2s) seguido de flush'},
     {nome:'TSV estável (2ª/3ª dose)',dose:0.2,unidade:'mg/kg',via:'IV',max:12,intervalo:'1-2 min após 1ª',diluicao:'Sem diluir + flush',velocidade:'BOLUS RÁPIDO + flush'}
@@ -941,6 +1036,11 @@ const MEDICACOES = [
 
   // ==================== ANTIEMÉTICOS AMBULATORIAIS ====================
   {id:'metoclopramida',nome:'Metoclopramida',classe:'antiemetico',apresentacao:'Sol oral 4 mg/mL | Comp 10 mg | Amp 5 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:4,desc:'Sol oral 4 mg/mL (1 gota = 0,1 mg) — Plasil',gotas_ml:40,sus:true},
+     {tipo:'sol',mg_un:10,desc:'Comp 10 mg',sus:true,idade_min:1},
+     {tipo:'amp',mg_ml:5,volume_ml:2,desc:'Amp 10 mg/2 mL (5 mg/mL)',sus:true,diluicao:'IV: diluir em SF 50-100 mL e infundir em 15 min (extrapiramidal se rápido)'}
+   ],
    indicacoes:[
     {nome:'Náusea/vômito (>1 ano)',dose:0.1,unidade:'mg/kg/dose',via:'VO/IV',max:10,intervalo:'8/8 h',diluicao:'IV: diluir',velocidade:'IV: 15 min',minNota:'Máx 0,5 mg/kg/dia | curso curto ≤5 dias'}
    ],idadeMinima:'≥1 ano (controvérsia <1a — extrapiramidal)',
@@ -951,6 +1051,11 @@ const MEDICACOES = [
    ajusteRenal:'Reduzir 50% se ClCr <40',ajusteHepatico:'Reduzir em hepatopatia',fonte:'[ANVISA] + [EMA] + [SBP]'},
 
   {id:'bromoprida',nome:'Bromoprida',classe:'antiemetico',apresentacao:'Sol oral 4 mg/mL | Comp 10 mg | Amp 5 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:4,desc:'Sol oral 4 mg/mL (1 gota = 0,2 mg) — Digesan',gotas_ml:20,sus:false,idade_min:1},
+     {tipo:'sol',mg_un:10,desc:'Comp 10 mg',sus:false,idade_min:1},
+     {tipo:'amp',mg_ml:5,volume_ml:2,desc:'Amp 10 mg/2 mL (5 mg/mL)',sus:false,diluicao:'IV: diluir em 100 mL SF e infundir em 15 min'}
+   ],
    indicacoes:[
     {nome:'Náusea/vômito (uso restrito)',dose:0.5,unidade:'mg/kg/dia',via:'VO/IV',max:30,intervalo:'8/8 h',diluicao:'IV: diluir',velocidade:'IV: lento',minNota:'EVITAR — risco extrapiramidal alto'}
    ],idadeMinima:'≥2 anos (uso desencorajado pela SBP)',
@@ -961,6 +1066,12 @@ const MEDICACOES = [
    ajusteRenal:'Reduzir',ajusteHepatico:'Reduzir',fonte:'[SBP] (uso desencorajado)'},
 
   {id:'dimenidrinato',nome:'Dimenidrinato',classe:'antiemetico',apresentacao:'Sol oral 1,67 mg/mL | Comp 50 mg | Amp 30 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:1.67,desc:'Sol oral 1,67 mg/mL (Dramin) — 1 gota = ~0,3 mg',gotas_ml:5,sus:false,idade_min:2},
+     {tipo:'sol',mg_un:50,desc:'Comp 50 mg',sus:false,idade_min:6},
+     {tipo:'amp',mg_ml:30,volume_ml:1,desc:'Amp 30 mg/mL (1 mL)',sus:false,diluicao:'IV: diluir em 10 mL SF, lento'},
+     {tipo:'amp',mg_ml:5,volume_ml:10,desc:'Amp 50 mg/10 mL (5 mg/mL)',sus:false,diluicao:'IV: pode aplicar lento sem rediluir'}
+   ],
    indicacoes:[
     {nome:'Cinetose / náusea',dose:1.25,unidade:'mg/kg/dose',via:'VO/IM',max:50,intervalo:'6-8/8 h',diluicao:'—',velocidade:'—',minNota:'Máx 5 mg/kg/dia | 2-6 a: 12,5-25 mg | 6-12 a: 25-50 mg'}
    ],idadeMinima:'≥2 anos',
@@ -997,6 +1108,10 @@ const MEDICACOES = [
 
   // ==================== INALATÓRIOS / MANUTENÇÃO ASMA ====================
   {id:'budesonida',nome:'Budesonida (inalatória)',classe:'broncodilatador',apresentacao:'Susp nebul 0,25/0,5 mg/mL | Spray 100/200 mcg | Cápsula inal 200/400 mcg',
+   apresentacoes:[
+     {tipo:'nebul',mg_ml:0.25,desc:'Susp nebul 0,25 mg/mL (Pulmicort)',sus:true,diluicao:'Em 2 mL SF, sem misturar com salbutamol no mesmo recipiente'},
+     {tipo:'nebul',mg_ml:0.5,desc:'Susp nebul 0,5 mg/mL (Pulmicort)',sus:true,diluicao:'Em 2 mL SF'}
+   ],
    indicacoes:[
     {nome:'Crupe (grave) — nebulização',dose:2,unidade:'mg',via:'NEB',max:2,intervalo:'dose única',diluicao:'Diluir em SF qsp 4 mL',velocidade:'O₂ 6 L/min'},
     {nome:'Asma — manutenção (controle)',dose:200,unidade:'mcg/dia',via:'INAL',max:800,intervalo:'12/12 h ou 1×/dia',diluicao:'Espaçador',velocidade:'—',minNota:'Dose baixa: 100-200 | média: 200-400 | alta: >400 mcg/dia'},
@@ -1009,8 +1124,13 @@ const MEDICACOES = [
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Reduzir em hepatopatia grave',fonte:'[GINA, 2025] + [SBP-DC Pneumo]'},
 
   {id:'beclometasona',nome:'Beclometasona',classe:'broncodilatador',apresentacao:'Spray 50/200/250 mcg/jato',
+   apresentacoes:[
+     {tipo:'amp',mcg_ml:50,volume_ml:1,desc:'Spray 50 mcg/jato',sus:true,diluicao:'Inalatório com espaçador. Bochechar após uso.'},
+     {tipo:'amp',mcg_ml:200,volume_ml:1,desc:'Spray 200 mcg/jato',sus:true,diluicao:'Inalatório com espaçador. Bochechar após uso.'},
+     {tipo:'amp',mcg_ml:250,volume_ml:1,desc:'Spray 250 mcg/jato',sus:false,diluicao:'Inalatório com espaçador. Bochechar após uso.'}
+   ],
    indicacoes:[
-    {nome:'Asma — manutenção',dose:200,unidade:'mcg/dia',via:'INAL',max:800,intervalo:'12/12 h',diluicao:'Espaçador obrigatório <12a',velocidade:'—',minNota:'Dose baixa: 100-200 | média: 200-400 | alta: >400 mcg/dia'}
+    {nome:'Asma — manutenção',dose:0,unidade:'jatos',via:'INAL',max:0,intervalo:'2 jatos 12/12 h (ajustar pela gravidade)',diluicao:'Espaçador obrigatório <12a',velocidade:'—',minNota:'Dose baixa: 100-200 | média: 200-400 | alta: >400 mcg/dia'}
    ],idadeMinima:'≥5 anos (apresentações brasileiras)',
    contraindicacoes:['Hipersensibilidade','TB respiratória ativa','Infecção fúngica oral'],
    efeitosFreq:['Candidíase oral','Disfonia','Irritação faringe'],
@@ -1019,9 +1139,14 @@ const MEDICACOES = [
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Cautela',fonte:'[GINA, 2025] + [SBP]'},
 
   {id:'fluticasona',nome:'Fluticasona (inalatória)',classe:'broncodilatador',apresentacao:'Spray 50/125/250 mcg/jato | Diskus 50/100/250 mcg | Spray nasal 50 mcg',
+   apresentacoes:[
+     {tipo:'amp',mcg_ml:50,volume_ml:1,desc:'Spray 50 mcg/jato (Flixotide)',sus:false,diluicao:'Inalatório com espaçador. Bochechar após uso.'},
+     {tipo:'amp',mcg_ml:125,volume_ml:1,desc:'Spray 125 mcg/jato',sus:false,diluicao:'Inalatório com espaçador'},
+     {tipo:'amp',mcg_ml:250,volume_ml:1,desc:'Spray 250 mcg/jato',sus:false,diluicao:'Inalatório com espaçador'}
+   ],
    indicacoes:[
-    {nome:'Asma — manutenção (controle)',dose:100,unidade:'mcg/dia',via:'INAL',max:500,intervalo:'12/12 h',diluicao:'Espaçador',velocidade:'—',minNota:'Dose baixa: 50-100 | média: 100-250 | alta: >250 mcg/dia (≈ metade da budesonida)'},
-    {nome:'Rinite alérgica (spray nasal)',dose:50,unidade:'mcg/narina',via:'INTRA-NASAL',max:200,intervalo:'1×/dia',diluicao:'—',velocidade:'—'}
+    {nome:'Asma — manutenção (controle)',dose:0,unidade:'jatos',via:'INAL',max:0,intervalo:'1-2 jatos 12/12 h (ajustar pela gravidade)',diluicao:'Espaçador',velocidade:'—',minNota:'Dose baixa: 50-100 | média: 100-250 | alta: >250 mcg/dia (≈ metade da budesonida)'},
+    {nome:'Rinite alérgica (spray nasal)',dose:0,unidade:'jatos',via:'INTRA-NASAL',max:0,intervalo:'1 jato em cada narina, 1×/dia',diluicao:'—',velocidade:'—'}
    ],idadeMinima:'≥4 anos (asma); ≥4 anos (rinite)',
    contraindicacoes:['Hipersensibilidade','TB respiratória ativa'],
    efeitosFreq:['Candidíase oral','Disfonia','Epistaxe (nasal)'],
@@ -1106,7 +1231,7 @@ const MEDICACOES = [
 
   {id:'oseltamivir',nome:'Oseltamivir',classe:'antiviral',apresentacao:'Susp 12 mg/mL | Cáps 30/45/75 mg',
    indicacoes:[
-    {nome:'Influenza (tratamento)',dose:3,unidade:'mg/kg/dose',via:'VO',max:75,intervalo:'12/12 h × 5 dias',diluicao:'—',velocidade:'—',minNota:'<1 mês: 2 mg/kg/dose | 1-3m: 2,5 mg/kg/dose | 3-12m: 3 mg/kg/dose | ≥1a por peso: ≤15kg=30mg | 15-23kg=45mg | 23-40kg=60mg | >40kg=75mg'},
+    {nome:'Influenza (tratamento)',dose:3,unidade:'mg/kg/dose',via:'VO',max:75,intervalo:'12/12 h × 5 dias',diluicao:'—',velocidade:'—',minNota:'<1 mês: 2 mg/kg/dose | 1-3m: 2,5 mg/kg/dose | 3-8m: 3 mg/kg/dose | 9-11m: 3,5 mg/kg/dose (CDC/AAP) | ≥1a por peso: ≤15kg=30mg | 15-23kg=45mg | 23-40kg=60mg | >40kg=75mg'},
     {nome:'Profilaxia pós-exposição',dose:3,unidade:'mg/kg/dose',via:'VO',max:75,intervalo:'1×/dia × 10 dias',diluicao:'—',velocidade:'—'}
    ],idadeMinima:'≥2 semanas (FDA) | uso clínico ≥1 mês comum',
    contraindicacoes:['Hipersensibilidade','Cautela em IRC <30'],
@@ -1143,6 +1268,9 @@ const MEDICACOES = [
 
   // ==================== TÓPICOS ====================
   {id:'mupirocina',nome:'Mupirocina (tópico)',classe:'topico',apresentacao:'Pomada 2% (20 mg/g)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:20,volume_ml:1,desc:'Pomada 2% — bisnaga 5 g ou 15 g (Bactroban)',sus:false,diluicao:'Aplicação tópica fina, 3× ao dia, por 5-10 dias'}
+   ],
    indicacoes:[
     {nome:'Impetigo / infecções pele localizadas',dose:0,unidade:'aplicação local',via:'TÓPICO',max:0,intervalo:'3×/dia × 5-7 dias',diluicao:'Aplicar fina camada',velocidade:'—'},
     {nome:'Descolonização nasal de S. aureus (MRSA)',dose:0,unidade:'aplicação intranasal',via:'INTRA-NASAL',max:0,intervalo:'2×/dia × 5 dias',diluicao:'—',velocidade:'—'}
@@ -1154,6 +1282,10 @@ const MEDICACOES = [
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[SBP]'},
 
   {id:'permetrina',nome:'Permetrina (tópico)',classe:'topico',apresentacao:'Loção/creme 1% (pediculose) ou 5% (escabiose)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:10,volume_ml:60,desc:'Loção 1% — frasco 60 mL (pediculose)',sus:true,diluicao:'Aplicar em couro cabeludo seco, deixar 10 min, enxaguar. Repetir em 7-10 dias.'},
+     {tipo:'amp',mg_ml:50,volume_ml:60,desc:'Creme 5% — bisnaga 60 g (escabiose)',sus:true,diluicao:'Aplicar em todo o corpo (do pescoço pra baixo), deixar 8-14h. Repetir em 7 dias.'}
+   ],
    indicacoes:[
     {nome:'Pediculose (1%)',dose:0,unidade:'aplicação no couro cabeludo',via:'TÓPICO',max:0,intervalo:'aplicar e enxaguar após 10 min, repetir em 7 dias',diluicao:'Cabelo úmido',velocidade:'—'},
     {nome:'Escabiose (5%)',dose:0,unidade:'aplicação corporal',via:'TÓPICO',max:0,intervalo:'do pescoço aos pés à noite, banhar em 8-14h, repetir em 7 dias',diluicao:'Pele seca',velocidade:'—'}
@@ -1165,6 +1297,9 @@ const MEDICACOES = [
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[SBP] + [MS]'},
 
   {id:'sulfadiazina-prata',nome:'Sulfadiazina de Prata 1%',classe:'topico',apresentacao:'Creme 1% (10 mg/g)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:10,volume_ml:1,desc:'Creme 1% — pote 50 g ou 400 g (Dermazine)',sus:true,diluicao:'Aplicar camada de 3-5 mm em ferida limpa, 1-2× ao dia'}
+   ],
    indicacoes:[
     {nome:'Queimadura 2º/3º grau (cobertura)',dose:0,unidade:'aplicação local',via:'TÓPICO',max:0,intervalo:'1-2×/dia',diluicao:'Camada de 2-3 mm',velocidade:'—'}
    ],idadeMinima:'≥2 meses (kernicterus em RN)',
@@ -1175,6 +1310,9 @@ const MEDICACOES = [
    ajusteRenal:'Cautela em IRC',ajusteHepatico:'Cautela',fonte:'[SBP] + [MS]'},
 
   {id:'corticoide-topico',nome:'Hidrocortisona 1% (tópica)',classe:'topico',apresentacao:'Creme/pomada 1% (10 mg/g)',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:10,volume_ml:1,desc:'Creme/pomada 1% (Berlison) — bisnaga 30 g',sus:false,diluicao:'Aplicar fina camada 1-2× ao dia, por até 7 dias. Evitar face e dobras prolongadamente.'}
+   ],
    indicacoes:[
     {nome:'Dermatite atópica leve / dermatite de contato',dose:0,unidade:'aplicação fina',via:'TÓPICO',max:0,intervalo:'1-2×/dia × ≤7 dias',diluicao:'Camada fina',velocidade:'—'}
    ],idadeMinima:'≥3 meses',
@@ -1186,6 +1324,9 @@ const MEDICACOES = [
 
   // ==================== ORL ====================
   {id:'cipro-otologico',nome:'Ciprofloxacino (otológico)',classe:'orl',apresentacao:'Sol otológica 0,3%',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:3,volume_ml:5,desc:'Sol otológica 0,3% — frasco 5 mL (Cilodex sem dexa)',sus:false,diluicao:'Aquecer frasco na mão antes. Pingar com cabeça lateralizada, manter 1 min.'}
+   ],
    indicacoes:[
     {nome:'Otite externa aguda',dose:0,unidade:'gotas',via:'OTOLÓGICO',max:0,intervalo:'3-4 gotas 12/12 h × 7 dias',diluicao:'—',velocidade:'—'},
     {nome:'Otite média supurativa (com tubo de ventilação)',dose:0,unidade:'gotas',via:'OTOLÓGICO',max:0,intervalo:'3-4 gotas 12/12 h × 7 dias',diluicao:'—',velocidade:'—'}
@@ -1197,6 +1338,9 @@ const MEDICACOES = [
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[SBP-DC ORL]'},
 
   {id:'soro-fisiologico-nasal',nome:'Soro Fisiológico Nasal',classe:'orl',apresentacao:'Sol nasal 0,9% (frasco/seringa) | Spray',
+   apresentacoes:[
+     {tipo:'amp',mg_ml:9,volume_ml:5,desc:'Sol nasal 0,9% — seringa 5 mL ou frasco',sus:true,diluicao:'Lavar narinas: 1-2 mL por narina, 3-6× ao dia. Lactentes: deitar lateralmente.'}
+   ],
    indicacoes:[
     {nome:'Higiene nasal / rinite / IVAS',dose:0,unidade:'mL por narina',via:'INTRA-NASAL',max:0,intervalo:'3-6×/dia',diluicao:'—',velocidade:'—',minNota:'Lactente: 1-2 mL/narina | Pré-escolar: 3-5 mL | Escolar: 5-10 mL'}
    ],idadeMinima:'Sem idade mínima',
@@ -1423,6 +1567,197 @@ function interpretarIntervalo(intervalo) {
 
 // Calcula doses por apresentação. Retorna array de cards prontos.
 // ind: objeto da indicação. m: medicação completa (para acessar apresentacoes/componenteCalc)
+// ============================================================================
+// GERAÇÃO E CÓPIA DE RECEITA (estilo SUS, separado em linhas)
+// ============================================================================
+
+// Gera texto de receita para UMA apresentação específica (botão pequeno do card)
+function gerarReceitaApresentacao(med, ind, card) {
+  const linhas = [];
+  const nomeMed = med.nome || '';
+  const desc = card.desc || '';
+  
+  // CASO ESPECIAL: tópicos / inalatórios / sprays — receita textual sem cálculo
+  if (card.topico) {
+    let qtd = '1 frasco';
+    if (desc.toLowerCase().includes('pomada') || desc.toLowerCase().includes('creme')) qtd = '1 bisnaga';
+    else if (desc.toLowerCase().includes('spray')) qtd = '1 frasco aerossol';
+    else if (desc.toLowerCase().includes('loção')) qtd = '1 frasco';
+    linhas.push(nomeMed + ' — ' + desc + ' .................... ' + qtd);
+    // Posologia textual baseada no intervalo da indicação
+    const acao = (ind.unidade || '').toLowerCase().includes('jato') ? 'Inalar' : 'Aplicar';
+    linhas.push(acao + ' ' + (ind.intervalo || 'conforme orientação médica') + '.');
+    if (card.diluicao) { let d = card.diluicao.trim(); if (!/[.!?]$/.test(d)) d += '.'; linhas.push('Obs: ' + d); }
+    return linhas.join('\n');
+  }
+  
+  // Linha 1: Nome da medicação + apresentação completa + quantidade dispensada
+  let qtdDispensada = '1 frasco';
+  if (card.tipo === 'sol') {
+    // Comprimidos: estimar baseado em 7 dias × dosesDia (default)
+    qtdDispensada = '__ comprimidos';
+  } else if (card.tipo === 'amp' || card.tipo === 'nebul') {
+    qtdDispensada = '__ ampolas';
+  }
+  linhas.push(nomeMed + ' — ' + desc + ' .................... ' + qtdDispensada);
+  
+  // Linha 2: Posologia
+  // Tradução de via — ordem importa: combinações primeiro, simples depois
+  let via = (ind.via || 'VO');
+  // Combinações triplas e duplas comuns
+  via = via.replace(/VO\/IM\/IV/g, 'via oral, intramuscular ou endovenoso')
+           .replace(/VO\/IV\/IM/g, 'via oral, intramuscular ou endovenoso')
+           .replace(/IV\/IM\/VO/g, 'via oral, intramuscular ou endovenoso')
+           .replace(/IV\/IM/g, 'intramuscular ou endovenoso')
+           .replace(/IM\/IV/g, 'intramuscular ou endovenoso')
+           .replace(/VO\/IM/g, 'via oral ou intramuscular')
+           .replace(/VO\/IV/g, 'via oral ou endovenoso')
+           .replace(/VO\/SNG/g, 'via oral ou sonda')
+           .replace(/VO\/SL/g, 'via oral ou sublingual')
+           .replace(/IV\/IO/g, 'endovenoso ou intraósseo')
+           // Vias simples
+           .replace(/\bVO\b/g, 'via oral')
+           .replace(/\bIV\b/g, 'endovenoso')
+           .replace(/\bIM\b/g, 'intramuscular')
+           .replace(/\bSC\b/g, 'subcutâneo')
+           .replace(/\bNEB\b/g, 'nebulização')
+           .replace(/\bINAL\b/g, 'inalatório')
+           .replace(/\bIO\b/g, 'intraósseo');
+  
+  let posologia = 'Tomar ' + (card.resultado || '—');
+  // Se o resultado contém "gotas" (ex: "0,4 mL (≈ 8 gotas)"), simplificar para "X gotas"
+  const matchGotas = (card.resultado || '').match(/≈\s*(\d+)\s*gotas/);
+  const matchSoGotas = (card.resultado || '').match(/^(\d+(?:[,.]\d+)?)\s*gotas$/);
+  if (matchGotas) {
+    posologia = 'Pingar ' + matchGotas[1] + ' gotas';
+  } else if (matchSoGotas) {
+    posologia = 'Pingar ' + matchSoGotas[1].replace('.', ',') + ' gotas';
+  } else if (card.tipo === 'amp') {
+    posologia = 'Aplicar ' + (card.resultado || '');
+  } else if (card.tipo === 'nebul') {
+    posologia = 'Nebulizar ' + (card.resultado || '');
+  } else if (card.tipo === 'sol') {
+    // Comprimidos
+    posologia = 'Tomar ' + (card.resultado || '');
+  }
+  
+  // Preposição inteligente antes do intervalo
+  let prepIntervalo = ', de '; // padrão (de 6/6 h, de 12/12 h)
+  const intLbl = (card.intervaloLbl || ind.intervalo || '').toLowerCase();
+  const isUnica = intLbl.includes('única') || intLbl.includes('unica');
+  if (isUnica) {
+    prepIntervalo = ', em ';
+  } else if (intLbl.includes('cada')) {
+    prepIntervalo = ', a ';  // "a cada 20 min"
+  } else if (intLbl.includes('×') || intLbl.includes(' x ') || intLbl.includes('vez')) {
+    prepIntervalo = ', ';  // "1× ao dia"
+  } else if (intLbl.includes('ataque') || intLbl.includes('manutenção')) {
+    prepIntervalo = ', em ';
+  }
+  // Adicionar via, depois preposição + intervalo
+  posologia += ', ' + via + prepIntervalo + (card.intervaloLbl || ind.intervalo || '');
+  if (card.dias) posologia += ' ' + card.dias;
+  
+  // Adicionar finalidade da indicação — mas evitar duplicações
+  const finalidade = (ind.nome || '').toLowerCase();
+  if (finalidade) {
+    if (finalidade.includes('febre') || finalidade.includes('dor')) {
+      posologia += ', se dor ou febre';
+    } else if (finalidade.includes('alergia') || finalidade.includes('alérgic')) {
+      posologia += ', se reação alérgica';
+    } else if (finalidade.includes('asma') && !isUnica) {
+      posologia += ', em crise';
+    }
+    // Crupe já vem com "dose única" — não duplicar
+  }
+  posologia += '.';
+  linhas.push(posologia);
+  
+  // Linha 3 (opcional): diluição/velocidade da apresentação
+  if (card.diluicao) { let d = card.diluicao.trim(); if (!/[.!?]$/.test(d)) d += '.'; linhas.push('Obs: ' + d); }
+  
+  return linhas.join('\n');
+}
+
+// Gera texto de receita CONSOLIDADO de todas apresentações disponíveis (botão grande)
+function gerarReceitaConsolidada(med, ind, apr) {
+  const cards = (apr.cards || []).filter(c => !c.bloqueado && !c.inviavel && c.resultado);
+  if (!cards.length) return '';
+  
+  // Pegar a apresentação mais "comum" (primeira sem bloqueio) para a receita principal
+  const principal = cards[0];
+  return gerarReceitaApresentacao(med, ind, principal);
+}
+
+// Copiar texto para área de transferência — com fallback robusto para iOS Safari
+function copiarTextoReceita(texto, btnEl) {
+  // Fallback antigo (funciona em iOS Safari quando navigator.clipboard não disponível)
+  const fallbackCopy = (txt) => {
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
+    ta.setAttribute('readonly', '');
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, txt.length);
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    return ok;
+  };
+  
+  // Feedback visual no botão
+  const feedback = (sucesso) => {
+    if (!btnEl) return;
+    const txtOriginal = btnEl.dataset.txtOriginal || btnEl.innerHTML;
+    btnEl.dataset.txtOriginal = txtOriginal;
+    btnEl.innerHTML = sucesso ? '✓ Copiado!' : '✗ Falhou';
+    btnEl.classList.add(sucesso ? 'copiou' : 'falhou');
+    setTimeout(() => {
+      btnEl.innerHTML = txtOriginal;
+      btnEl.classList.remove('copiou', 'falhou');
+    }, 1800);
+  };
+  
+  // Tentar API moderna primeiro
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(texto).then(
+      () => feedback(true),
+      () => feedback(fallbackCopy(texto))
+    );
+  } else {
+    feedback(fallbackCopy(texto));
+  }
+}
+
+// Função global para os onclick inline (encontra med/ind/card pelos índices)
+window.wpCopiarApresentacao = function(medId, indIdx, aprIdx, btnEl) {
+  try {
+    const med = (typeof MEDICACOES !== 'undefined' ? MEDICACOES : []).find(x => x.id === medId);
+    if (!med) return;
+    const ind = med.indicacoes && med.indicacoes[indIdx];
+    if (!ind) return;
+    const apr = calcularApresentacoes(ind, estado.peso, estado.idade, med);
+    if (!apr || !apr.cards[aprIdx]) return;
+    const card = apr.cards[aprIdx];
+    const texto = gerarReceitaApresentacao(med, ind, card);
+    copiarTextoReceita(texto, btnEl);
+  } catch(e) { console.error(e); }
+};
+
+window.wpCopiarReceita = function(medId, indIdx, btnEl) {
+  try {
+    const med = (typeof MEDICACOES !== 'undefined' ? MEDICACOES : []).find(x => x.id === medId);
+    if (!med) return;
+    const ind = med.indicacoes && med.indicacoes[indIdx];
+    if (!ind) return;
+    const apr = calcularApresentacoes(ind, estado.peso, estado.idade, med);
+    if (!apr) return;
+    const texto = gerarReceitaConsolidada(med, ind, apr);
+    if (texto) copiarTextoReceita(texto, btnEl);
+  } catch(e) { console.error(e); }
+};
+
 // Formatar quantidade de comprimidos em fração realista da prática clínica.
 // Frações praticáveis: ¼, ⅓, ½, ⅔, ¾, 1, 1¼, 1⅓, 1½, 1⅔, 1¾, 2, 2½, 3, ...
 // Quando cai entre frações úteis (ex: 0.20 = 1/5, 0.14 = 1/7), marcar como inviável.
@@ -1482,7 +1817,43 @@ function formatarFracaoCp(qtd, unLabel) {
 function calcularApresentacoes(ind, peso, idade, m) {
   if (!peso) return null;
   if (!m.apresentacoes || !m.apresentacoes.length) return null;
-  // Aceita qualquer via — VO, IV, IM, SC, NEB, INAL — desde que haja apresentação compatível
+  
+  // Detecção de modo TÓPICO: quando dose é 0 ou via é TÓPICO/SPRAY/INAL sem dose mg/kg
+  const viaUp0 = (ind.via || '').toUpperCase();
+  const isTopico = ind.dose === 0 || viaUp0.includes('TÓPICO') || viaUp0.includes('TOPICO') || (ind.unidade || '').toLowerCase().includes('aplicação') || (ind.unidade || '').toLowerCase().includes('jato');
+  
+  if (isTopico) {
+    // Modo tópico: cards informativos, sem cálculo numérico
+    const interp0 = interpretarIntervalo(ind.intervalo);
+    const cards = m.apresentacoes.map(apr => {
+      let bloqueado = null;
+      if (apr.idade_min && idade && idade < apr.idade_min) {
+        bloqueado = 'Apresentação para ≥' + apr.idade_min + ' anos';
+      }
+      return {
+        desc: apr.desc,
+        tipo: apr.tipo,
+        sus: apr.sus || false,
+        resultado: bloqueado ? null : 'Aplicar conforme orientação',
+        bloqueado: bloqueado,
+        alerta: apr.alerta || null,
+        diluicao: apr.diluicao || null,
+        intervaloLbl: interp0.intervaloLbl || ind.intervalo,
+        dias: interp0.dias,
+        topico: true
+      };
+    });
+    return {
+      cards: cards,
+      dosePorDose: 0,
+      doseDia: 0,
+      interp: interp0,
+      isPorDose: true,
+      unidade: ind.unidade,
+      unidadeBase: 'topico',
+      topico: true
+    };
+  }
 
   const interp = interpretarIntervalo(ind.intervalo);
   const unidade = (ind.unidade || '').toLowerCase();
@@ -1523,15 +1894,41 @@ function calcularApresentacoes(ind, peso, idade, m) {
     doseDia = doseFixa * interp.dosesDia;
   } else {
     const fator = isPorKg ? peso : 1;
+    
+    // Resolver cap efetivo: maxPorIdade (se definido) tem prioridade sobre max
+    let capEfetivo = ind.max;
+    let capPorIdadeAplicado = false;
+    if (ind.maxPorIdade && Array.isArray(ind.maxPorIdade) && idade != null && idade !== '') {
+      const idadeN = parseFloat(idade);
+      for (const f of ind.maxPorIdade) {
+        const minOk = f.idade_min === undefined || idadeN >= f.idade_min;
+        const maxOk = f.idade_max === undefined || idadeN < f.idade_max;
+        if (minOk && maxOk) {
+          capEfetivo = f.max;
+          capPorIdadeAplicado = true;
+          break;
+        }
+      }
+    }
+    
     if (isPorDia) {
       doseDia = ind.dose * fator;
-      if (ind.max && doseDia > ind.max) doseDia = ind.max;
+      if (capEfetivo && doseDia > capEfetivo) doseDia = capEfetivo;
       dosePorDose = doseDia / interp.dosesDia;
     } else {
       dosePorDose = ind.dose * fator;
-      if (ind.max && dosePorDose > ind.max) dosePorDose = ind.max;
+      if (capEfetivo && dosePorDose > capEfetivo) dosePorDose = capEfetivo;
       doseDia = dosePorDose * interp.dosesDia;
     }
+  }
+  
+  // CRÍTICO: Aplicar dose MÍNIMA absoluta (ex.: Atropina mín 0,1 mg)
+  // Se cálculo por peso resultou em dose abaixo do mínimo, AJUSTA pra cima E sinaliza
+  let doseAjustadaParaMin = false;
+  if (ind.doseMinAbs && dosePorDose < ind.doseMinAbs) {
+    dosePorDose = ind.doseMinAbs;
+    doseDia = dosePorDose * interp.dosesDia;
+    doseAjustadaParaMin = true;
   }
   
   // Converter para mg-base quando necessário (apenas para casar com mg_ml e mg_un das apresentações)
@@ -1569,20 +1966,29 @@ function calcularApresentacoes(ind, peso, idade, m) {
     if (apr.tipo === 'sache_sro') {
       resultado = Math.round(50*peso) + '–' + Math.round(100*peso) + ' mL em 4 h';
     } else if (apr.tipo === 'amp' || apr.tipo === 'nebul') {
-      // Ampola/solução nebul: cálculo de mL via concentração mg/mL
-      const conc = apr.mg_ml;
-      if (conc) {
-        let ml;
-        if (unidadeBase === 'mcg') ml = (dosePorDose / 1000) / conc;
-        else if (unidadeBase === 'g') ml = (dosePorDose * 1000) / conc;
-        else ml = dosePorDose / conc;
-        resultado = ml.toFixed(2).replace('.', ',') + ' mL';
-        if (apr.tipo === 'amp' && apr.volume_ml) {
-          resultado += ' da amp ' + apr.volume_ml + ' mL';
-        }
+      // Ampola/solução nebul: cálculo de mL via concentração
+      // Suporta mg_ml E mcg_ml (alguns fármacos vêm em mcg/mL: fentanil, naloxona)
+      let ml = null;
+      if (apr.mcg_ml) {
+        // Concentração em mcg/mL
+        if (unidadeBase === 'mcg') ml = dosePorDose / apr.mcg_ml;
+        else if (unidadeBase === 'mg') ml = (dosePorDose * 1000) / apr.mcg_ml;
+        else if (unidadeBase === 'g') ml = (dosePorDose * 1000000) / apr.mcg_ml;
+      } else if (apr.mg_ml) {
+        // Concentração em mg/mL (padrão)
+        if (unidadeBase === 'mcg') ml = (dosePorDose / 1000) / apr.mg_ml;
+        else if (unidadeBase === 'g') ml = (dosePorDose * 1000) / apr.mg_ml;
+        else ml = dosePorDose / apr.mg_ml;
       } else if (apr.ui_ml && unidadeBase === 'UI') {
-        const ml = dosePorDose / apr.ui_ml;
-        resultado = ml.toFixed(2).replace('.', ',') + ' mL';
+        ml = dosePorDose / apr.ui_ml;
+      }
+      if (ml !== null) {
+        // Para volumes muito pequenos (<0,1 mL), mostrar 3 casas
+        const casas = ml < 0.1 ? 3 : 2;
+        resultado = ml.toFixed(casas).replace('.', ',') + ' mL';
+        if (apr.tipo === 'amp' && apr.volume_ml) {
+          resultado += ' da amp ' + String(apr.volume_ml).replace('.', ',') + ' mL';
+        }
       }
     } else if (apr.tipo === 'liq') {
       if (unidadeBase === 'mL') {
@@ -1665,7 +2071,9 @@ function calcularApresentacoes(ind, peso, idade, m) {
     interp: interp,
     isPorDose: isPorDose,
     unidade: ind.unidade,
-    unidadeBase: unidadeBase
+    unidadeBase: unidadeBase,
+    doseAjustadaParaMin: doseAjustadaParaMin,
+    doseMinAbs: ind.doseMinAbs
   };
 }
 
@@ -1768,28 +2176,50 @@ function renderMed(m) {
     html += '<div class="med-content-inner">';
     html += '<div class="sec-title">Indicações & Doses</div>';
     html += '<div class="indicacoes">';
-    m.indicacoes.forEach(ind => {
+    m.indicacoes.forEach((ind, indIdx) => {
       const calc = calcDose(ind.dose, estado.peso, ind.max);
       const apr = calcularApresentacoes(ind, estado.peso, estado.idade, m);
+      const ehTopico = ind.dose === 0 || (ind.via||'').toUpperCase().includes('TÓPIC') || (ind.via||'').toUpperCase().includes('TOPIC') || (ind.unidade||'').toLowerCase().includes('aplicação') || (ind.unidade||'').toLowerCase().includes('jato');
       html += `<div class="indicacao">
         <div class="ind-nome">${esc(ind.nome)}</div>
         <div class="ind-grid">
-          <div class="ind-cell"><div class="lbl">Dose</div><div class="val">${ind.dose} ${esc(ind.unidade)}</div></div>
+          ${ehTopico ? '' : `<div class="ind-cell"><div class="lbl">Dose</div><div class="val">${String(ind.dose).replace('.',',')} ${esc(ind.unidade)}</div></div>`}
           <div class="ind-cell"><div class="lbl">Via</div><div class="val">${esc(ind.via)}</div></div>
-          <div class="ind-cell"><div class="lbl">Máx</div><div class="val">${ind.max} ${esc((ind.unidade||'').replace('/kg','').replace('/dia',''))}</div></div>
+          ${ehTopico ? '' : `<div class="ind-cell"><div class="lbl">Máx</div><div class="val">${String(ind.max).replace('.',',')} ${esc((ind.unidade||'').replace('/kg','').replace('/dia',''))}</div></div>`}
           <div class="ind-cell"><div class="lbl">Intervalo</div><div class="val">${esc(ind.intervalo)}</div></div>
         </div>`;
       if (ind.minNota) html += `<div class="ind-nota">${esc(ind.minNota)}</div>`;
       // BLOCO NOVO: cards de apresentações (mL/dose por intervalo) — quando VO + apresentações
       if (apr && apr.cards.length) {
         const u = apr.unidadeBase || 'mg';
-        html += `<div class="apr-bloco">
-          <div class="apr-resumo">
-            <span class="apr-resumo-lbl">Para ${estado.peso} kg →</span>
-            <span class="apr-resumo-val">${apr.dosePorDose.toFixed(u==='UI'||u==='mcg'?0:1).replace('.',',')} ${u}/dose</span>
-            <span class="apr-resumo-aux">(${apr.interp.dosesDia}× ao dia${apr.isPorDose ? '' : ', total '+apr.doseDia.toFixed(u==='UI'||u==='mcg'?0:1).replace('.',',')+' '+u+'/dia'})</span>
-          </div>`;
-        apr.cards.forEach(c => {
+        if (apr.topico) {
+          // Modo tópico: cabeçalho descritivo sem cálculo numérico
+          html += `<div class="apr-bloco">
+            <div class="apr-resumo">
+              <span class="apr-resumo-lbl">Apresentações disponíveis →</span>
+              <span class="apr-resumo-aux">${esc(ind.intervalo || 'conforme orientação')}</span>
+            </div>`;
+        } else {
+          // Quantas casas decimais? doses pequenas (<1 mg ou mL) precisam de 2 casas
+          // Doses muito pequenas (<0.1) precisam de 3 casas
+          const fmtDose = (v) => {
+            if (u === 'UI' || u === 'mcg') return Math.round(v).toString();
+            if (Math.abs(v) < 0.1) return v.toFixed(3).replace('.', ',');
+            if (Math.abs(v) < 1) return v.toFixed(2).replace('.', ',');
+            return v.toFixed(1).replace('.', ',');
+          };
+          html += `<div class="apr-bloco">
+            <div class="apr-resumo">
+              <span class="apr-resumo-lbl">Para ${estado.peso} kg →</span>
+              <span class="apr-resumo-val">${fmtDose(apr.dosePorDose)} ${u}/dose</span>
+              <span class="apr-resumo-aux">(${apr.interp.dosesDia}× ao dia${apr.isPorDose ? '' : ', total '+fmtDose(apr.doseDia)+' '+u+'/dia'})</span>
+            </div>`;
+          // Aviso de dose ajustada para o mínimo absoluto (ex: Atropina mín 0,1 mg)
+          if (apr.doseAjustadaParaMin) {
+            html += `<div class="apr-min-aviso">⚠ <b>Dose ajustada para o mínimo absoluto</b> (${String(apr.doseMinAbs).replace('.',',')} ${u}). Cálculo por peso resultou em valor abaixo do mínimo de segurança — usar ${fmtDose(apr.dosePorDose)} ${u}.</div>`;
+          }
+        }
+        apr.cards.forEach((c, aprIdx) => {
           const cls = c.tipo === 'sol' ? 'apr-card cp' : c.tipo === 'sache_sro' ? 'apr-card sro' : c.tipo === 'amp' ? 'apr-card amp' : c.tipo === 'nebul' ? 'apr-card nebul' : 'apr-card';
           html += `<div class="${cls}${c.bloqueado || c.inviavel ? ' bloqueado' : ''}">
             <div class="apr-card-h">
@@ -1798,6 +2228,9 @@ function renderMed(m) {
             </div>`;
           if (c.bloqueado) {
             html += `<div class="apr-card-bloq">⊘ ${esc(c.bloqueado)}</div>`;
+          } else if (c.topico) {
+            // Modo tópico: mostrar só o intervalo descritivo, sem cálculo numérico
+            html += `<div class="apr-card-res topico"><span class="apr-int-topico">${esc(c.intervaloLbl || c.dias || '')}</span></div>`;
           } else if (c.resultado) {
             html += `<div class="apr-card-res">
               <span class="apr-vol${c.inviavel ? ' inviavel' : ''}">${c.resultado}</span>
@@ -1813,15 +2246,26 @@ function renderMed(m) {
           if (c.alerta) {
             html += `<div class="apr-card-alerta">⚠ ${esc(c.alerta)}</div>`;
           }
+          // Botão pequeno: copiar receita só desta apresentação
+          if (!c.bloqueado && !c.inviavel && c.resultado) {
+            html += `<button class="btn-copiar-mini" onclick="event.stopPropagation();wpCopiarApresentacao('${esc(m.id)}',${indIdx},${aprIdx},this)">📋 copiar receita</button>`;
+          }
           html += '</div>';
         });
         html += '</div>';
+        // Botão grande consolidado no fim da indicação
+        if (apr.cards.some(c => !c.bloqueado && !c.inviavel && c.resultado)) {
+          html += `<button class="btn-copiar-receita" onclick="wpCopiarReceita('${esc(m.id)}',${indIdx},this)">📋 Copiar para receita</button>`;
+        }
       } else if (calc && estado.peso && ind.via !== 'VO') {
         // Para vias não-VO (IV, IM, IN), manter cálculo simples mg/dia
         html += `<div class="ind-calc">
           <div class="lbl">Para ${estado.peso} kg →</div>
           <div class="val">${String(calc.valor).replace('.', ',')} ${esc((ind.unidade||'').replace('/kg',''))}${calc.capped ? '<span class="capped">(dose máx atingida)</span>' : ''}</div>
         </div>`;
+      } else if (!estado.peso && m.apresentacoes && m.apresentacoes.length) {
+        // Sem peso preenchido, mas a medicação TEM apresentações: mostrar botão cinza orientativo
+        html += `<button class="btn-copiar-receita disabled" disabled title="Preencha peso e idade para gerar a receita">📋 Preencha peso para copiar receita</button>`;
       }
       const extras = [];
       if (ind.diluicao) extras.push(`<span><b>Diluição:</b> ${esc(ind.diluicao)}</span>`);
@@ -2827,6 +3271,11 @@ if (document.readyState !== 'loading') {
 const MED_EXTRAS_4 = [
   // ==================== MUCOLÍTICOS / ANTITUSSÍGENOS ====================
   {id:'ambroxol',nome:'Ambroxol',classe:'mucolitico',apresentacao:'Xarope 3 mg/mL (lactente) ou 6 mg/mL | Comp 30 mg | Solução IV/inal',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:3,desc:'Xarope pediátrico 3 mg/mL (Mucosolvan infantil)',sus:false,idade_min:2},
+     {tipo:'liq',mg_ml:6,desc:'Xarope adulto 6 mg/mL',sus:false,idade_min:6},
+     {tipo:'sol',mg_un:30,desc:'Comp 30 mg',sus:false,idade_min:12}
+   ],
    indicacoes:[
     {nome:'Mucolítico em IVAS/bronquite (uso restrito)',dose:1.2,unidade:'mg/kg/dia',via:'VO',max:90,intervalo:'8-12/12 h',diluicao:'Xarope 3 mg/mL: 0,4 mL/kg/dia',velocidade:'—',minNota:'<2a (xarope 3 mg/mL): 1,25 mL 12/12h | 2-5a: 2,5 mL 8/8h | 6-12a: 5 mL 8/8h | >12a: 10 mL 8/8h'}
    ],idadeMinima:'≥2 anos (SBP — uso desencorajado <2a) | Bula: ≥6 meses',
@@ -2841,6 +3290,13 @@ const MED_EXTRAS_4 = [
    ajusteRenal:'Reduzir em IRC',ajusteHepatico:'Cautela',fonte:'[ANVISA] + [SBP-DC Pneumo] (uso desencorajado <2a)'},
 
   {id:'nac-oral',nome:'N-acetilcisteína (NAC oral)',classe:'mucolitico',apresentacao:'Solução oral 20 mg/mL ou 40 mg/mL | Granulado 100/200/600 mg sachê | Comp efervescente 600 mg',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:20,desc:'Solução oral 20 mg/mL (Fluimucil 20 mg/mL)',sus:false,idade_min:2},
+     {tipo:'liq',mg_ml:40,desc:'Solução oral 40 mg/mL (Fluimucil 40 mg/mL)',sus:false,idade_min:2},
+     {tipo:'sol',mg_un:100,desc:'Granulado 100 mg/sachê',sus:false,idade_min:2,unidade_label:'sachê'},
+     {tipo:'sol',mg_un:200,desc:'Granulado 200 mg/sachê',sus:false,idade_min:2,unidade_label:'sachê'},
+     {tipo:'sol',mg_un:600,desc:'Comp efervescente 600 mg',sus:false,idade_min:14}
+   ],
    indicacoes:[
     {nome:'Mucolítico (uso restrito)',dose:30,unidade:'mg/kg/dia',via:'VO',max:600,intervalo:'8/8 h ou 1×/dia (600 mg)',diluicao:'—',velocidade:'—',minNota:'2-7a: 100 mg 8/8h | 7-14a: 200 mg 8/8h | >14a: 600 mg 1×/dia ou 200 mg 8/8h'},
     {nome:'Antídoto paracetamol (VO — alt à IV)',dose:140,unidade:'mg/kg dose ataque',via:'VO',max:0,intervalo:'depois 70 mg/kg 4/4 h × 17 doses (72 h total)',diluicao:'Diluir em suco/refrigerante (mascara sabor sulfúreo)',velocidade:'—',minNota:'Esquema de 72h. Preferir IV se vômito persistente'},
@@ -2857,6 +3313,11 @@ const MED_EXTRAS_4 = [
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'[CIATox] + [SBP]'},
 
   {id:'bromexina',nome:'Bromexina',classe:'mucolitico',apresentacao:'Xarope pediátrico 0,8 mg/mL ou adulto 1,6 mg/mL | Comp 8 mg',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:0.8,desc:'Xarope pediátrico 0,8 mg/mL (Bisolvon infantil)',sus:false,idade_min:2},
+     {tipo:'liq',mg_ml:1.6,desc:'Xarope adulto 1,6 mg/mL',sus:false,idade_min:12},
+     {tipo:'sol',mg_un:8,desc:'Comp 8 mg',sus:false,idade_min:12}
+   ],
    indicacoes:[
     {nome:'Mucolítico (uso restrito)',dose:0.3,unidade:'mg/kg/dia',via:'VO',max:24,intervalo:'8/8 h',diluicao:'—',velocidade:'—',minNota:'2-5a: 4 mg 8/8h | 6-12a: 4-8 mg 8/8h | >12a: 8-16 mg 8/8h'}
    ],idadeMinima:'≥2 anos (SBP — uso desencorajado <2a)',
@@ -2867,6 +3328,10 @@ const MED_EXTRAS_4 = [
    ajusteRenal:'Reduzir',ajusteHepatico:'Cautela',fonte:'[ANVISA] + [SBP]'},
 
   {id:'levodropropizina',nome:'Levodropropizina',classe:'mucolitico',apresentacao:'Xarope 6 mg/mL | Sol oral 60 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:6,desc:'Xarope 6 mg/mL (Antux)',sus:false,idade_min:2},
+     {tipo:'liq',mg_ml:60,desc:'Sol oral 60 mg/mL (concentrada)',sus:false,idade_min:12}
+   ],
    indicacoes:[
     {nome:'Antitussígeno periférico (tosse seca improdutiva)',dose:1,unidade:'mg/kg/dose',via:'VO',max:60,intervalo:'8/8 h',diluicao:'—',velocidade:'—',minNota:'2-12a: ~1 mg/kg/dose | máx 3 mg/kg/dia | >12a: 60 mg 8/8h'}
    ],idadeMinima:'≥2 anos',
@@ -2882,6 +3347,10 @@ const MED_EXTRAS_4 = [
 
   // ==================== ANTI-HISTAMÍNICO 2ª GERAÇÃO ====================
   {id:'desloratadina',nome:'Desloratadina',classe:'antihistaminico',apresentacao:'Xarope 0,5 mg/mL | Comp 5 mg',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:0.5,desc:'Xarope 0,5 mg/mL (Desalex)',sus:false,idade_min:1},
+     {tipo:'sol',mg_un:5,desc:'Comp 5 mg',sus:false,idade_min:12}
+   ],
    indicacoes:[
     {nome:'Rinite alérgica perene/sazonal',dose:0.05,unidade:'mg/kg/dose',via:'VO',max:5,intervalo:'1×/dia',diluicao:'—',velocidade:'—',minNota:'6-11m: 1 mg (2 mL) 1×/d | 1-5a: 1,25 mg (2,5 mL) | 6-11a: 2,5 mg (5 mL) | ≥12a: 5 mg'},
     {nome:'Urticária crônica',dose:0.05,unidade:'mg/kg/dose',via:'VO',max:5,intervalo:'1×/dia (pode dobrar dose se refratária - off-label)',diluicao:'—',velocidade:'—'}
@@ -2919,6 +3388,12 @@ const MED_V5 = [
    ajusteRenal:'Reduzir intervalo se ClCr <30',ajusteHepatico:'Cautela',fonte:'[EMA, 2015] + [SBP]'},
 
   {id:'acetilcisteina-vo',nome:'Acetilcisteína (mucolítica VO)',classe:'mucolitico',apresentacao:'Granulado 100/200/600 mg | Xarope 20 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:20,desc:'Xarope 20 mg/mL (Fluimucil)',sus:false,idade_min:2},
+     {tipo:'sol',mg_un:100,desc:'Granulado 100 mg/sachê',sus:false,idade_min:2,unidade_label:'sachê'},
+     {tipo:'sol',mg_un:200,desc:'Granulado 200 mg/sachê',sus:false,idade_min:2,unidade_label:'sachê'},
+     {tipo:'sol',mg_un:600,desc:'Comp efervescente 600 mg',sus:false,idade_min:14}
+   ],
    indicacoes:[
     {nome:'Mucolítico em hipersecreção brônquica',dose:30,unidade:'mg/kg/dia',via:'VO',max:600,intervalo:'8-12/12 h',diluicao:'Dissolver granulado em água',velocidade:'—',minNota:'2-7a: 100 mg 2-3×/d | >7a: 200 mg 2-3×/d ou 600 mg/d (adolescente)'}
    ],idadeMinima:'≥2 anos (mucolítico VO)',
@@ -2937,6 +3412,10 @@ const MED_V5 = [
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Cautela',fonte:'[SBP-DC Pneumo]'},
 
   {id:'carbocisteina',nome:'Carbocisteína',classe:'mucolitico',apresentacao:'Xarope 20 mg/mL (pediátrico) ou 50 mg/mL (adulto)',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:20,desc:'Xarope pediátrico 20 mg/mL (Mucofan)',sus:false,idade_min:2},
+     {tipo:'liq',mg_ml:50,desc:'Xarope adulto 50 mg/mL',sus:false,idade_min:12}
+   ],
    indicacoes:[
     {nome:'Mucolítico',dose:20,unidade:'mg/kg/dia',via:'VO',max:2250,intervalo:'8/8 h',diluicao:'—',velocidade:'—',minNota:'2-5a: 100 mg 8/8h | 5-12a: 250 mg 8/8h | >12a: 750 mg 8/8h'}
    ],idadeMinima:'≥2 anos',
@@ -2959,6 +3438,14 @@ const MED_V5 = [
 
   // ==================== ANTICONVULSIVANTES ADICIONAIS ====================
   {id:'levetiracetam',nome:'Levetiracetam',classe:'anticonvulsivante',apresentacao:'Sol oral 100 mg/mL | Comp 250/500/750/1000 mg | Amp 100 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:100,desc:'Sol oral 100 mg/mL (Keppra)',sus:false,idade_min:1},
+     {tipo:'sol',mg_un:250,desc:'Comp 250 mg',sus:false,idade_min:6},
+     {tipo:'sol',mg_un:500,desc:'Comp 500 mg',sus:false,idade_min:6},
+     {tipo:'sol',mg_un:750,desc:'Comp 750 mg',sus:false,idade_min:12},
+     {tipo:'sol',mg_un:1000,desc:'Comp 1000 mg',sus:false,idade_min:12},
+     {tipo:'amp',mg_ml:100,volume_ml:5,desc:'Amp 500 mg/5 mL (100 mg/mL)',sus:false,diluicao:'IV: diluir em 100 mL SF e infundir em 15 min'}
+   ],
    indicacoes:[
     {nome:'Status epilepticus (2ª linha — alt à fenitoína)',dose:60,unidade:'mg/kg',via:'IV',max:4500,intervalo:'dose de ataque única',diluicao:'Diluir em 100 mL SF',velocidade:'5-15 min'},
     {nome:'Manutenção (epilepsia)',dose:30,unidade:'mg/kg/dia',via:'VO',max:3000,intervalo:'12/12 h',diluicao:'—',velocidade:'—',minNota:'Iniciar 10-20 mg/kg/dia, titular até 30-60 mg/kg/dia'}
@@ -2973,6 +3460,12 @@ const MED_V5 = [
    ajusteRenal:'Ajuste obrigatório por ClCr',ajusteHepatico:'Sem ajuste',fonte:'[AES] + [SBP-DC Neuro]'},
 
   {id:'acido-valproico',nome:'Ácido Valproico',classe:'anticonvulsivante',apresentacao:'Xarope 50 mg/mL | Cáps 250/500 mg | Amp 100 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:50,desc:'Xarope 50 mg/mL (Depakene)',sus:true},
+     {tipo:'sol',mg_un:250,desc:'Cáps 250 mg',sus:true,idade_min:6},
+     {tipo:'sol',mg_un:500,desc:'Cáps 500 mg',sus:true,idade_min:6},
+     {tipo:'amp',mg_ml:100,volume_ml:5,desc:'Amp 500 mg/5 mL (100 mg/mL)',sus:false,diluicao:'IV: diluir em 50-100 mL SF/SG5%, infundir em 60 min'}
+   ],
    indicacoes:[
     {nome:'Status epilepticus (2ª linha)',dose:40,unidade:'mg/kg',via:'IV',max:3000,intervalo:'dose de ataque',diluicao:'Diluir em SF/SG5%',velocidade:'5-10 min'},
     {nome:'Manutenção (epilepsia generalizada)',dose:20,unidade:'mg/kg/dia',via:'VO',max:1500,intervalo:'12/12 h',diluicao:'Tomar com alimento',velocidade:'—',minNota:'Iniciar 10-15 mg/kg/dia, titular até 20-40 mg/kg/dia'}
@@ -2996,6 +3489,11 @@ const MED_V5 = [
 
   // ==================== CARDIOVASCULAR / DIURÉTICO ====================
   {id:'furosemida',nome:'Furosemida',classe:'cardio',apresentacao:'Sol oral 10 mg/mL (manipulada) | Comp 40 mg | Amp 10 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:10,desc:'Sol oral 10 mg/mL (manipulada — comum em pediatria)',sus:false},
+     {tipo:'sol',mg_un:40,desc:'Comp 40 mg',sus:true,idade_min:6},
+     {tipo:'amp',mg_ml:10,volume_ml:2,desc:'Amp 20 mg/2 mL (10 mg/mL) — Lasix',sus:true,diluicao:'IV: pode aplicar sem diluir, lento (≥1-2 min). Infusão contínua: diluir em SF.'}
+   ],
    indicacoes:[
     {nome:'IC / edema pulmonar agudo',dose:1,unidade:'mg/kg/dose',via:'IV/IM',max:40,intervalo:'pode repetir 8-12/12 h',diluicao:'IV: lenta (≤4 mg/min)',velocidade:'IV: ototoxicidade se rápido'},
     {nome:'IC crônica / edema (manutenção VO)',dose:1,unidade:'mg/kg/dose',via:'VO',max:40,intervalo:'8-12/12 h',diluicao:'—',velocidade:'—',minNota:'1-6 mg/kg/dia em 2-3 doses'},
@@ -3012,6 +3510,11 @@ const MED_V5 = [
    ajusteRenal:'Manter (necessário em IC com IRC). Aumentar dose se ClCr <30',ajusteHepatico:'Cautela em hepatopatia (alcalose pode precipitar encefalopatia)',fonte:'[SBP-DC Cardio]'},
 
   {id:'espironolactona',nome:'Espironolactona',classe:'cardio',apresentacao:'Susp 5 mg/mL (manipulada) | Comp 25/100 mg',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:5,desc:'Susp 5 mg/mL (manipulada) — comum em pediatria',sus:false},
+     {tipo:'sol',mg_un:25,desc:'Comp 25 mg',sus:true,idade_min:6},
+     {tipo:'sol',mg_un:100,desc:'Comp 100 mg',sus:true,idade_min:6}
+   ],
    indicacoes:[
     {nome:'IC / edema (poupador de K)',dose:2,unidade:'mg/kg/dia',via:'VO',max:100,intervalo:'12/12 h',diluicao:'—',velocidade:'—',minNota:'1-3 mg/kg/dia | em IC: 1 mg/kg/dia inicial'},
     {nome:'Cirrose com ascite',dose:3,unidade:'mg/kg/dia',via:'VO',max:200,intervalo:'12/12 h',diluicao:'—',velocidade:'—'}
@@ -3026,6 +3529,12 @@ const MED_V5 = [
    ajusteRenal:'Reduzir 50% se ClCr 30-50; evitar <30',ajusteHepatico:'Sem ajuste de rotina',fonte:'[SBP-DC Cardio]'},
 
   {id:'captopril',nome:'Captopril',classe:'cardio',apresentacao:'Comp 12,5/25/50 mg | Sol manipulada 1 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:1,desc:'Sol manipulada 1 mg/mL (lactente)',sus:false},
+     {tipo:'sol',mg_un:12.5,desc:'Comp 12,5 mg',sus:true,idade_min:6},
+     {tipo:'sol',mg_un:25,desc:'Comp 25 mg',sus:true,idade_min:6},
+     {tipo:'sol',mg_un:50,desc:'Comp 50 mg',sus:true,idade_min:12}
+   ],
    indicacoes:[
     {nome:'IC / HAS',dose:0.3,unidade:'mg/kg/dose',via:'VO',max:50,intervalo:'8/8 h',diluicao:'Em jejum',velocidade:'—',minNota:'RN: 0,1-0,5 mg/kg/dose | Lactente: 0,5-2 mg/kg/dia | Criança: 0,5-6 mg/kg/dia'},
     {nome:'Crise hipertensiva (sintomática)',dose:0.5,unidade:'mg/kg',via:'VO/sublingual',max:25,intervalo:'pode repetir em 1-2 h',diluicao:'—',velocidade:'—'}
@@ -3049,6 +3558,10 @@ const MED_V5 = [
 
   // ==================== ATB ESPECÍFICO ====================
   {id:'doxiciclina',nome:'Doxiciclina',classe:'antibiotico',apresentacao:'Comp 100 mg | Susp manipulada 25 mg/mL',
+   apresentacoes:[
+     {tipo:'liq',mg_ml:25,desc:'Susp manipulada 25 mg/mL',sus:false,idade_min:8},
+     {tipo:'sol',mg_un:100,desc:'Comp 100 mg',sus:true,idade_min:8}
+   ],
    indicacoes:[
     {nome:'Febre maculosa / rickettsiose (1ª linha INDEPENDENTE da idade)',dose:2.2,unidade:'mg/kg/dose',via:'VO/IV',max:100,intervalo:'12/12 h × 7 dias OU até 3 dias afebril',diluicao:'IV: diluir em SF/SG5%',velocidade:'IV: 1-4h',minNota:'≤45 kg: 2,2 mg/kg/dose | >45 kg: 100 mg dose'},
     {nome:'Doença de Lyme (≥8 anos)',dose:2,unidade:'mg/kg/dose',via:'VO',max:100,intervalo:'12/12 h × 14-21 dias',diluicao:'—',velocidade:'—'},

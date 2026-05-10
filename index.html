@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="Ped">
   <link rel="apple-touch-icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" fill="%231c1917"/><text x="90" y="108" font-family="Georgia,serif" font-size="95" font-weight="700" fill="%23fafaf9" text-anchor="middle" font-style="italic">P</text><circle cx="130" cy="50" r="13" fill="%237c2128"/></svg>'>
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%231c1917"/><text x="16" y="22" font-family="Georgia,serif" font-size="20" font-weight="700" fill="%23fafaf9" text-anchor="middle" font-style="italic">P</text></svg>'>
-<title>Pediatria Emergência · Manual de Bolso</title>
+<title>Pediatria com o Pé no Chão · Manual de Bolso</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -140,6 +140,43 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
   #modos-bar { overflow-x:auto !important; flex-wrap:nowrap !important; -webkit-overflow-scrolling:touch; }
   .modo-btn { white-space:nowrap; min-width:80px !important; font-size:12px !important; }
 }
+
+/* === FRACIONAMENTO v6.1 === */
+.frac-bloco { margin-top:14px; padding:14px; background:#f0fdf4; border:1px solid #1a7a3d33; border-left:4px solid #1a7a3d; }
+.frac-titulo { font-family:'Fraunces',Georgia,serif; font-size:13px; font-weight:600; color:#1a7a3d; margin-bottom:10px; text-transform:uppercase; letter-spacing:.08em; }
+.frac-tabs { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+.frac-tab { font-size:12px; font-weight:600; padding:6px 14px; border:1px solid #1a7a3d66; background:white; color:#1a7a3d; cursor:pointer; font-family:inherit; transition:all .15s; }
+.frac-tab:hover { background:#dcfce7; }
+.frac-tab.ativo { background:#1a7a3d; color:white; border-color:#1a7a3d; }
+.frac-intv-fixo { font-size:12px; color:#44403c; margin-bottom:10px; font-family:'JetBrains Mono',monospace; }
+.frac-stats { display:flex; gap:14px; margin-bottom:14px; padding:10px 12px; background:white; border:1px solid #d6d3d1; flex-wrap:wrap; }
+.frac-stat { flex:1; min-width:120px; }
+.frac-stat-lbl { font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:#78716c; font-family:'JetBrains Mono',monospace; margin-bottom:2px; }
+.frac-stat-val { font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:600; color:#1c1917; }
+.frac-stat-val.emerald { color:#1a7a3d; }
+.frac-cards { display:grid; gap:8px; grid-template-columns:1fr; }
+@media (min-width:640px) { .frac-cards { grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); } }
+.frac-card { background:white; border:1px solid #d6d3d1; padding:12px 14px; display:flex; flex-direction:column; gap:6px; transition:border-color .15s; }
+.frac-card:hover { border-color:#1a7a3d66; }
+.frac-card-warn { background:#fef9c3; border-color:#c4a800; }
+.frac-card-cab { font-size:12px; font-weight:600; color:#44403c; text-transform:uppercase; letter-spacing:.04em; font-family:'JetBrains Mono',monospace; }
+.frac-card-warn .frac-card-cab { color:#7c5c00; }
+.frac-card-dose { font-family:'Fraunces',Georgia,serif; font-size:18px; font-weight:600; line-height:1.2; color:#1c1917; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+.frac-card-dose b { color:#1a7a3d; }
+.frac-card-warn .frac-card-dose { color:#7c5c00; font-size:15px; }
+.frac-card-warn .frac-card-dose b { color:#7c5c00; }
+.frac-card-intv { font-size:12px; color:#78716c; font-weight:400; font-family:'JetBrains Mono',monospace; }
+.frac-card-meta { font-size:11px; color:#78716c; font-family:'JetBrains Mono',monospace; line-height:1.4; }
+.frac-card-aprox { color:#a8a29e; }
+.frac-copiar-btn { margin-top:6px; background:#1c1917; color:#fafaf9; border:none; padding:8px 14px; font-size:12px; font-weight:600; font-family:inherit; cursor:pointer; transition:background .15s; align-self:flex-start; }
+.frac-copiar-btn:hover { background:#44403c; }
+.frac-copiar-btn.frac-copiado { background:#1a7a3d; }
+@media (max-width:640px) {
+  .frac-bloco { padding:12px; }
+  .frac-stats { gap:8px; padding:8px 10px; }
+  .frac-stat-val { font-size:14px; }
+  .frac-card-dose { font-size:16px; }
+}
 </style>
 </head>
 <body>
@@ -148,12 +185,12 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
   <div class="hdr-inner">
     <div class="hdr-row">
       <div>
-        <p class="hdr-eyebrow">Manual de Bolso</p>
-        <h1 class="hdr-title">Pediatria <em>Emergência</em></h1>
+        <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
+        <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.2026.05 · SBP/MS/AHA</p>
+      <p class="hdr-version">v.6.6 · UBS · posologia · combinações fixas</p>
     </div>
-    <p class="hdr-desc">Manual completo de Pediatria — Medicações com cálculo de ampolas, Emergências e Doenças Comuns. SBP, MS, ANVISA, RENAME 2024, AHA PALS 2025.</p>
+    <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
 </header>
 
@@ -213,8 +250,15 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
 
 <footer>
   <div class="foot-inner">
-    <span>Pediatria Emergência · 2026</span>
-    <span class="light">SBP · MS · ANVISA · AHA PALS 2025</span>
+    <span><strong>Felipe Ribeiro Toledo</strong> <span class="light">(vovôminic)</span> — Médico e Nerd</span>
+    <span class="light">USF 5 José Pascoal Rosolim · Estiva Gerbi/SP · Bairro Ludi</span>
+  </div>
+  <div class="foot-inner" style="border-top:1px solid #d6d3d1;margin-top:8px;padding-top:8px;font-size:11px;font-style:italic">
+    <span class="light">deveria estar estudando pra fazer psiquiatria, mas está criando calculadora de pediatria só porque queria uma legal pra usar</span>
+  </div>
+  <div class="foot-inner" style="margin-top:6px;font-size:11px">
+    <span class="light">Pediatria com o Pé no Chão · 2026 · uso clínico de apoio</span>
+    <span class="light">SBP · MS · ANVISA · AHA PALS 2025 · GINA · PCDT vigentes</span>
   </div>
 </footer>
 
@@ -1974,9 +2018,9 @@ function injetarBarraModo() {
 function setupPWA() {
   // Manifest inline via blob URL
   const manifest = {
-    name: 'Pediatria Emergência - Manual de Bolso',
-    short_name: 'Ped Emergência',
-    description: 'Manual de medicações e protocolos pediátricos',
+    name: 'Pediatria com o Pé no Chão',
+    short_name: 'Pé no Chão',
+    description: 'Pediatria de APS com referenciamento — Felipe Toledo',
     start_url: location.href,
     display: 'standalone',
     background_color: '#f5f5f4',
@@ -1984,13 +2028,13 @@ function setupPWA() {
     orientation: 'portrait',
     icons: [
       {
-        src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="#1c1917"/><text x="96" y="115" font-family="Georgia,serif" font-size="100" font-weight="700" fill="#fafaf9" text-anchor="middle" font-style="italic">P</text><circle cx="140" cy="55" r="14" fill="#7c2128"/></svg>`),
+        src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="#1c1917"/><text x="96" y="118" font-family="Georgia,serif" font-size="100" font-weight="700" fill="#fafaf9" text-anchor="middle" font-style="italic">P</text><g transform="translate(132,38) scale(0.35)" fill="#7a9b3d"><ellipse cx="40" cy="55" rx="22" ry="32"/><circle cx="20" cy="18" r="7"/><circle cx="35" cy="9" r="8"/><circle cx="50" cy="9" r="7"/><circle cx="62" cy="14" r="6"/><circle cx="70" cy="22" r="5"/></g></svg>`),
         sizes: '192x192',
         type: 'image/svg+xml',
         purpose: 'any maskable'
       },
       {
-        src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#1c1917"/><text x="256" y="310" font-family="Georgia,serif" font-size="270" font-weight="700" fill="#fafaf9" text-anchor="middle" font-style="italic">P</text><circle cx="370" cy="150" r="38" fill="#7c2128"/></svg>`),
+        src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#1c1917"/><text x="256" y="320" font-family="Georgia,serif" font-size="270" font-weight="700" fill="#fafaf9" text-anchor="middle" font-style="italic">P</text><g transform="translate(355,100) scale(0.95)" fill="#7a9b3d"><ellipse cx="40" cy="55" rx="22" ry="32"/><circle cx="20" cy="18" r="7"/><circle cx="35" cy="9" r="8"/><circle cx="50" cy="9" r="7"/><circle cx="62" cy="14" r="6"/><circle cx="70" cy="22" r="5"/></g></svg>`),
         sizes: '512x512',
         type: 'image/svg+xml',
         purpose: 'any maskable'
@@ -7634,27 +7678,33 @@ if (typeof MEDICACOES !== 'undefined') {
 
   // Toggle específico para meds UBS — usa estado.expandidas como o original
   window.toggleMedUBS = function(id) {
-    if (typeof estado === 'undefined') return;
-    if (!estado.expandidas) estado.expandidas = new Set();
-    if (estado.expandidas.has(id)) estado.expandidas.delete(id);
-    else estado.expandidas.add(id);
-    // Re-render do card específico
-    const el = document.getElementById('med-'+id);
-    const m = (typeof MEDICACOES !== 'undefined' ? MEDICACOES : []).find(x => x.id === id);
-    if (el && m && isMedUBS(m)) {
-      el.outerHTML = renderMedUBSCard(m);
-    }
+    try {
+      if (typeof estado === 'undefined') return;
+      if (!estado.expandidas) estado.expandidas = new Set();
+      if (estado.expandidas.has(id)) estado.expandidas.delete(id);
+      else estado.expandidas.add(id);
+      const el = document.getElementById('med-'+id);
+      const m = (typeof MEDICACOES !== 'undefined' ? MEDICACOES : []).find(x => x.id === id);
+      if (el && m && isMedUBS(m)) {
+        el.outerHTML = renderMedUBSCard(m);
+      }
+    } catch(e) { console.warn('[UBS] toggleMedUBS erro:', e.message); }
   };
 
   // ===== SOBRESCREVER renderMed PARA DETECTAR MEDS UBS =====
   const _renderMedOriginal = (typeof renderMed === 'function') ? renderMed : null;
 
   window.renderMed = function(m) {
-    if (isMedUBS(m)) {
-      return renderMedUBSCard(m);
+    try {
+      if (isMedUBS(m)) {
+        return renderMedUBSCard(m);
+      }
+      if (_renderMedOriginal) return _renderMedOriginal(m);
+      return '';
+    } catch(e) {
+      console.warn('[UBS] renderMed erro em', m && m.id, ':', e.message);
+      return '<div class="med" style="border-left:4px solid #7c2128;padding:12px"><b>⚠ Erro ao renderizar '+(m && m.nome || 'medicação')+'</b><br><small>'+e.message+'</small></div>';
     }
-    if (_renderMedOriginal) return _renderMedOriginal(m);
-    return '';
   };
 
   // ===== ABA UBS =====
@@ -7852,16 +7902,38 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   };
 
-  // ===== HOOK DE BUSCA — quando modo é UBS, fazer busca local =====
+  // ===== REBIND ROBUSTO DA BUSCA — substitui todos rebinds anteriores =====
+  // Cria handler único que conhece os 5 modos (medicacoes, ampolas, protocolos, doencas, ubs)
   function hookBusca() {
-    const busca = get('busca');
-    if (!busca || busca.dataset.ubsHooked) return;
-    busca.dataset.ubsHooked = '1';
-    busca.addEventListener('input', (e) => {
-      if (typeof estado !== 'undefined' && estado.modo === 'ubs') {
-        renderUBS(e.target.value || '');
-      }
-    });
+    try {
+      const busca = get('busca');
+      if (!busca || !busca.parentNode) return;
+      if (busca.dataset.v6Rebound === '1') return;
+
+      // Clone do elemento para limpar listeners antigos de integradores anteriores
+      const novo = busca.cloneNode(true);
+      novo.dataset.v6Rebound = '1';
+      busca.parentNode.replaceChild(novo, busca);
+
+      novo.addEventListener('input', function(e){
+        try {
+          const v = e.target.value || '';
+          if (typeof estado !== 'undefined') estado.busca = v;
+          const m = (typeof estado !== 'undefined') ? estado.modo : 'medicacoes';
+          if (m === 'ubs') {
+            renderUBS(v);
+          } else if (m === 'protocolos' && typeof renderProtocolos === 'function') {
+            renderProtocolos();
+          } else if (m === 'doencas' && typeof renderDoencas === 'function') {
+            renderDoencas();
+          } else if (m === 'ampolas' && typeof renderAmpolas === 'function') {
+            renderAmpolas();
+          } else if (typeof renderLista === 'function') {
+            renderLista();
+          }
+        } catch(err) { console.warn('[UBS] busca input erro:', err.message); }
+      });
+    } catch(err) { console.warn('[UBS] hookBusca erro:', err.message); }
   }
 
   // ===== GARANTIR BOTÃO UBS NA BARRA SEMPRE =====
@@ -7956,6 +8028,1263 @@ if (typeof MEDICACOES !== 'undefined') {
   window.renderMedUBSCard = renderMedUBSCard;
 
   console.log('[UBS v6.0] carregado · '+(typeof DOENCAS!=='undefined'?DOENCAS.filter(d=>d.id&&d.id.startsWith('u-')).length:'?')+' doenças UBS · '+(typeof MEDICACOES!=='undefined'?MEDICACOES.filter(m=>m.sus).length:'?')+' meds com tag SUS');
+})();
+
+
+// ===== MÓDULO UBS v6.0: dose-fracionamento.js =====
+// ============================================================================
+// FRACIONAMENTO DE DOSES v6.2 — converte dose calculada em mL, comprimidos
+// ou jatos por apresentação disponível, com seletor de intervalo e copiar
+// SUPORTE: mg, mcg, g, gotas, jatos/puffs/inalações, cápsulas inalatórias
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  // ===== UNIDADES — conversão para mcg interno =====
+  function toMcg(valor, unidade) {
+    var u = String(unidade||'').toLowerCase().trim();
+    if (u === 'mcg' || u === 'µg' || u === 'ug') return valor;
+    if (u === 'mg') return valor * 1000;
+    if (u === 'g')  return valor * 1000000;
+    if (u === 'ng') return valor / 1000;
+    return valor;
+  }
+
+  // Detecta combinação farmacológica fixa (amoxi+clav, sulfa+trim, etc).
+  function ehCombinacaoFixa(med) {
+    if (!med || !med.nome) return false;
+    var n = String(med.nome);
+    if (/\s\+\s|\s\+$|^\+\s/.test(n)) return true;
+    if (/\s+com\s+/i.test(n)) return true;
+    if (/clavulanat|sulbactam|tazobactam/i.test(n)) return true;
+    if (/sulfameto.*trim|trim.*sulfameto/i.test(n)) return true;
+    if (/hidroclorotiaz.*losart|losart.*hidroclorot/i.test(n)) return true;
+    return false;
+  }
+
+
+  function extrairUnidadeMassa(unidadeStr) {
+    var u = String(unidadeStr||'').toLowerCase();
+    if (/mcg|µg/.test(u)) return 'mcg';
+    if (/\bmg\b/.test(u)) return 'mg';
+    return 'mg';
+  }
+
+  // ===== PARSER DE APRESENTAÇÕES =====
+  function parseApresentacoes(s, opts) {
+    if (!s) return [];
+    var out = [];
+    var op = opts || {};
+    try {
+      var sProc = op.combo ? preProcessarCombo(s) : s;
+      var partes = sProc.split(/\s*[\|;]\s*/);
+      partes.forEach(function(p){
+        try {
+          p = (p || '').trim();
+          if (!p) return;
+          processarParte(p, out, op);
+        } catch(e) {}
+      });
+    } catch(e) {
+      console.warn('[FRAC] parse falhou:', e.message);
+    }
+    return out;
+  }
+
+  // Para combinações fixas (ex: amoxi+clav 50/12,5 mg/mL),
+  // pré-processa transformando "X/Y" do componente em apenas "X",
+  // produzindo strings canônicas que o parser normal entende.
+  function preProcessarCombo(p) {
+    // Estratégia: cada regex usa "★" como separador temporário entre apresentações
+    // expandidas (ex: "Susp X mg/mL ★ Susp A mg/mL"). No final, "★" vira "|".
+
+    // 1. Líquido com "ou": "Susp X/Y ou A/B mg/mL" → "Susp X mg/mL ★ Susp A mg/mL"
+    p = p.replace(
+      /(susp|sol(?:ução|uçao)?|xarope|gotas?|nebuliza)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s+ou\s+(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(mg|mcg)\s*\/\s*ml/gi,
+      '$1 $2 $4/mL ★ $1 $3 $4/mL'
+    );
+    // 2. Líquido com "ou" + diluição: "Susp X/Y ou A/B mg/Z mL" → "Susp X mg/Z mL ★ Susp A mg/Z mL"
+    p = p.replace(
+      /(susp|sol(?:ução|uçao)?|xarope|gotas?|nebuliza)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s+ou\s+(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(mg|mcg)\s*\/\s*(\d+)\s*ml/gi,
+      '$1 $2 $4/$5 mL ★ $1 $3 $4/$5 mL'
+    );
+    // 3. Líquido simples sem "ou": "Susp X/Y mg/mL" → "Susp X mg/mL"
+    p = p.replace(
+      /(susp|sol(?:ução|uçao)?|xarope|gotas?|nebuliza)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(mg|mcg)\s*\/\s*ml/gi,
+      '$1 $2 $3/mL'
+    );
+    // 4. Líquido simples com diluição: "Susp X/Y mg/Z mL" → "Susp X mg/Z mL"
+    p = p.replace(
+      /(susp|sol(?:ução|uçao)?|xarope|gotas?|nebuliza)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(mg|mcg)\s*\/\s*(\d+)\s*ml/gi,
+      '$1 $2 $3/$4 mL'
+    );
+    // 5. Sólido com "ou": "Comp X/Y [mg] ou A/B [mg]" → "Comp X mg ★ Comp A mg"
+    p = p.replace(
+      /(comp(?:rimido)?s?|cáp(?:sula)?s?|caps?|drágeas?)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(?:mg\s+)?ou\s+(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?(?:\s*mg)?/gi,
+      '$1 $2 mg ★ $1 $3 mg'
+    );
+    // 6. Sólido simples: "Comp X/Y" (sem 3º número, sem "ou") → "Comp X mg"
+    p = p.replace(
+      /(comp(?:rimido)?s?|cáp(?:sula)?s?|caps?|drágeas?)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?(?!\s*\/\s*\d)(?:\s*mg\b)?/gi,
+      '$1 $2 mg'
+    );
+
+    // Trocar marcador por separador real
+    p = p.replace(/★/g, '|');
+    return p;
+  }
+
+  function processarParte(p, out, opts) {
+    opts = opts || {};
+    var m;
+
+    // === 1. SPRAY/AEROSSOL com /jato/puff/dose explícito ===
+    m = p.match(/(spray|aerossol|aerosol)[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)\s*\/\s*(jato|puff|aplicação|aplicacao|dose|borrifo)/i);
+    if (m) {
+      var concs = m[2].split(/\s*\/\s*/);
+      var um = m[3].toLowerCase().replace(/[µu]g/,'mcg');
+      var formaForma = m[4].toLowerCase().replace('aplicacao','aplicação');
+      var ehNasal = /nasal/i.test(p);
+      concs.forEach(function(c){
+        var v = parseFloat(c.replace(',','.'));
+        if (isFinite(v) && v > 0) {
+          out.push({
+            tipo: 'spray',
+            mcgPorJato: toMcg(v, um),
+            valorPorJato: v,
+            unidadeApr: um,
+            unidadeForma: formaForma,
+            ehNasal: ehNasal,
+            label: (ehNasal?'Spray nasal ':'Spray ') + v.toString().replace('.',',') + ' ' + um + '/' + formaForma
+          });
+        }
+      });
+      return;
+    }
+
+    // === 2. SPRAY sem /jato (ex: "Spray 100/200 mcg" ou "Spray dosimetrado 50/250 mcg") ===
+    m = p.match(/(spray|aerossol|aerosol)[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)(?!\s*\/\s*ml)/i);
+    if (m) {
+      var concs2 = m[2].split(/\s*\/\s*/);
+      var um2 = m[3].toLowerCase().replace(/[µu]g/,'mcg');
+      var ehNasal2 = /nasal/i.test(p);
+      concs2.forEach(function(c){
+        var v = parseFloat(c.replace(',','.'));
+        if (isFinite(v) && v > 0) {
+          out.push({
+            tipo: 'spray',
+            mcgPorJato: toMcg(v, um2),
+            valorPorJato: v,
+            unidadeApr: um2,
+            unidadeForma: 'jato',
+            ehNasal: ehNasal2,
+            label: (ehNasal2?'Spray nasal ':'Spray ') + v.toString().replace('.',',') + ' ' + um2 + '/jato'
+          });
+        }
+      });
+      return;
+    }
+
+    // === 3. CÁPSULA INALATÓRIA / TURBOHALER / DISKUS ===
+    m = p.match(/(cáp(?:sula)?|cap)\s+inal(?:atória|atoria)?[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)/i)
+        || p.match(/(diskus|turb(?:o|u)haler|aerolizer|handihaler|breezhaler|respimat)[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)/i);
+    if (m) {
+      var concs3 = m[2].split(/\s*\/\s*/);
+      var um3 = m[3].toLowerCase().replace(/[µu]g/,'mcg');
+      concs3.forEach(function(c){
+        var v = parseFloat(c.replace(',','.'));
+        if (isFinite(v) && v > 0) {
+          out.push({
+            tipo: 'inal_capsula',
+            mcgPorJato: toMcg(v, um3),
+            valorPorJato: v,
+            unidadeApr: um3,
+            unidadeForma: 'inalação',
+            label: 'Cáps inal ' + v.toString().replace('.',',') + ' ' + um3
+          });
+        }
+      });
+      return;
+    }
+
+    // === 4. LÍQUIDO com X mg/Y mL (denominador >1 mL) ===
+    m = p.match(/(susp|sol(?:ução|uçao)?|sus|xarope|gotas?|colírio|amp(?:ola)?|frasco)[^.,;|]*?(\d+(?:[.,]\d+)?)\s*(mcg|µg|ug|mg|g)\s*\/\s*(\d+(?:[.,]\d+)?)\s*ml/i);
+    if (m) {
+      var v = parseFloat(m[2].replace(',','.'));
+      var um4 = m[3].toLowerCase().replace(/[µu]g/,'mcg');
+      var ml = parseFloat(m[4].replace(',','.'));
+      if (isFinite(v) && isFinite(ml) && ml > 0) {
+        out.push({
+          tipo: 'liquido',
+          mcgPorMl: toMcg(v/ml, um4),
+          valorPorMl: v/ml,
+          unidadeApr: um4,
+          label: p.trim()
+        });
+      }
+      return;
+    }
+
+    // === 5. LÍQUIDO com MÚLTIPLAS concentrações (X/Y mg/mL ou X mg/mL ou Y mg/mL) ===
+    // Ex: "Susp nebul 0,25/0,5 mg/mL"  ou  "Susp 50 mg/mL ou 80 mg/mL"
+    m = p.match(/(susp|sol(?:ução|uçao)?|sus|xarope|gotas?|colírio|amp(?:ola)?|frasco)[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)\s*\/\s*ml/i);
+    if (m) {
+      var tipoTxt = m[1];
+      var concs5 = m[2].split(/\s*\/\s*/);
+      var um5 = m[3].toLowerCase().replace(/[µu]g/,'mcg');
+      // Procurar concentração alternativa com "ou"
+      var resto = p.substring(m.index + m[0].length);
+      var ouRe = /(?:ou)\s*(\d+(?:[.,]\d+)?)\s*(mcg|µg|ug|mg|g)?\s*\/?\s*ml/i;
+      var ouM = resto.match(ouRe);
+      if (concs5.length > 1) {
+        // Múltiplas com barra (ex: 0,25/0,5 mg/mL)
+        concs5.forEach(function(c){
+          var v = parseFloat(c.replace(',','.'));
+          if (isFinite(v) && v > 0) {
+            out.push({
+              tipo: 'liquido',
+              mcgPorMl: toMcg(v, um5),
+              valorPorMl: v,
+              unidadeApr: um5,
+              label: tipoTxt + ' ' + v.toString().replace('.',',') + ' ' + um5 + '/mL'
+            });
+          }
+        });
+      } else {
+        var v1 = parseFloat(concs5[0].replace(',','.'));
+        if (isFinite(v1) && v1 > 0) {
+          out.push({
+            tipo: 'liquido',
+            mcgPorMl: toMcg(v1, um5),
+            valorPorMl: v1,
+            unidadeApr: um5,
+            label: ouM ? (tipoTxt + ' ' + v1.toString().replace('.',',') + ' ' + um5 + '/mL') : p.trim()
+          });
+          if (ouM) {
+            var v2 = parseFloat(ouM[1].replace(',','.'));
+            var um6 = (ouM[2]||um5).toLowerCase().replace(/[µu]g/,'mcg');
+            if (isFinite(v2) && v2 > 0) {
+              out.push({
+                tipo: 'liquido',
+                mcgPorMl: toMcg(v2, um6),
+                valorPorMl: v2,
+                unidadeApr: um6,
+                label: tipoTxt + ' ' + v2.toString().replace('.',',') + ' ' + um6 + '/mL'
+              });
+            }
+          }
+        }
+      }
+      return;
+    }
+
+    // === 6. SÓLIDO com múltiplas concentrações ===
+    m = p.match(/(comp(?:rimido)?s?(?:\s+orodispersível|\s+mastigável)?|cáp(?:sula)?s?|caps?|drágeas?|pastilhas?)\s*(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)+)\s*(mcg|µg|ug|mg|g)/i);
+    if (m) {
+      var tipoTxt7 = m[1];
+      var isComp = /comp|drágea|pastilha/i.test(tipoTxt7);
+      var concs7 = m[2].split(/\s*\/\s*/);
+      var um7 = m[3].toLowerCase().replace(/[µu]g/,'mcg');
+      concs7.forEach(function(c){
+        var v = parseFloat(c.replace(',','.'));
+        if (isFinite(v) && v > 0) {
+          out.push({
+            tipo: isComp ? 'comp' : 'cap',
+            mcgPorUnidade: toMcg(v, um7),
+            valorPorUnidade: v,
+            unidadeApr: um7,
+            fracionavel: isComp,
+            label: (isComp?'Comp ':'Cáps ') + v.toString().replace('.',',') + ' ' + um7
+          });
+        }
+      });
+      return;
+    }
+
+    // === 7. SÓLIDO com 1 concentração ===
+    m = p.match(/(comp(?:rimido)?s?(?:\s+orodispersível|\s+mastigável)?|cáp(?:sula)?s?|caps?|drágeas?|pastilhas?)\s*(\d+(?:[.,]\d+)?)\s*(mcg|µg|ug|mg|g)/i);
+    if (m) {
+      var tipoTxt8 = m[1];
+      var isComp8 = /comp|drágea|pastilha/i.test(tipoTxt8);
+      var v8 = parseFloat(m[2].replace(',','.'));
+      var um8 = m[3].toLowerCase().replace(/[µu]g/,'mcg');
+      if (isFinite(v8) && v8 > 0) {
+        out.push({
+          tipo: isComp8 ? 'comp' : 'cap',
+          mcgPorUnidade: toMcg(v8, um8),
+          valorPorUnidade: v8,
+          unidadeApr: um8,
+          fracionavel: isComp8,
+          label: p.trim()
+        });
+      }
+      return;
+    }
+  }
+
+  // ===== PARSER DE INTERVALOS =====
+  function parseIntervalos(s) {
+    if (!s) return [];
+    var opcoes = [];
+    try {
+      var txt = s.toString();
+      var m = txt.match(/(\d+)\s*[-–]\s*(\d+)\s*\/\s*\d+\s*h/i);
+      if (m) {
+        var n1 = parseInt(m[1]);
+        var n2 = parseInt(m[2]);
+        [n1, n2].forEach(function(h){
+          if (h > 0 && h <= 24 && !opcoes.find(function(o){return o.horas===h;})) {
+            opcoes.push({label:h+'/'+h+'h', freq: 24/h, horas:h});
+          }
+        });
+        return opcoes;
+      }
+      m = txt.match(/(\d+)\s*\/\s*\d+\s*h/i);
+      if (m) {
+        var h = parseInt(m[1]);
+        if (h > 0 && h <= 24) return [{label:h+'/'+h+'h', freq: 24/h, horas:h}];
+      }
+      m = txt.match(/(\d+)\s*x\s*\/?\s*(?:ao\s+)?dia/i);
+      if (m) {
+        var n = parseInt(m[1]);
+        return [{label:n+'x/dia', freq:n, horas: n>0?24/n:0}];
+      }
+      if (/dose\s*única|1\s*x|única/i.test(txt)) {
+        return [{label:'Dose única', freq:1, horas:0}];
+      }
+    } catch(e) {}
+    return [];
+  }
+
+  // ===== ARREDONDAMENTOS =====
+  function arredondarVolume(ml) {
+    if (!isFinite(ml) || ml <= 0) return 0;
+    if (ml < 0.5) return Math.round(ml * 10) / 10;
+    if (ml < 2)   return Math.round(ml * 4) / 4;
+    if (ml < 10)  return Math.round(ml * 2) / 2;
+    return Math.round(ml);
+  }
+  function fracaoComp(comps) {
+    if (!isFinite(comps) || comps <= 0) return null;
+    if (comps >= 0.9)   return {label:'1 comp',  valor:1};
+    if (comps >= 0.625) return {label:'¾ comp',  valor:0.75};
+    if (comps >= 0.375) return {label:'½ comp',  valor:0.5};
+    if (comps >= 0.18)  return {label:'¼ comp',  valor:0.25};
+    return null;
+  }
+  function comprimidosInteiros(comps) {
+    if (!isFinite(comps) || comps <= 0) return null;
+    if (Math.abs(comps - Math.round(comps)) < 0.05) return Math.round(comps);
+    if (Math.abs(comps - Math.round(comps*2)/2) < 0.05) return Math.round(comps*2)/2;
+    return null;
+  }
+  function jatosArred(jatos) {
+    if (!isFinite(jatos) || jatos <= 0) return null;
+    if (jatos > 8) return {valor: null, impraticavel: true, motivo: 'mais de 8 jatos é impraticável'};
+    var arred = Math.round(jatos);
+    if (arred >= 1 && Math.abs(jatos - arred) < 0.2) {
+      return {valor: arred, label: arred + ' jato' + (arred>1?'s':''), exato: Math.abs(jatos - arred) < 0.05};
+    }
+    var sugerido = Math.round(jatos);
+    if (sugerido < 1) sugerido = 1;
+    return {valor: sugerido, label: sugerido + ' jato' + (sugerido>1?'s':''), aproximado: true};
+  }
+
+  function viaPorExtenso(via) {
+    if (!via) return 'VO';
+    var v = String(via).trim().toLowerCase();
+    if (v === 'vo' || v.includes('oral')) return 'VO';
+    if (v === 'iv') return 'EV';
+    if (v === 'im') return 'IM';
+    if (v === 'sc') return 'SC';
+    if (v === 'sl') return 'SL';
+    if (v === 'in' || v.includes('nasal')) return 'IN';
+    if (v === 'nb' || v.includes('neb')) return 'NEB';
+    if (v === 'inal' || v.includes('inal')) return 'inalatório';
+    if (v.includes('tóp') || v.includes('top')) return 'tópico';
+    return v.toUpperCase();
+  }
+
+  var escFrac = function(s){ return (typeof esc === 'function' ? esc(s) : String(s||'').replace(/[&<>"\']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]; })); };
+
+  function formatN(n, casas) {
+    if (n == null || !isFinite(n)) return '0';
+    var c = (typeof casas === 'number') ? casas : 1;
+    if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n));
+    return n.toFixed(c).replace(/\.?0+$/,'').replace('.', ',');
+  }
+
+  // ===== RENDER =====
+  function renderFracionamento(medId, indIdx, ind, peso, apresentacoes, intvIdx) {
+    if (!peso || !ind) return '';
+    try {
+      var intervalos = parseIntervalos(ind.intervalo);
+      if (intervalos.length === 0 || apresentacoes.length === 0) return '';
+
+      var idx = (typeof intvIdx === 'number' && intvIdx >= 0 && intvIdx < intervalos.length) ? intvIdx : 0;
+      var intv = intervalos[idx];
+
+      var totalRaw = ind.dose * peso;
+      var total = (ind.max && totalRaw > ind.max) ? ind.max : totalRaw;
+      var ehDosePorDia = (ind.unidade||'').toLowerCase().includes('/dia');
+      var dosePorAdm = ehDosePorDia ? (intv.freq > 0 ? total / intv.freq : total) : total;
+      var unidadeDose = extrairUnidadeMassa(ind.unidade);
+      var dosePorAdmMcg = toMcg(dosePorAdm, unidadeDose);
+
+      var html = '<div class="frac-bloco" data-med-id="'+escFrac(medId)+'" data-ind-idx="'+indIdx+'">';
+      html += '<div class="frac-titulo">📋 Posologia prescritível</div>';
+
+      if (intervalos.length > 1) {
+        html += '<div class="frac-tabs">';
+        intervalos.forEach(function(iv, i){
+          var ativo = i === idx;
+          html += '<button class="frac-tab '+(ativo?'ativo':'')+'" type="button" onclick="trocarIntervaloFrac(\''+escFrac(medId)+'\', '+indIdx+', '+i+')">'+escFrac(iv.label)+'</button>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="frac-intv-fixo">Intervalo: <b>'+escFrac(intervalos[0].label)+'</b></div>';
+      }
+
+      html += '<div class="frac-stats">';
+      if (ehDosePorDia) {
+        html += '<div class="frac-stat"><div class="frac-stat-lbl">Total/dia</div><div class="frac-stat-val">'+formatN(total)+' '+unidadeDose+'</div></div>';
+        html += '<div class="frac-stat"><div class="frac-stat-lbl">Por dose ('+escFrac(intv.label)+')</div><div class="frac-stat-val emerald">'+formatN(dosePorAdm)+' '+unidadeDose+'</div></div>';
+      } else {
+        html += '<div class="frac-stat"><div class="frac-stat-lbl">Por dose</div><div class="frac-stat-val emerald">'+formatN(dosePorAdm)+' '+unidadeDose+'</div></div>';
+      }
+      html += '</div>';
+
+      html += '<div class="frac-cards">';
+      apresentacoes.forEach(function(apr){
+        try {
+          html += renderCardApresentacao(apr, dosePorAdmMcg, intv, ind, ehDosePorDia);
+        } catch(e) {}
+      });
+      html += '</div>';
+
+      html += '</div>';
+      return html;
+    } catch(e) {
+      console.warn('[FRAC] erro renderFrac:', e.message);
+      return '';
+    }
+  }
+
+  function renderCardApresentacao(apr, dosePorAdmMcg, intv, ind, ehDosePorDia) {
+    var via = viaPorExtenso(ind.via);
+    var intervaloTxt = intv.horas > 0 ? intv.horas+'/'+intv.horas+' h' : intv.label;
+
+    if (apr.tipo === 'spray' || apr.tipo === 'inal_capsula') {
+      if (!apr.mcgPorJato) return '';
+      var jatosExato = dosePorAdmMcg / apr.mcgPorJato;
+      var jatos = jatosArred(jatosExato);
+      if (!jatos) return '';
+      if (jatos.impraticavel) {
+        return '<div class="frac-card frac-card-warn"><div class="frac-card-cab">'+escFrac(apr.label)+'</div><div class="frac-card-dose">⚠ '+formatN(jatosExato,1)+' jatos</div><div class="frac-card-meta">'+jatos.motivo+' — preferir outra concentração</div></div>';
+      }
+      var formaPalavra = apr.tipo === 'inal_capsula' ? 'inalação' : 'jato';
+      var formaPalavraPlural = apr.tipo === 'inal_capsula' ? 'inalações' : 'jatos';
+      var labelDose = jatos.valor + ' ' + (jatos.valor === 1 ? formaPalavra : formaPalavraPlural);
+      var totalDia = ehDosePorDia ? formatN(jatos.valor * intv.freq) : formatN(jatos.valor);
+      var cardClass = jatos.aproximado ? 'frac-card frac-card-warn' : 'frac-card';
+      var aproxNota = jatos.aproximado ? '⚠ '+formatN(jatosExato,1)+' jatos exatos (arredondado)' : '≈ '+formatN(jatosExato,2)+' jatos exatos';
+      var posologia;
+      if (apr.ehNasal) {
+        posologia = jatos.valor + ' borrifo' + (jatos.valor>1?'s':'') + ' em cada narina ' + intervaloTxt;
+      } else if (apr.tipo === 'inal_capsula') {
+        posologia = labelDose + ' via inalatória pelo dispositivo ' + intervaloTxt;
+      } else {
+        posologia = labelDose + ' via inalatória com espaçador ' + intervaloTxt;
+      }
+      return '<div class="'+cardClass+'"><div class="frac-card-cab">'+escFrac(apr.label)+'</div><div class="frac-card-dose"><b>'+escFrac(labelDose)+'</b><span class="frac-card-intv">'+escFrac(intervaloTxt)+'</span></div><div class="frac-card-meta">'+aproxNota+(ehDosePorDia?' · '+totalDia+' '+formaPalavraPlural+'/dia':'')+'</div><button class="frac-copiar-btn" type="button" onclick="copiarPosologiaFrac(this, \''+posologia.replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">📋 Copiar posologia</button></div>';
+    }
+
+    if (apr.tipo === 'liquido') {
+      if (!apr.mcgPorMl) return '';
+      var mlExato = dosePorAdmMcg / apr.mcgPorMl;
+      var mlArred = arredondarVolume(mlExato);
+      if (mlArred <= 0) return '';
+      var totalMl = ehDosePorDia ? formatN(mlArred * intv.freq) : formatN(mlArred);
+      var posol = formatN(mlArred) + ' mL ' + via + ' ' + intervaloTxt;
+      var conf = Math.abs(mlExato - mlArred) > 0.01 ? '<span class="frac-card-aprox">≈ '+formatN(mlExato,2)+' mL exatos</span>' : '';
+      return '<div class="frac-card"><div class="frac-card-cab">'+escFrac(apr.label)+'</div><div class="frac-card-dose"><b>'+formatN(mlArred)+' mL</b><span class="frac-card-intv">'+escFrac(intervaloTxt)+'</span></div><div class="frac-card-meta">'+conf+(ehDosePorDia?' · '+totalMl+' mL/dia':'')+'</div><button class="frac-copiar-btn" type="button" onclick="copiarPosologiaFrac(this, \''+posol.replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">📋 Copiar posologia</button></div>';
+    }
+
+    if (apr.tipo === 'comp' || apr.tipo === 'cap') {
+      if (!apr.mcgPorUnidade) return '';
+      var compsExato = dosePorAdmMcg / apr.mcgPorUnidade;
+      var palavraComp = apr.tipo === 'cap' ? 'cápsula' : 'comprimido';
+      if (apr.fracionavel) {
+        var frac = fracaoComp(compsExato);
+        if (frac) {
+          var totalDia2 = ehDosePorDia ? formatN(frac.valor * intv.freq) : formatN(frac.valor);
+          var posol2 = frac.label + ' ' + via + ' ' + intervaloTxt;
+          return '<div class="frac-card"><div class="frac-card-cab">'+escFrac(apr.label)+'</div><div class="frac-card-dose"><b>'+escFrac(frac.label)+'</b><span class="frac-card-intv">'+escFrac(intervaloTxt)+'</span></div><div class="frac-card-meta">≈ '+formatN(compsExato,2)+' comp exatos'+(ehDosePorDia?' · '+totalDia2+' comp/dia':'')+'</div><button class="frac-copiar-btn" type="button" onclick="copiarPosologiaFrac(this, \''+posol2.replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">📋 Copiar posologia</button></div>';
+        } else {
+          return '<div class="frac-card frac-card-warn"><div class="frac-card-cab">'+escFrac(apr.label)+'</div><div class="frac-card-dose">⚠ '+formatN(compsExato,2)+' comp</div><div class="frac-card-meta">Fração impraticável — preferir outra apresentação</div></div>';
+        }
+      } else {
+        var n = comprimidosInteiros(compsExato);
+        if (n !== null && n > 0) {
+          var totalDia3 = ehDosePorDia ? formatN(n * intv.freq) : formatN(n);
+          var plural = n > 1 ? 's' : '';
+          var posol3 = formatN(n) + ' ' + palavraComp + plural + ' ' + via + ' ' + intervaloTxt;
+          return '<div class="frac-card"><div class="frac-card-cab">'+escFrac(apr.label)+'</div><div class="frac-card-dose"><b>'+formatN(n)+' '+palavraComp+plural+'</b><span class="frac-card-intv">'+escFrac(intervaloTxt)+'</span></div><div class="frac-card-meta">≈ '+formatN(compsExato,2)+(ehDosePorDia?' · '+totalDia3+' '+palavraComp+'/dia':'')+'</div><button class="frac-copiar-btn" type="button" onclick="copiarPosologiaFrac(this, \''+posol3.replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">📋 Copiar posologia</button></div>';
+        } else {
+          return '<div class="frac-card frac-card-warn"><div class="frac-card-cab">'+escFrac(apr.label)+'</div><div class="frac-card-dose">⚠ '+formatN(compsExato,2)+' '+palavraComp+'</div><div class="frac-card-meta">Cápsula não fraciona — preferir outra concentração</div></div>';
+        }
+      }
+    }
+    return '';
+  }
+
+  window.trocarIntervaloFrac = function(medId, indIdx, novoIdx) {
+    try {
+      var m = (typeof MEDICACOES !== 'undefined' ? MEDICACOES : []).find(function(x){return x.id === medId;});
+      if (!m || !m.indicacoes || !m.indicacoes[indIdx]) return;
+      var ind = m.indicacoes[indIdx];
+      var peso = (typeof estado !== 'undefined') ? estado.peso : null;
+      if (!peso) return;
+      var apresentacoes = parseApresentacoes(m.apresentacao, { combo: ehCombinacaoFixa(m) });
+      var novoHTML = renderFracionamento(medId, indIdx, ind, peso, apresentacoes, novoIdx);
+      var el = document.querySelector('.frac-bloco[data-med-id="'+medId+'"][data-ind-idx="'+indIdx+'"]');
+      if (el && novoHTML) {
+        var wrap = document.createElement('div');
+        wrap.innerHTML = novoHTML;
+        el.replaceWith(wrap.firstElementChild);
+      }
+    } catch(e) {}
+  };
+
+  window.copiarPosologiaFrac = function(btn, texto) {
+    if (!texto) return;
+    try {
+      var fallback = function(){
+        var ta = document.createElement('textarea');
+        ta.value = texto;
+        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch(e){}
+        document.body.removeChild(ta);
+      };
+      var sucesso = function(){
+        var orig = btn.textContent;
+        btn.textContent = '✓ Copiado!';
+        btn.classList.add('frac-copiado');
+        setTimeout(function(){ btn.textContent = orig; btn.classList.remove('frac-copiado'); }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(sucesso, fallback);
+      } else { fallback(); sucesso(); }
+    } catch(e) {}
+  };
+
+  function enriquecerComFracionamento() {
+    try {
+      if (typeof estado === 'undefined' || !estado.peso) return;
+      if (typeof MEDICACOES === 'undefined') return;
+      var meds = document.querySelectorAll('.med.aberto');
+      meds.forEach(function(elMed){
+        try {
+          var id = (elMed.id || '').replace(/^med-/, '');
+          if (!id) return;
+          var m = MEDICACOES.find(function(x){return x.id === id;});
+          if (!m) return;
+          if (typeof window.isMedUBS === 'function' && window.isMedUBS(m)) return;
+          if (!m.indicacoes || !Array.isArray(m.indicacoes)) return;
+          if (!m.apresentacao) return;
+          var apresentacoes = parseApresentacoes(m.apresentacao, { combo: ehCombinacaoFixa(m) });
+          if (apresentacoes.length === 0) return;
+          var indEls = elMed.querySelectorAll('.indicacao');
+          indEls.forEach(function(indEl, idx){
+            try {
+              if (indEl.querySelector('.frac-bloco')) return;
+              var ind = m.indicacoes[idx];
+              if (!ind || ind.dose == null) return;
+              var html = renderFracionamento(id, idx, ind, estado.peso, apresentacoes);
+              if (html) indEl.insertAdjacentHTML('beforeend', html);
+            } catch(e) {}
+          });
+        } catch(e) {}
+      });
+    } catch(e) { console.warn('[FRAC] enriquecer falhou:', e.message); }
+  }
+
+  function setupObserver() {
+    try {
+      var lista = document.getElementById('lista');
+      if (!lista) { setTimeout(setupObserver, 200); return; }
+      var obs = new MutationObserver(function(){
+        if (setupObserver._t) clearTimeout(setupObserver._t);
+        setupObserver._t = setTimeout(enriquecerComFracionamento, 50);
+      });
+      obs.observe(lista, { childList:true, subtree:true });
+      enriquecerComFracionamento();
+    } catch(e) {}
+  }
+
+  function hookPeso() {
+    try {
+      var inp = document.getElementById('peso');
+      if (!inp || inp.dataset.fracHooked) return;
+      inp.dataset.fracHooked = '1';
+      inp.addEventListener('input', function(){ setTimeout(enriquecerComFracionamento, 100); });
+    } catch(e) {}
+  }
+
+  function init() {
+    try {
+      setupObserver();
+      hookPeso();
+      setTimeout(hookPeso, 500);
+      setTimeout(hookPeso, 1500);
+      setTimeout(enriquecerComFracionamento, 500);
+      setTimeout(enriquecerComFracionamento, 1500);
+    } catch(e) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 100);
+  }
+
+  window.parseApresentacoes = parseApresentacoes;
+  window.parseIntervalos = parseIntervalos;
+  window.enriquecerComFracionamento = enriquecerComFracionamento;
+  window.toMcgFrac = toMcg;
+
+  console.log('[FRAC v6.2] Fracionamento carregado · suporta líquidos, sólidos, sprays e cáps inalatórias');
+})();
+
+
+// ===== MÓDULO UBS v6.0: integrador-v64-fix.js =====
+// ============================================================================
+// INTEGRADOR v6.4 — FIX FINAL
+//   1. Busca via delegação de evento (à prova de cloneNode)
+//   2. Redesign da barra de modos: pills com scroll horizontal, sticky
+//   3. Mobile: emoji + label compacta, scroll suave com indicador
+// CARREGA POR ÚLTIMO — sobrescreve tudo anterior
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  // ===== 1. CSS REDESIGN DA BARRA DE MODOS =====
+  const cssNovo = `
+/* === BARRA DE MODOS REDESENHADA v6.4 === */
+#modos-bar {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #a8a29e transparent;
+  gap: 0 !important;
+  padding: 0 !important;
+  background: #fafaf9;
+  border: 1px solid #d6d3d1;
+  border-bottom: none;
+  margin-bottom: 0 !important;
+  position: relative;
+  z-index: 10;
+}
+#modos-bar::-webkit-scrollbar { height: 3px; background: transparent; }
+#modos-bar::-webkit-scrollbar-thumb { background: #a8a29e; border-radius: 2px; }
+#modos-bar::-webkit-scrollbar-track { background: transparent; }
+
+#modos-bar .modo-btn {
+  flex: 0 0 auto !important;
+  min-width: auto !important;
+  padding: 12px 18px !important;
+  border: none !important;
+  border-right: 1px solid #d6d3d1 !important;
+  border-bottom: 3px solid transparent !important;
+  background: transparent !important;
+  cursor: pointer;
+  font-family: 'Fraunces', Georgia, serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #57534e !important;
+  white-space: nowrap !important;
+  letter-spacing: -.01em !important;
+  border-radius: 0 !important;
+  transition: all .15s ease;
+  position: relative;
+}
+#modos-bar .modo-btn:last-child { border-right: none !important; }
+#modos-bar .modo-btn:hover {
+  color: #1c1917 !important;
+  background: #f5f5f4 !important;
+}
+#modos-bar .modo-btn.ativo {
+  color: #1c1917 !important;
+  background: white !important;
+  font-weight: 600 !important;
+}
+
+/* Cor por modo no estado ativo (linha embaixo) */
+#modos-bar .modo-btn[data-modo="medicacoes"].ativo { border-bottom-color: #1c1917 !important; }
+#modos-bar .modo-btn[data-modo="ampolas"].ativo    { border-bottom-color: #7c2128 !important; color: #7c2128 !important; }
+#modos-bar .modo-btn[data-modo="protocolos"].ativo { border-bottom-color: #c25c1a !important; color: #c25c1a !important; }
+#modos-bar .modo-btn[data-modo="doencas"].ativo    { border-bottom-color: #1c5fa3 !important; color: #1c5fa3 !important; }
+#modos-bar .modo-btn[data-modo="ubs"].ativo        { border-bottom-color: #5a4f8a !important; color: #5a4f8a !important; background: white !important; }
+
+/* Hint visual de scroll em mobile (gradient nas bordas) */
+.modos-wrap {
+  position: relative;
+}
+.modos-wrap::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 3px;
+  width: 24px;
+  background: linear-gradient(to left, rgba(250,250,249,1), rgba(250,250,249,0));
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.modos-wrap.scrollable::after { opacity: 1; }
+
+/* Mobile */
+@media (max-width: 640px) {
+  #modos-bar .modo-btn {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+  #modos-bar { font-size: 13px; }
+}
+@media (max-width: 380px) {
+  #modos-bar .modo-btn {
+    padding: 9px 11px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* Sticky em mobile pra barra ficar visível ao scrollar */
+@media (max-width: 768px) {
+  #modos-bar, .modos-wrap {
+    position: sticky;
+    top: 0;
+    background: #fafaf9;
+    z-index: 20;
+  }
+}
+`;
+
+  function aplicarCSS() {
+    if (document.getElementById('fix-v64-css')) return;
+    const s = document.createElement('style');
+    s.id = 'fix-v64-css';
+    s.textContent = cssNovo;
+    document.head.appendChild(s);
+  }
+
+  // ===== 2. ENVOLVER BARRA EM WRAPPER PARA O INDICADOR DE SCROLL =====
+  function envolverBarra() {
+    const bar = document.getElementById('modos-bar');
+    if (!bar) return;
+    if (bar.parentElement && bar.parentElement.classList.contains('modos-wrap')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'modos-wrap';
+    bar.parentNode.insertBefore(wrap, bar);
+    wrap.appendChild(bar);
+
+    // Detecta se há scroll e ajusta o indicador
+    const checarScroll = () => {
+      try {
+        const tem = bar.scrollWidth > bar.clientWidth;
+        const fim = bar.scrollLeft + bar.clientWidth >= bar.scrollWidth - 4;
+        wrap.classList.toggle('scrollable', tem && !fim);
+      } catch(e) {}
+    };
+    bar.addEventListener('scroll', checarScroll);
+    window.addEventListener('resize', checarScroll);
+    setTimeout(checarScroll, 100);
+    setTimeout(checarScroll, 500);
+  }
+
+  // ===== 3. LIMPAR ESTILOS INLINE DOS BOTÕES =====
+  // Os integradores anteriores adicionam style="..." inline nos botões.
+  // Vamos remover periodicamente para que o CSS novo prevaleça.
+  function limparEstiloInline() {
+    document.querySelectorAll('#modos-bar .modo-btn').forEach(b => {
+      // Remove só os estilos que conflitam, mantendo color custom se houver
+      const stylesParaRemover = ['flex','padding','background','border','font-family','font-size','font-weight','letter-spacing','min-width'];
+      stylesParaRemover.forEach(prop => b.style.removeProperty(prop));
+    });
+  }
+
+  // ===== 4. BUSCA VIA DELEGAÇÃO DE EVENTO =====
+  // Listener no document com useCapture=true, captura o evento ANTES dos handlers
+  // tradicionais. Funciona mesmo se o input for substituído por cloneNode.
+  let _delegationInstalado = false;
+  function instalarDelegacaoBusca() {
+    if (_delegationInstalado) return;
+    _delegationInstalado = true;
+
+    document.addEventListener('input', function(e){
+      try {
+        if (!e.target || e.target.id !== 'busca') return;
+        const v = e.target.value || '';
+        if (typeof estado !== 'undefined') estado.busca = v;
+
+        const m = (typeof estado !== 'undefined') ? estado.modo : 'medicacoes';
+
+        if (m === 'ubs' && typeof renderUBS === 'function') {
+          renderUBS(v);
+        } else if (m === 'protocolos' && typeof renderProtocolos === 'function') {
+          renderProtocolos();
+        } else if (m === 'doencas' && typeof renderDoencas === 'function') {
+          renderDoencas();
+        } else if (m === 'ampolas' && typeof renderAmpolas === 'function') {
+          renderAmpolas();
+        } else if (typeof renderLista === 'function') {
+          renderLista();
+        }
+      } catch(err) {
+        console.warn('[FIX v6.4] busca erro:', err.message);
+      }
+    }, true); // useCapture: captura ANTES dos handlers normais
+
+    // Também keyup como fallback (alguns dispositivos não disparam input certo)
+    document.addEventListener('keyup', function(e){
+      try {
+        if (!e.target || e.target.id !== 'busca') return;
+        // Só dispara se valor mudou (evita re-render em setas/shift)
+        if (e.target.dataset._lastVal === e.target.value) return;
+        e.target.dataset._lastVal = e.target.value;
+        // Trigger no próprio input
+        const event = new Event('input', { bubbles: true });
+        e.target.dispatchEvent(event);
+      } catch(err) {}
+    }, true);
+  }
+
+  // ===== INIT =====
+  function init() {
+    aplicarCSS();
+    instalarDelegacaoBusca();
+
+    // Tentativas múltiplas (DOM pode não estar pronto na ordem)
+    const tentar = () => {
+      envolverBarra();
+      limparEstiloInline();
+    };
+    tentar();
+    setTimeout(tentar, 100);
+    setTimeout(tentar, 500);
+    setTimeout(tentar, 1500);
+
+    // Observer para reaplicar limpeza de estilos quando barra for recriada
+    const main = document.querySelector('main') || document.body;
+    if (main && typeof MutationObserver !== 'undefined') {
+      const obs = new MutationObserver(() => {
+        if (init._t) clearTimeout(init._t);
+        init._t = setTimeout(() => {
+          envolverBarra();
+          limparEstiloInline();
+        }, 100);
+      });
+      obs.observe(main, { childList:true, subtree:true });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 50);
+  }
+
+  console.log('[FIX v6.4] Busca via delegação + barra de modos redesenhada');
+})();
+
+
+// ===== MÓDULO UBS v6.0: autocomplete-busca.js =====
+// ============================================================================
+// AUTOCOMPLETE BUSCA v6.5
+//   - Dropdown de sugestões abaixo do input quando digita
+//   - Click numa sugestão expande a medicação E faz scroll
+//   - Debounce de 200ms no filtro da lista (evita re-render a cada tecla)
+//   - Setas ↑↓ navegam, Enter seleciona, Esc fecha
+//   - Funciona em todos os modos
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const MAX_SUGESTOES = 10;
+  const DEBOUNCE_MS = 200;
+
+  // ===== CSS =====
+  const css = `
+.input-group.search { position: relative; }
+
+#busca-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #d6d3d1;
+  border-top: none;
+  max-height: 360px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.busca-sug-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #f5f5f4;
+  font-size: 14px;
+  color: #1c1917;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  transition: background .1s;
+}
+.busca-sug-item:last-child { border-bottom: none; }
+.busca-sug-item:hover, .busca-sug-item.highlight {
+  background: #f5f5f4;
+}
+.busca-sug-item .sug-nome {
+  flex: 1;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.busca-sug-item .sug-nome b {
+  color: #1a7a3d;
+  font-weight: 700;
+  background: #dcfce7;
+  padding: 0 2px;
+}
+.busca-sug-item .sug-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #78716c;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.busca-sug-item .sug-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border: 1px solid #d6d3d1;
+  white-space: nowrap;
+}
+.busca-sug-item .sug-tag.ubs { color: #5a4f8a; border-color: #5a4f8a66; background: #f3f0fa; }
+.busca-sug-item .sug-tag.amp { color: #7c2128; border-color: #7c212866; background: #fef2f2; }
+
+.busca-sug-vazio {
+  padding: 14px;
+  color: #78716c;
+  font-style: italic;
+  font-size: 13px;
+  text-align: center;
+}
+
+.busca-sug-footer {
+  padding: 8px 14px;
+  font-size: 11px;
+  color: #a8a29e;
+  background: #fafaf9;
+  border-top: 1px solid #f5f5f4;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  #busca-suggestions { max-height: 50vh; }
+  .busca-sug-item { padding: 12px 14px; font-size: 15px; }
+}
+`;
+
+  function aplicarCSS() {
+    if (document.getElementById('autocomplete-css')) return;
+    const s = document.createElement('style');
+    s.id = 'autocomplete-css';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  // ===== HELPERS =====
+  function escHtml(s) {
+    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function isMedUBS(m) {
+    return m && (m.sus !== undefined || m.receita !== undefined);
+  }
+
+  function highlightQuery(nome, q) {
+    if (!q) return escHtml(nome);
+    const idx = nome.toLowerCase().indexOf(q.toLowerCase());
+    if (idx < 0) return escHtml(nome);
+    return escHtml(nome.substring(0, idx)) +
+           '<b>' + escHtml(nome.substring(idx, idx + q.length)) + '</b>' +
+           escHtml(nome.substring(idx + q.length));
+  }
+
+  // ===== BUSCAR SUGESTÕES =====
+  function buscarSugestoes(q) {
+    if (!q || q.length < 1) return [];
+    const ql = q.toLowerCase().trim();
+    if (typeof MEDICACOES === 'undefined') return [];
+    const todas = MEDICACOES;
+
+    const matches = todas.filter(m => {
+      if (!m || !m.nome) return false;
+      return m.nome.toLowerCase().includes(ql) ||
+             (m.classe || '').toLowerCase().includes(ql);
+    });
+
+    // Ordenar: nome começando com q vem primeiro, depois por nome
+    matches.sort((a, b) => {
+      const aStarts = a.nome.toLowerCase().startsWith(ql) ? 0 : 1;
+      const bStarts = b.nome.toLowerCase().startsWith(ql) ? 0 : 1;
+      if (aStarts !== bStarts) return aStarts - bStarts;
+      return a.nome.localeCompare(b.nome, 'pt-BR');
+    });
+
+    return matches.slice(0, MAX_SUGESTOES);
+  }
+
+  // ===== CRIAR DROPDOWN =====
+  function criarDropdown() {
+    const busca = document.getElementById('busca');
+    if (!busca) return null;
+    if (document.getElementById('busca-suggestions')) {
+      return document.getElementById('busca-suggestions');
+    }
+
+    const wrap = busca.closest('.input-group') || busca.parentElement;
+    if (!wrap) return null;
+
+    const drop = document.createElement('div');
+    drop.id = 'busca-suggestions';
+    wrap.appendChild(drop);
+    return drop;
+  }
+
+  // ===== RENDER DROPDOWN =====
+  let _highlightedIdx = -1;
+  let _sugsAtual = [];
+
+  function renderDropdown(q) {
+    const drop = criarDropdown();
+    if (!drop) return;
+
+    if (!q || q.length < 1) {
+      drop.style.display = 'none';
+      _sugsAtual = [];
+      _highlightedIdx = -1;
+      return;
+    }
+
+    const sugs = buscarSugestoes(q);
+    _sugsAtual = sugs;
+    _highlightedIdx = -1;
+
+    if (sugs.length === 0) {
+      drop.innerHTML = '<div class="busca-sug-vazio">Nenhuma medicação encontrada para "' + escHtml(q) + '"</div>';
+      drop.style.display = 'block';
+      return;
+    }
+
+    let html = sugs.map((m, i) => {
+      const ubs = isMedUBS(m);
+      const tagClass = ubs ? 'ubs' : (m.classe === 'reanimacao' || m.id && m.id.startsWith('a-') ? 'amp' : '');
+      const tagLabel = ubs ? 'UBS' : (m.id && m.id.startsWith('a-') ? 'AMPOLA' : '');
+      return `<div class="busca-sug-item" data-id="${escHtml(m.id)}" data-idx="${i}">
+        <span class="sug-nome">${highlightQuery(m.nome, q)}</span>
+        ${tagLabel ? `<span class="sug-tag ${tagClass}">${tagLabel}</span>` : ''}
+        <span class="sug-meta">${escHtml(m.classe || '')}</span>
+      </div>`;
+    }).join('');
+    html += '<div class="busca-sug-footer">↑↓ navegar · Enter abrir · Esc fechar</div>';
+
+    drop.innerHTML = html;
+    drop.style.display = 'block';
+
+    // Hook clicks
+    drop.querySelectorAll('.busca-sug-item').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        selecionarMed(el.dataset.id);
+      });
+      el.addEventListener('mouseenter', () => {
+        const idx = parseInt(el.dataset.idx);
+        if (!isNaN(idx)) destacarItem(idx);
+      });
+    });
+  }
+
+  function destacarItem(idx) {
+    const drop = document.getElementById('busca-suggestions');
+    if (!drop) return;
+    drop.querySelectorAll('.busca-sug-item').forEach(el => el.classList.remove('highlight'));
+    const el = drop.querySelector(`[data-idx="${idx}"]`);
+    if (el) {
+      el.classList.add('highlight');
+      el.scrollIntoView({block:'nearest'});
+      _highlightedIdx = idx;
+    }
+  }
+
+  // ===== SELECIONAR MED =====
+  function selecionarMed(id) {
+    if (!id) return;
+    if (typeof MEDICACOES === 'undefined') return;
+    const m = MEDICACOES.find(x => x.id === id);
+    if (!m) return;
+
+    const ehUBS = isMedUBS(m);
+    const ehAmpola = id.startsWith('a-');
+
+    // Detectar modo apropriado
+    let modoAlvo = 'medicacoes';
+    if (ehUBS) modoAlvo = 'ubs';
+    else if (ehAmpola) modoAlvo = 'ampolas';
+
+    // Trocar de modo se necessário
+    if (typeof estado !== 'undefined' && estado.modo !== modoAlvo) {
+      if (typeof setModo === 'function') setModo(modoAlvo);
+    }
+
+    // Limpar busca
+    const busca = document.getElementById('busca');
+    if (busca) busca.value = '';
+    if (typeof estado !== 'undefined') estado.busca = '';
+
+    // Esconder dropdown
+    const drop = document.getElementById('busca-suggestions');
+    if (drop) drop.style.display = 'none';
+
+    // Adicionar à expandidas e re-renderizar
+    if (typeof estado !== 'undefined') {
+      if (!estado.expandidas) estado.expandidas = new Set();
+      estado.expandidas.add(id);
+    }
+
+    // Re-render do modo atual (após troca de modo, se houve)
+    setTimeout(() => {
+      try {
+        if (modoAlvo === 'ubs' && typeof renderUBS === 'function') renderUBS();
+        else if (modoAlvo === 'ampolas' && typeof renderAmpolas === 'function') renderAmpolas();
+        else if (typeof renderLista === 'function') renderLista();
+      } catch(e) { console.warn('[AC] render erro:', e.message); }
+
+      // Scroll até o card
+      setTimeout(() => {
+        const el = document.getElementById('med-' + id);
+        if (el) {
+          el.scrollIntoView({behavior:'smooth', block:'start'});
+          // Pequeno highlight visual
+          el.style.transition = 'background-color .6s';
+          el.style.backgroundColor = '#fef3c7';
+          setTimeout(() => { el.style.backgroundColor = ''; }, 1200);
+        }
+      }, 150);
+    }, 60);
+  }
+
+  // ===== DEBOUNCE FILTRO LISTA =====
+  let _debounceT = null;
+  function filtrarComDebounce() {
+    if (_debounceT) clearTimeout(_debounceT);
+    _debounceT = setTimeout(() => {
+      try {
+        const m = (typeof estado !== 'undefined') ? estado.modo : 'medicacoes';
+        if (m === 'ubs' && typeof renderUBS === 'function') renderUBS(estado.busca || '');
+        else if (m === 'protocolos' && typeof renderProtocolos === 'function') renderProtocolos();
+        else if (m === 'doencas' && typeof renderDoencas === 'function') renderDoencas();
+        else if (m === 'ampolas' && typeof renderAmpolas === 'function') renderAmpolas();
+        else if (typeof renderLista === 'function') renderLista();
+      } catch(e) {}
+    }, DEBOUNCE_MS);
+  }
+
+  // ===== HANDLERS =====
+  document.addEventListener('input', function(e){
+    if (!e.target || e.target.id !== 'busca') return;
+    const v = e.target.value || '';
+    // Atualiza estado
+    if (typeof estado !== 'undefined') estado.busca = v;
+    // Mostra dropdown imediatamente
+    renderDropdown(v);
+    // Filtra lista com debounce
+    filtrarComDebounce();
+  }, true);
+
+  document.addEventListener('keydown', function(e){
+    if (!e.target || e.target.id !== 'busca') return;
+    const drop = document.getElementById('busca-suggestions');
+    if (!drop || drop.style.display === 'none') return;
+
+    if (e.key === 'Escape') {
+      drop.style.display = 'none';
+      e.preventDefault();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = (_highlightedIdx + 1) % _sugsAtual.length;
+      destacarItem(next);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = _highlightedIdx <= 0 ? _sugsAtual.length - 1 : _highlightedIdx - 1;
+      destacarItem(prev);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const idx = _highlightedIdx >= 0 ? _highlightedIdx : 0;
+      const sug = _sugsAtual[idx];
+      if (sug) selecionarMed(sug.id);
+    }
+  }, true);
+
+  // Click fora fecha
+  document.addEventListener('click', function(e){
+    if (!e.target) return;
+    if (e.target.id === 'busca') return;
+    if (e.target.closest('#busca-suggestions')) return;
+    const drop = document.getElementById('busca-suggestions');
+    if (drop) drop.style.display = 'none';
+  });
+
+  // Focus no input mostra dropdown se já tem texto
+  document.addEventListener('focus', function(e){
+    if (!e.target || e.target.id !== 'busca') return;
+    const v = e.target.value || '';
+    if (v.length > 0) renderDropdown(v);
+  }, true);
+
+  // ===== INIT =====
+  function init() {
+    aplicarCSS();
+    criarDropdown();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 100);
+  }
+  setTimeout(init, 500);
+  setTimeout(init, 1500);
+
+  console.log('[AC v6.5] Autocomplete + debounce carregado');
 })();
 
 </script>

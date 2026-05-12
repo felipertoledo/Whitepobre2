@@ -268,7 +268,7 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
         <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
         <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.6.7 · UBS · posologia · dose fixa</p>
+      <p class="hdr-version">v.6.8 · UBS · posologia · cobertura ATB</p>
     </div>
     <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
@@ -9286,8 +9286,13 @@ if (typeof MEDICACOES !== 'undefined') {
 
     const matches = todas.filter(m => {
       if (!m || !m.nome) return false;
-      return m.nome.toLowerCase().includes(ql) ||
-             (m.classe || '').toLowerCase().includes(ql);
+      // Match por nome, classe ou searchTerms (cobertura clínica)
+      const haystack = [
+        m.nome.toLowerCase(),
+        (m.classe || '').toLowerCase(),
+        m._searchTerms || ''
+      ].join(' | ');
+      return haystack.includes(ql);
     });
 
     // Ordenar: nome começando com q vem primeiro, depois por nome
@@ -9295,6 +9300,10 @@ if (typeof MEDICACOES !== 'undefined') {
       const aStarts = a.nome.toLowerCase().startsWith(ql) ? 0 : 1;
       const bStarts = b.nome.toLowerCase().startsWith(ql) ? 0 : 1;
       if (aStarts !== bStarts) return aStarts - bStarts;
+      // Match por cobertura tem prioridade menor que match por nome
+      const aNome = a.nome.toLowerCase().includes(ql) ? 0 : 1;
+      const bNome = b.nome.toLowerCase().includes(ql) ? 0 : 1;
+      if (aNome !== bNome) return aNome - bNome;
       return a.nome.localeCompare(b.nome, 'pt-BR');
     });
 
@@ -9524,6 +9533,426 @@ if (typeof MEDICACOES !== 'undefined') {
   setTimeout(init, 1500);
 
   console.log('[AC v6.5] Autocomplete + debounce carregado');
+})();
+
+
+// ===== MÓDULO UBS v6.0: atb-extras.js =====
+// ============================================================================
+// ATB-EXTRAS v6.8 — Cobertura clínica + Antibióticos adicionais
+//   - Mapa de cobertura ('vias-aereas', 'pele', 'itu', etc) por ATB
+//   - 9 ATBs novos: penicilina V, benzatina, cefadroxila, eritromicina,
+//     gentamicina, cefotaxima, bacitracina-neomicina, tinidazol, ácido fusídico
+//   - Renderização visual de tags coloridas no card
+//   - Busca por cobertura ("pele", "otite", "ITU")
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  // ===== TAGS DE COBERTURA — definição visual =====
+  // chave: tag interna · valor: { rótulo visível, cor, ícone, sinônimos }
+  const TAGS_COBERTURA = {
+    'vias-aereas':        { label: 'Vias aéreas',           cor: '#1c5fa3', bg: '#dbeafe', icone: '🫁', sin: ['otite','sinusite','pneumonia','pac','faringite','via','aerea','aérea','respiratoria','respiratória'] },
+    'vias-aereas-strep':  { label: 'Faringite GABHS',       cor: '#1c5fa3', bg: '#dbeafe', icone: '🫁', sin: ['faringite','estreptococo','gabhs','garganta'] },
+    'atipicos':           { label: 'Atípicos',              cor: '#5a4f8a', bg: '#ede9fe', icone: '🦠', sin: ['mycoplasma','chlamydia','pneumonia atipica','clamídia'] },
+    'coqueluche':         { label: 'Coqueluche',            cor: '#5a4f8a', bg: '#ede9fe', icone: '🦠', sin: ['pertussis','coqueluche','tosse comprida'] },
+    'pele':               { label: 'Pele e partes moles',   cor: '#c2410c', bg: '#fed7aa', icone: '🩹', sin: ['pele','celulite','erisipela','impetigo','foliculite','furunculo','furúnculo','abscesso pele'] },
+    'pele-mrsa-ca':       { label: 'Pele (MRSA-CA)',        cor: '#7c2128', bg: '#fee2e2', icone: '🩹', sin: ['mrsa','staph resistente','pele resistente'] },
+    'mordedura':          { label: 'Mordedura',             cor: '#7c2128', bg: '#fee2e2', icone: '🦷', sin: ['mordedura','mordida','animal','humana'] },
+    'itu':                { label: 'ITU',                   cor: '#a16207', bg: '#fef3c7', icone: '💧', sin: ['itu','cistite','urina','infecção urinária','urinária','urinaria','pielo','pielonefrite'] },
+    'gi':                 { label: 'Gastrointestinal',      cor: '#15803d', bg: '#dcfce7', icone: '🍽️', sin: ['gi','intestinal','gastroenterite','diarreia bacteriana','salmonella','shigella'] },
+    'giardia':            { label: 'Giardíase',             cor: '#15803d', bg: '#dcfce7', icone: '🍽️', sin: ['giardia','giardíase','giardiase','parasita'] },
+    'amebiase':           { label: 'Amebíase',              cor: '#15803d', bg: '#dcfce7', icone: '🍽️', sin: ['amebiase','amebíase','entamoeba','disenteria'] },
+    'h-pylori':           { label: 'H. pylori',             cor: '#15803d', bg: '#dcfce7', icone: '🍽️', sin: ['h pylori','helicobacter','úlcera','gastrite'] },
+    'meningite':          { label: 'Meningite',             cor: '#581c87', bg: '#f3e8ff', icone: '🧠', sin: ['meningite','meningococo','snc'] },
+    'sepse':              { label: 'Sepse',                 cor: '#581c87', bg: '#f3e8ff', icone: '🧠', sin: ['sepse','sepsis','choque séptico','bacteriemia'] },
+    'osteoarticular':     { label: 'Osso/articulação',      cor: '#525252', bg: '#e7e5e4', icone: '🦴', sin: ['osteomielite','artrite séptica','osso'] },
+    'dental':             { label: 'Odontogênica',          cor: '#0e7490', bg: '#cffafe', icone: '🦷', sin: ['dental','dente','dentária','dentaria','abscesso dentário','periodontite'] },
+    'ist-sifilis':        { label: 'Sífilis',               cor: '#be123c', bg: '#ffe4e6', icone: '❤️‍🩹', sin: ['sífilis','sifilis','treponema','ist'] },
+    'ist-clamidia':       { label: 'Clamídia/Gonorreia',    cor: '#be123c', bg: '#ffe4e6', icone: '❤️‍🩹', sin: ['clamidia','clamídia','gonorreia','ist'] },
+    'anaerobios':         { label: 'Anaeróbios',            cor: '#78350f', bg: '#fef3c7', icone: '🦠', sin: ['anaerobios','anaeróbios','peritonite','abscesso','bacteroides'] },
+    'profilaxia-fr':      { label: 'Profilaxia FR',         cor: '#0e7490', bg: '#cffafe', icone: '💉', sin: ['febre reumática','profilaxia','reumatica'] },
+    'pneumocystis':       { label: 'Pneumocystis',          cor: '#5a4f8a', bg: '#ede9fe', icone: '🦠', sin: ['pneumocystis','pcp','jirovecii'] },
+    'gn':                 { label: 'Gram-negativos',        cor: '#525252', bg: '#e7e5e4', icone: '🦠', sin: ['gram negativo','gn','e coli','klebsiella','pseudomonas'] },
+    'gn-rn':              { label: 'Gram-neg RN',           cor: '#525252', bg: '#e7e5e4', icone: '🦠', sin: ['rn','recem nascido','recém-nascido','neonato','sepse rn'] },
+    'leptospirose':       { label: 'Leptospirose',          cor: '#be123c', bg: '#ffe4e6', icone: '🦠', sin: ['leptospira','lepto'] },
+    'lyme':               { label: 'Doença de Lyme',        cor: '#be123c', bg: '#ffe4e6', icone: '🦠', sin: ['lyme','borrelia'] },
+    'rickettsia':         { label: 'Riquetsiose',           cor: '#be123c', bg: '#ffe4e6', icone: '🦠', sin: ['rickettsia','febre maculosa'] },
+    'pele-leve':          { label: 'Pele (leve, tópico)',   cor: '#c2410c', bg: '#fed7aa', icone: '🩹', sin: ['pele leve','ferida','escoriacao','escoriação'] }
+  };
+
+  // ===== COBERTURA por ID de ATB existente =====
+  const COBERTURA_ATB = {
+    'amoxicilina':       ['vias-aereas', 'vias-aereas-strep', 'dental'],
+    'amox-clav':         ['vias-aereas', 'pele', 'dental', 'mordedura', 'itu'],
+    'ceftriaxona':       ['vias-aereas', 'meningite', 'sepse', 'ist-clamidia', 'osteoarticular', 'itu'],
+    'oxacilina':         ['pele', 'osteoarticular'],
+    'vancomicina':       ['pele-mrsa-ca', 'meningite', 'sepse', 'osteoarticular'],
+    'azitromicina':      ['vias-aereas', 'atipicos', 'coqueluche', 'ist-clamidia'],
+    'cefalexina':        ['pele', 'itu', 'vias-aereas-strep'],
+    'cefuroxima':        ['vias-aereas', 'pele', 'itu'],
+    'claritromicina':    ['vias-aereas', 'atipicos', 'h-pylori', 'coqueluche'],
+    'clindamicina-vo':   ['pele', 'pele-mrsa-ca', 'anaerobios', 'dental', 'osteoarticular'],
+    'smx-tmp':           ['itu', 'pele-mrsa-ca', 'pneumocystis'],
+    'nitrofurantoina':   ['itu'],
+    'metronidazol':      ['anaerobios', 'giardia', 'amebiase', 'h-pylori'],
+    'doxiciclina':       ['atipicos', 'pele-mrsa-ca', 'ist-clamidia', 'leptospirose', 'lyme', 'rickettsia'],
+    'cipro-otologico':   ['vias-aereas'],
+    'mupirocina':        ['pele-leve'],
+    'sulfadiazina-prata':['pele-leve']
+  };
+
+  // ===== ATBs NOVOS =====
+  const ATB_NOVOS = [
+    {
+      id: 'penicilina-v',
+      nome: 'Penicilina V (Fenoximetilpenicilina)',
+      classe: 'antibiotico',
+      apresentacao: 'Susp 80.000 UI/mL | Comp 500.000 UI',
+      indicacoes: [
+        {nome:'Faringite estreptocócica', dose:50000, unidade:'UI/kg/dia', via:'VO', max:2000000, intervalo:'8/8 h × 10 dias', diluicao:'—', velocidade:'—', minNota:'em jejum (30 min antes ou 2h após comida)'},
+        {nome:'Profilaxia secundária de febre reumática', dose:50000, unidade:'UI/kg/dia', via:'VO', max:500000, intervalo:'12/12 h'}
+      ],
+      cobertura: ['vias-aereas-strep', 'profilaxia-fr'],
+      idadeMinima: 'Sem idade mínima',
+      contraindicacoes: ['Alergia a betalactâmicos'],
+      efeitosFreq: ['Sintomas GI leves'],
+      efeitosGraves: ['Anafilaxia (rara)'],
+      alertas: [
+        {tipo:'info', texto:'1ª linha para faringite GABHS comprovada — amoxicilina é mais palatável mas tem mesmo espectro'},
+        {tipo:'aviso', texto:'Absorção prejudicada por alimentos — administrar em jejum se possível'}
+      ],
+      ajusteRenal:'Reduzir em IRC grave',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, IDSA, AHA'
+    },
+    {
+      id: 'penicilina-benzatina',
+      nome: 'Penicilina G Benzatina',
+      classe: 'antibiotico',
+      apresentacao: 'Frasco 600.000 UI ou 1.200.000 UI (IM profunda)',
+      indicacoes: [
+        {nome:'Faringite estreptocócica (dose única)', dose:50000, unidade:'UI/kg', via:'IM', max:1200000, intervalo:'dose única', diluicao:'4 mL água destilada', velocidade:'IM profunda lenta'},
+        {nome:'Profilaxia secundária febre reumática', dose:50000, unidade:'UI/kg', via:'IM', max:1200000, intervalo:'a cada 21-28 dias', minNota:'<27 kg: 600.000 UI · ≥27 kg: 1.200.000 UI'},
+        {nome:'Sífilis adquirida recente (<1 ano)', dose:50000, unidade:'UI/kg', via:'IM', max:2400000, intervalo:'dose única'},
+        {nome:'Sífilis tardia / latente >1 ano', dose:50000, unidade:'UI/kg', via:'IM', max:2400000, intervalo:'1×/sem × 3 semanas'}
+      ],
+      cobertura: ['vias-aereas-strep', 'profilaxia-fr', 'ist-sifilis'],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Alergia betalactâmicos'],
+      efeitosFreq:['Dor local intensa', 'Equimose no local'],
+      efeitosGraves:['Anafilaxia (rara mas grave — observar 30 min)', 'Reação de Hoigne (vasovagal, IM acidental EV)'],
+      alertas:[
+        {tipo:'aviso', texto:'Aplicar lenta e profundamente no quadrante superior externo glúteo. Manter em observação 30 min'},
+        {tipo:'info', texto:'Reação de Jarisch-Herxheimer (febre, mialgia 2-8h após dose em sífilis) NÃO é alergia — orientar paciente'},
+        {tipo:'info', texto:'Vantagem: dose única para faringite — útil quando há dúvida sobre adesão a 10 dias VO'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'PCDT-MS Sífilis, AHA, SBP'
+    },
+    {
+      id: 'cefadroxila',
+      nome: 'Cefadroxila',
+      classe: 'antibiotico',
+      apresentacao: 'Susp 50 mg/mL | Cáps 500 mg',
+      indicacoes: [
+        {nome:'Infecção de pele/partes moles (impetigo, celulite leve)', dose:30, unidade:'mg/kg/dia', via:'VO', max:2000, intervalo:'12/12 h × 7 dias'},
+        {nome:'ITU baixa (cistite)', dose:30, unidade:'mg/kg/dia', via:'VO', max:2000, intervalo:'12/12 h × 7-10 dias'},
+        {nome:'Faringite estreptocócica', dose:30, unidade:'mg/kg/dia', via:'VO', max:1000, intervalo:'1×/dia × 10 dias'}
+      ],
+      cobertura: ['pele', 'itu', 'vias-aereas-strep'],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Alergia a cefalosporinas/betalactâmicos'],
+      efeitosFreq:['Diarreia leve', 'Náusea'],
+      efeitosGraves:['Reação alérgica cruzada com penicilina (~1-2%)'],
+      alertas:[{tipo:'info', texto:'Alternativa a cefalexina — apenas 1-2×/dia melhora adesão. Mesmo espectro (cefalosporina 1ª geração)'}],
+      ajusteRenal:'Reduzir em ClCr <50',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, RENAME'
+    },
+    {
+      id: 'eritromicina',
+      nome: 'Eritromicina (estolato/estearato)',
+      classe: 'antibiotico',
+      apresentacao: 'Susp 50 mg/mL | Comp 250/500 mg',
+      indicacoes: [
+        {nome:'Coqueluche (pertussis)', dose:40, unidade:'mg/kg/dia', via:'VO', max:2000, intervalo:'6/6 h × 14 dias', minNota:'<1 mês: PREFERIR azitromicina por menor risco de estenose hipertrófica do piloro'},
+        {nome:'Conjuntivite/pneumonia neonatal por C. trachomatis', dose:50, unidade:'mg/kg/dia', via:'VO', max:2000, intervalo:'6/6 h × 14 dias'},
+        {nome:'Alternativa em alergia a penicilina (faringite)', dose:40, unidade:'mg/kg/dia', via:'VO', max:2000, intervalo:'6/6 h × 10 dias'}
+      ],
+      cobertura: ['atipicos', 'coqueluche', 'ist-clamidia', 'vias-aereas-strep'],
+      idadeMinima:'Sem idade mínima (cuidado <1 mês)',
+      contraindicacoes:['Alergia a macrolídeos', 'Uso concomitante com fármacos que prolongam QT'],
+      efeitosFreq:['Náusea, vômito, dor abdominal (significativos — limita uso)', 'Diarreia'],
+      efeitosGraves:['Estenose hipertrófica do piloro (RN <14 dias — relação dose-dependente)', 'Prolongamento QT', 'Hepatite colestática (rara)'],
+      alertas:[
+        {tipo:'aviso', texto:'<1 mês: prefira azitromicina (10 mg/kg/dia 1×/dia 5 dias) — menor risco de EHP'},
+        {tipo:'info', texto:'Numerosas interações via CYP3A4 — verificar antes de prescrever'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Evitar em hepatopatia grave',
+      fonte:'SBP, CDC, RENAME'
+    },
+    {
+      id: 'gentamicina',
+      nome: 'Gentamicina',
+      classe: 'antibiotico',
+      apresentacao: 'Amp 40 mg/mL (1, 1.5, 2 mL = 40/60/80 mg)',
+      indicacoes: [
+        {nome:'Pielonefrite aguda (em combinação)', dose:5, unidade:'mg/kg/dia', via:'IV', max:240, intervalo:'1×/dia (24/24 h)', diluicao:'SF 0,9% 30-60 mL', velocidade:'30 min em infusão'},
+        {nome:'Sepse neonatal tardia (>7 dias)', dose:4, unidade:'mg/kg/dia', via:'IV', max:240, intervalo:'24/24 h'},
+        {nome:'Sepse RN precoce (≤7 dias)', dose:2.5, unidade:'mg/kg/dose', via:'IV', max:120, intervalo:'12/12 h'}
+      ],
+      cobertura: ['gn', 'itu', 'sepse', 'gn-rn'],
+      idadeMinima:'Sem idade mínima — ajustar conforme idade gestacional/pós-natal',
+      contraindicacoes:['Alergia aminoglicosídeo', 'Miastenia gravis'],
+      efeitosFreq:[],
+      efeitosGraves:['Nefrotoxicidade (acumulativa — monitorar creatinina)', 'Ototoxicidade vestibular e coclear (monitorar audição se >7 dias)', 'Bloqueio neuromuscular'],
+      alertas:[
+        {tipo:'aviso', texto:'Janela terapêutica estreita. Monitorar função renal. Não exceder 7-10 dias sem reavaliar nível sérico'},
+        {tipo:'info', texto:'Dose única diária tem mesma eficácia e menor toxicidade que múltiplas doses em pediatria'}
+      ],
+      ajusteRenal:'Ajustar dose/intervalo conforme ClCr',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, Nelson, RENAME'
+    },
+    {
+      id: 'cefotaxima',
+      nome: 'Cefotaxima',
+      classe: 'antibiotico',
+      apresentacao: 'Frasco 500/1000 mg',
+      indicacoes: [
+        {nome:'Sepse/meningite em RN (≤28 dias)', dose:150, unidade:'mg/kg/dia', via:'IV', max:8000, intervalo:'6-8/8 h', diluicao:'SF/AD 5-10 mL', velocidade:'3-5 min lento'},
+        {nome:'Meningite bacteriana pediátrica', dose:300, unidade:'mg/kg/dia', via:'IV', max:12000, intervalo:'6/6 h × 7-14 dias'},
+        {nome:'Pneumonia complicada / sepse', dose:200, unidade:'mg/kg/dia', via:'IV', max:8000, intervalo:'6-8/8 h'}
+      ],
+      cobertura: ['meningite', 'sepse', 'gn-rn', 'vias-aereas'],
+      idadeMinima:'Sem idade mínima — PREFERIDA em RN',
+      contraindicacoes:['Alergia betalactâmicos'],
+      efeitosFreq:['Diarreia'],
+      efeitosGraves:['Reação cruzada penicilina (raro)', 'Colite por C. difficile'],
+      alertas:[{tipo:'info', texto:'Preferida em RN para evitar deslocamento de bilirrubina pela ceftriaxona (risco kernicterus em hiperbilirrubinêmico)'}],
+      ajusteRenal:'Reduzir em ClCr <50',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, Nelson, RENAME'
+    },
+    {
+      id: 'bacitracina-neomicina',
+      nome: 'Bacitracina + Neomicina (Nebacetin®)',
+      classe: 'antibiotico',
+      apresentacao: 'Pomada (250 UI bacitracina + 5 mg neomicina por g)',
+      indicacoes: [
+        {nome:'Ferimentos superficiais limpos, impetigo localizado', dose:0, unidade:'aplicação local fina', via:'TÓPICO', max:0, intervalo:'2-3×/dia × 5-7 dias'},
+        {nome:'Profilaxia de infecção em escoriação/corte limpo', dose:0, unidade:'aplicação local fina', via:'TÓPICO', max:0, intervalo:'1-2×/dia × 3-5 dias'}
+      ],
+      cobertura: ['pele-leve'],
+      idadeMinima:'Sem idade mínima (cuidado em RN e áreas extensas)',
+      contraindicacoes:['Áreas extensas (>20% superfície corporal)', 'Lesão profunda ou queimadura', 'Hipersensibilidade a aminoglicosídeo', 'Perfuração timpânica'],
+      efeitosFreq:['Sensibilização cutânea de contato'],
+      efeitosGraves:['Ototoxicidade e nefrotoxicidade se aplicação em áreas extensas ou lesões profundas (absorção sistêmica de neomicina)'],
+      alertas:[
+        {tipo:'aviso', texto:'NÃO aplicar em queimaduras, lesões profundas ou áreas extensas — risco de absorção sistêmica de neomicina'},
+        {tipo:'info', texto:'Mupirocina é alternativa mais segura para impetigo (sem absorção significativa)'}
+      ],
+      ajusteRenal:'Não usar em IRC se áreas extensas',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, RENAME'
+    },
+    {
+      id: 'tinidazol',
+      nome: 'Tinidazol',
+      classe: 'antibiotico',
+      apresentacao: 'Comp 500 mg | Susp 100 mg/5 mL',
+      indicacoes: [
+        {nome:'Giardíase (dose única)', dose:50, unidade:'mg/kg', via:'VO', max:2000, intervalo:'dose única'},
+        {nome:'Amebíase intestinal', dose:50, unidade:'mg/kg/dia', via:'VO', max:2000, intervalo:'1×/dia × 3 dias'},
+        {nome:'Tricomoníase', dose:50, unidade:'mg/kg', via:'VO', max:2000, intervalo:'dose única'}
+      ],
+      cobertura: ['giardia', 'amebiase', 'anaerobios'],
+      idadeMinima:'≥3 anos',
+      contraindicacoes:['1º trimestre da gestação', 'Lactação (suspender 3 dias após dose)', 'Hipersensibilidade a nitroimidazólicos'],
+      efeitosFreq:['Gosto metálico', 'Náusea leve', 'Cefaleia'],
+      efeitosGraves:['Reação dissulfiram-like se etanol (efeito antabuse)', 'Neuropatia periférica (uso prolongado)'],
+      alertas:[
+        {tipo:'info', texto:'Vantagem: dose única em giardíase (vs metronidazol 5-7 dias) — adesão muito melhor'},
+        {tipo:'aviso', texto:'Evitar bebidas alcoólicas durante e até 3 dias após uso'}
+      ],
+      ajusteRenal:'Sem ajuste em ClCr >10',
+      ajusteHepatico:'Reduzir em hepatopatia',
+      fonte:'SBP, CAB-MS Parasitoses, RENAME'
+    },
+    {
+      id: 'acido-fusidico',
+      nome: 'Ácido Fusídico (tópico)',
+      classe: 'antibiotico',
+      apresentacao: 'Creme/Pomada 2% (20 mg/g)',
+      indicacoes: [
+        {nome:'Impetigo localizado, foliculite', dose:0, unidade:'aplicação local fina', via:'TÓPICO', max:0, intervalo:'3×/dia × 5-7 dias'}
+      ],
+      cobertura: ['pele-leve'],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Hipersensibilidade'],
+      efeitosFreq:['Ardor local leve', 'Eritema'],
+      efeitosGraves:['Sensibilização de contato'],
+      alertas:[
+        {tipo:'info', texto:'Alternativa a mupirocina para Staph. Aureus — boa atividade anti-MRSA quando resistente à mupirocina'},
+        {tipo:'aviso', texto:'Resistência crescente — limitar a infecções localizadas'}
+      ],
+      ajusteRenal:'Não aplica',
+      ajusteHepatico:'Não aplica',
+      fonte:'SBP, SBD'
+    }
+  ];
+
+  // ===== INTEGRAÇÃO =====
+
+  // 1. Aplicar cobertura aos ATBs existentes
+  function aplicarCobertura() {
+    if (typeof MEDICACOES === 'undefined' || !Array.isArray(MEDICACOES)) return;
+    MEDICACOES.forEach(function(m){
+      if (!m || !m.id) return;
+      if (COBERTURA_ATB[m.id] && !m.cobertura) {
+        m.cobertura = COBERTURA_ATB[m.id].slice();
+      }
+    });
+  }
+
+  // 2. Adicionar ATBs novos
+  function adicionarATBsNovos() {
+    if (typeof MEDICACOES === 'undefined' || !Array.isArray(MEDICACOES)) return;
+    ATB_NOVOS.forEach(function(novo){
+      if (MEDICACOES.find(function(x){ return x.id === novo.id; })) return; // já existe
+      MEDICACOES.push(novo);
+    });
+  }
+
+  // 3. CSS para tags de cobertura
+  function aplicarCSS() {
+    if (document.getElementById('atb-cobertura-css')) return;
+    var css = '';
+    css += '.atb-cobertura { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 14px; }\n';
+    css += '.atb-cobertura-tag { display:inline-flex; align-items:center; gap:5px; padding:4px 9px; font-size:11px; font-weight:600; font-family:\'JetBrains Mono\', monospace; letter-spacing:.02em; border:1px solid; line-height:1.3; border-radius:0; }\n';
+    css += '.atb-cobertura-titulo { font-family:\'JetBrains Mono\', monospace; font-size:10px; font-weight:600; color:#78716c; text-transform:uppercase; letter-spacing:.12em; margin-bottom:6px; }\n';
+    css += '@media (max-width:640px) { .atb-cobertura-tag { font-size:10px; padding:3px 7px; } }\n';
+    // Cores por tag
+    Object.keys(TAGS_COBERTURA).forEach(function(k){
+      var t = TAGS_COBERTURA[k];
+      css += '.atb-cobertura-tag[data-cob="'+k+'"] { color:'+t.cor+'; background:'+t.bg+'; border-color:'+t.cor+'33; }\n';
+    });
+    var s = document.createElement('style');
+    s.id = 'atb-cobertura-css';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  // 4. Render visual: injetar bloco de cobertura no card da med
+  function injetarCobertura() {
+    try {
+      if (typeof MEDICACOES === 'undefined') return;
+      var meds = document.querySelectorAll('.med.aberto');
+      meds.forEach(function(elMed){
+        try {
+          var id = (elMed.id || '').replace(/^med-/, '');
+          if (!id) return;
+          var m = MEDICACOES.find(function(x){ return x.id === id; });
+          if (!m || !m.cobertura || !m.cobertura.length) return;
+          // Evita duplicação
+          if (elMed.querySelector('.atb-cobertura')) return;
+
+          var tags = m.cobertura.map(function(c){
+            var t = TAGS_COBERTURA[c];
+            if (!t) return '';
+            return '<span class="atb-cobertura-tag" data-cob="'+c+'">'+t.icone+' '+t.label+'</span>';
+          }).filter(Boolean).join('');
+          if (!tags) return;
+
+          var html = '<div class="atb-cobertura-wrap">'
+                  + '<div class="atb-cobertura-titulo">Cobertura clínica</div>'
+                  + '<div class="atb-cobertura">'+tags+'</div>'
+                  + '</div>';
+
+          // Inserir antes da seção INDICAÇÕES & DOSES
+          var marcador = elMed.querySelector('.indicacoes-titulo') || elMed.querySelector('[class*="indica"]');
+          if (marcador) {
+            marcador.parentElement.insertBefore(htmlToEl(html), marcador);
+          } else {
+            // Fallback: depois dos alertas
+            var alertas = elMed.querySelectorAll('.alerta');
+            if (alertas.length) {
+              alertas[alertas.length-1].insertAdjacentHTML('afterend', html);
+            } else {
+              elMed.insertAdjacentHTML('beforeend', html);
+            }
+          }
+        } catch(e) { console.warn('[ATB] injetar erro:', e.message); }
+      });
+    } catch(e) {}
+  }
+
+  function htmlToEl(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    return div.firstElementChild;
+  }
+
+  // 5. Hook na busca: permitir buscar por sinônimo de cobertura
+  // Estende a função buscarSugestoes do autocomplete se existir
+  function estenderBusca() {
+    if (typeof window.MEDICACOES === 'undefined') return;
+    // Adicionar campo 'searchTerms' computado para meds com cobertura
+    MEDICACOES.forEach(function(m){
+      if (!m || !m.cobertura || !m.cobertura.length) return;
+      if (m._searchTerms) return; // já feito
+      var termos = [m.nome.toLowerCase()];
+      if (m.classe) termos.push(m.classe.toLowerCase());
+      m.cobertura.forEach(function(c){
+        var t = TAGS_COBERTURA[c];
+        if (t) {
+          termos.push(t.label.toLowerCase());
+          if (t.sin) t.sin.forEach(function(s){ termos.push(s.toLowerCase()); });
+        }
+      });
+      m._searchTerms = termos.join(' | ');
+    });
+  }
+
+  // ===== INIT =====
+  function init() {
+    try {
+      aplicarCSS();
+      aplicarCobertura();
+      adicionarATBsNovos();
+      estenderBusca();
+
+      // Observer pra reinjetar quando DOM muda
+      var main = document.querySelector('main') || document.body;
+      if (main && typeof MutationObserver !== 'undefined') {
+        var obs = new MutationObserver(function(){
+          if (init._t) clearTimeout(init._t);
+          init._t = setTimeout(injetarCobertura, 80);
+        });
+        obs.observe(main, { childList:true, subtree:true });
+      }
+      setTimeout(injetarCobertura, 300);
+      setTimeout(injetarCobertura, 1000);
+    } catch(e) { console.warn('[ATB] init erro:', e.message); }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 200);
+  }
+  // Retentativa para garantir que MEDICACOES já carregou
+  setTimeout(init, 800);
+  setTimeout(init, 2000);
+
+  // Expor para outras integrações
+  window.TAGS_COBERTURA = TAGS_COBERTURA;
+  window.COBERTURA_ATB = COBERTURA_ATB;
+
+  console.log('[ATB v6.8] Cobertura clínica + '+ATB_NOVOS.length+' ATBs novos carregados');
 })();
 
 </script>

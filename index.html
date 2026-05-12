@@ -8803,7 +8803,7 @@ if (typeof MEDICACOES !== 'undefined') {
 
   function enriquecerComFracionamento() {
     try {
-      if (typeof estado === 'undefined' || !estado.peso) return;
+      if (typeof estado === 'undefined') return;
       if (typeof MEDICACOES === 'undefined') return;
       var meds = document.querySelectorAll('.med.aberto');
       meds.forEach(function(elMed){
@@ -8824,16 +8824,17 @@ if (typeof MEDICACOES !== 'undefined') {
               var ind = m.indicacoes[idx];
               if (!ind) return;
 
-              // Caminho 1: dose fixa (tópicos, otológicos, contraindicadas, etc)
+              // Caminho 1: dose fixa (tópicos, otológicos, etc) — NÃO precisa de peso
               var fixa = ehDoseFixa(ind);
-              if (fixa === 'pular') return; // contraindicada — não renderizar
+              if (fixa === 'pular') return;
               if (fixa === true) {
                 var htmlFixa = renderDoseFixa(id, idx, ind, m);
                 if (htmlFixa) indEl.insertAdjacentHTML('beforeend', htmlFixa);
                 return;
               }
 
-              // Caminho 2: cálculo normal por peso
+              // Caminho 2: cálculo normal por peso — precisa de peso
+              if (!estado.peso) return;
               if (ind.dose == null) return;
               if (apresentacoes.length === 0) return;
               var html = renderFracionamento(id, idx, ind, estado.peso, apresentacoes);

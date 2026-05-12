@@ -141,7 +141,87 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
   .modo-btn { white-space:nowrap; min-width:80px !important; font-size:12px !important; }
 }
 
-/* === FRACIONAMENTO v6.1 === */
+/* === DOSE FIXA (tópicos, otológicos, etc) === */
+.frac-bloco.frac-fixa {
+  background: #fff7ed;
+  border-left: 3px solid #c25c1a;
+  padding: 14px;
+  margin-top: 12px;
+}
+.frac-fixa .frac-titulo {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7c2128;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.frac-fixa-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: #c25c1a;
+  background: #fed7aa;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.frac-fixa-card {
+  background: white;
+  border: 1px solid #fed7aa;
+  padding: 12px 14px;
+}
+.frac-fixa-apr {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+.frac-fixa-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #78716c;
+}
+.frac-fixa-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #44403c;
+}
+.frac-fixa-acao {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #1c1917;
+  margin-bottom: 6px;
+}
+.frac-fixa-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #57534e;
+  margin-bottom: 10px;
+}
+.frac-fixa .frac-copiar-btn {
+  background: #c25c1a;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .15s;
+}
+.frac-fixa .frac-copiar-btn:hover { background: #9a4615; }
+.frac-fixa .frac-copiar-btn.frac-copiado { background: #1a7a3d; }
+
+
 .frac-bloco { margin-top:14px; padding:14px; background:#f0fdf4; border:1px solid #1a7a3d33; border-left:4px solid #1a7a3d; }
 .frac-titulo { font-family:'Fraunces',Georgia,serif; font-size:13px; font-weight:600; color:#1a7a3d; margin-bottom:10px; text-transform:uppercase; letter-spacing:.08em; }
 .frac-tabs { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
@@ -188,7 +268,7 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
         <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
         <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.6.6 · UBS · posologia · combinações fixas</p>
+      <p class="hdr-version">v.6.7 · UBS · posologia · dose fixa</p>
     </div>
     <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
@@ -8581,6 +8661,146 @@ if (typeof MEDICACOES !== 'undefined') {
     } catch(e) {}
   };
 
+  // ===== DOSE FIXA (não-calculada por peso) =====
+  // Detecta medicações que NÃO devem fazer cálculo por kg:
+  // tópicos, otológicos, oftálmicos, nasais, retais, supositórios, etc.
+  function ehDoseFixa(ind) {
+    if (!ind) return false;
+    // Se o nome da indicação tem ⛔ (contraindicada/descontinuada), não renderizar
+    if (/⛔|contraindicada|descontinuada/i.test(ind.nome || '')) return 'pular';
+    // Dose explicitamente zero ou null
+    if (ind.dose === 0 || ind.dose == null) return true;
+    // Via não-sistêmica
+    var via = String(ind.via || '').toUpperCase();
+    if (/(OTOLÓG|OTOLOG|OFTÁLM|OFTALM|TÓPIC|TOPIC|CUTÂN|CUTAN|RETAL|VAGIN|TRANSDER|INTRA[-\s]NASAL|NASAL)/.test(via)) {
+      // Exceção: INAL puro (broncodilatador) → tem cálculo de jatos
+      if (/^INAL$/.test(via.trim())) return false;
+      return true;
+    }
+    return false;
+  }
+
+  // Extrai partes do "intervalo" quando contém quantidade descrita
+  // Ex: "3-4 gotas 12/12 h × 7 dias" → { quantidade:"3-4 gotas", intervalo:"12/12 h", duracao:"7 dias" }
+  function parseDescritivo(intervaloStr) {
+    if (!intervaloStr) return null;
+    var s = String(intervaloStr).trim();
+    var quantidade = '';
+    var intervaloTxt = '';
+    var duracao = '';
+
+    // Extrair duração no final ("× 7 dias", "× 5-7 dias")
+    var durM = s.match(/\s*[×x]\s*([\d\-–\s]+(?:dias?|sem(?:anas?)?|hor(?:as?)?))\s*$/i);
+    if (durM) {
+      duracao = durM[1].trim();
+      s = s.substring(0, durM.index).trim();
+    }
+
+    // Detectar intervalo de horas ou "Nx/dia" / "N-M ×/dia" — agora com range
+    var intvM = s.match(/(\d+\s*[-–]\s*\d+\s*[×x]\s*\/?\s*(?:ao\s+)?dia|\d+\s*[×x]\s*\/?\s*(?:ao\s+)?dia|\d+\s*\/\s*\d+\s*h|\d+\s*[-–]\s*\d+\s*\/\s*\d+\s*h|dose\s+única)/i);
+    if (intvM) {
+      intervaloTxt = intvM[0].trim();
+      quantidade = s.substring(0, intvM.index).trim();
+      quantidade = quantidade.replace(/[,;]+\s*$/, '');
+    } else {
+      quantidade = s.trim();
+    }
+
+    if (!quantidade && !intervaloTxt && !duracao) return null;
+    return { quantidade: quantidade, intervalo: intervaloTxt, duracao: duracao, full: String(intervaloStr) };
+  }
+
+  // Verbo de ação conforme via
+  function acaoPorVia(via) {
+    var v = String(via||'').toUpperCase();
+    if (/OTOLÓG|OTOLOG/.test(v)) return 'Pingar';
+    if (/OFTÁLM|OFTALM/.test(v)) return 'Pingar';
+    if (/NASAL/.test(v)) return 'Aplicar';
+    if (/TÓPIC|TOPIC|CUTÂN|CUTAN/.test(v)) return 'Aplicar';
+    if (/RETAL/.test(v)) return 'Introduzir';
+    if (/VAGIN/.test(v)) return 'Introduzir';
+    if (/TRANSDER/.test(v)) return 'Colar adesivo';
+    return 'Aplicar';
+  }
+
+  // Local anatômico conforme via
+  function localPorVia(via) {
+    var v = String(via||'').toUpperCase();
+    if (/OTOLÓG|OTOLOG/.test(v)) return ' no ouvido afetado';
+    if (/OFTÁLM|OFTALM/.test(v)) return ' no olho afetado';
+    if (/INTRA[-\s]NASAL|NASAL/.test(v)) return ' em cada narina';
+    if (/TÓPIC|TOPIC|CUTÂN|CUTAN/.test(v)) return ' na área afetada';
+    if (/RETAL/.test(v)) return ' (via retal)';
+    if (/VAGIN/.test(v)) return ' (via vaginal)';
+    if (/TRANSDER/.test(v)) return '';
+    return '';
+  }
+
+  // Renderiza bloco de prescrição direta (sem cálculo por peso)
+  function renderDoseFixa(medId, indIdx, ind, m) {
+    try {
+      var parsed = parseDescritivo(ind.intervalo);
+      var via = String(ind.via || '');
+      var apr = m && m.apresentacao ? m.apresentacao : '';
+      var aprStr = String(apr).toLowerCase();
+      var acao = acaoPorVia(via);
+      var local = localPorVia(via);
+      var textoOriginal = String(ind.intervalo || '').trim();
+
+      var qty = parsed && parsed.quantidade ? parsed.quantidade : '';
+      var ehTextoNarrativo = qty.length > 30 || /pescoço|aos pés|banhar|repetir|cobrir|enxaguar|noite/.test(qty);
+
+      if (!qty || qty === '') {
+        if (/creme|pomada|gel\b|loção/.test(aprStr)) qty = 'fina camada';
+        else if (/gota|colírio|sol otológ|sol oftálm/.test(aprStr)) qty = '1-2 gotas';
+        else if (/spray nasal|sol nasal/.test(aprStr)) qty = '1-2 jatos';
+        else if (/suposit/.test(aprStr)) qty = '1 supositório';
+        else if (/adesivo|transderm/.test(aprStr)) qty = '1 adesivo';
+        else if (/nebuliza/.test(aprStr)) qty = '1 nebulização';
+        else if (ind.unidade && !/^(mg|mcg|g|mL)\b/i.test(ind.unidade)) {
+          qty = String(ind.unidade).replace(/^aplicação\b\s*/i, '').trim();
+          if (!qty) qty = 'fina camada';
+        } else {
+          qty = 'aplicação';
+        }
+      }
+
+      var intv = parsed && parsed.intervalo ? parsed.intervalo : '';
+      var dur = parsed && parsed.duracao ? parsed.duracao : '';
+
+      // Posologia para copiar
+      var posologia = '';
+      if (ehTextoNarrativo) {
+        posologia = textoOriginal;
+      } else {
+        posologia = acao + ' ' + qty + local;
+        if (intv) posologia += ' ' + intv;
+        if (dur) posologia += ' por ' + dur;
+      }
+
+      var html = '<div class="frac-bloco frac-fixa" data-med-id="'+escFrac(medId)+'" data-ind-idx="'+indIdx+'">';
+      html += '<div class="frac-titulo">💊 Prescrição direta <span class="frac-fixa-tag">sem cálculo por peso</span></div>';
+      html += '<div class="frac-fixa-card">';
+      if (apr) html += '<div class="frac-fixa-apr"><span class="frac-fixa-lbl">Apresentação</span><span class="frac-fixa-val">'+escFrac(apr)+'</span></div>';
+      if (via) html += '<div class="frac-fixa-apr"><span class="frac-fixa-lbl">Via</span><span class="frac-fixa-val">'+escFrac(via)+'</span></div>';
+
+      if (ehTextoNarrativo) {
+        html += '<div class="frac-fixa-acao"><b>Instruções:</b></div>';
+        html += '<div class="frac-fixa-meta" style="font-size:13px;line-height:1.5">'+escFrac(textoOriginal)+'</div>';
+      } else {
+        html += '<div class="frac-fixa-acao"><b>'+escFrac(acao + ' ' + qty + local)+'</b></div>';
+        var meta = [];
+        if (intv) meta.push(escFrac(intv));
+        if (dur) meta.push('por ' + escFrac(dur));
+        if (meta.length) html += '<div class="frac-fixa-meta">'+meta.join(' · ')+'</div>';
+      }
+
+      html += '<button class="frac-copiar-btn" type="button" onclick="copiarPosologiaFrac(this, \''+posologia.replace(/'/g,'\\\'').replace(/"/g,'&quot;')+'\')">📋 Copiar posologia</button>';
+      html += '</div></div>';
+      return html;
+    } catch(e) { console.warn('[FRAC] renderDoseFixa erro:', e.message); return ''; }
+  }
+
   function enriquecerComFracionamento() {
     try {
       if (typeof estado === 'undefined' || !estado.peso) return;
@@ -8595,14 +8815,27 @@ if (typeof MEDICACOES !== 'undefined') {
           if (typeof window.isMedUBS === 'function' && window.isMedUBS(m)) return;
           if (!m.indicacoes || !Array.isArray(m.indicacoes)) return;
           if (!m.apresentacao) return;
+
           var apresentacoes = parseApresentacoes(m.apresentacao, { combo: ehCombinacaoFixa(m) });
-          if (apresentacoes.length === 0) return;
           var indEls = elMed.querySelectorAll('.indicacao');
           indEls.forEach(function(indEl, idx){
             try {
               if (indEl.querySelector('.frac-bloco')) return;
               var ind = m.indicacoes[idx];
-              if (!ind || ind.dose == null) return;
+              if (!ind) return;
+
+              // Caminho 1: dose fixa (tópicos, otológicos, contraindicadas, etc)
+              var fixa = ehDoseFixa(ind);
+              if (fixa === 'pular') return; // contraindicada — não renderizar
+              if (fixa === true) {
+                var htmlFixa = renderDoseFixa(id, idx, ind, m);
+                if (htmlFixa) indEl.insertAdjacentHTML('beforeend', htmlFixa);
+                return;
+              }
+
+              // Caminho 2: cálculo normal por peso
+              if (ind.dose == null) return;
+              if (apresentacoes.length === 0) return;
               var html = renderFracionamento(id, idx, ind, estado.peso, apresentacoes);
               if (html) indEl.insertAdjacentHTML('beforeend', html);
             } catch(e) {}
@@ -8653,6 +8886,11 @@ if (typeof MEDICACOES !== 'undefined') {
 
   window.parseApresentacoes = parseApresentacoes;
   window.parseIntervalos = parseIntervalos;
+  window.ehDoseFixa = ehDoseFixa;
+  window.parseDescritivo = parseDescritivo;
+  window.acaoPorVia = acaoPorVia;
+  window.localPorVia = localPorVia;
+  window.ehCombinacaoFixa = ehCombinacaoFixa;
   window.enriquecerComFracionamento = enriquecerComFracionamento;
   window.toMcgFrac = toMcg;
 

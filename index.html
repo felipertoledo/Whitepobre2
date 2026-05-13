@@ -268,7 +268,7 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
         <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
         <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.6.8 · UBS · posologia · cobertura ATB</p>
+      <p class="hdr-version">v.7.0 · cesta receitas · crescimento · escuro</p>
     </div>
     <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
@@ -9953,6 +9953,1273 @@ if (typeof MEDICACOES !== 'undefined') {
   window.COBERTURA_ATB = COBERTURA_ATB;
 
   console.log('[ATB v6.8] Cobertura clínica + '+ATB_NOVOS.length+' ATBs novos carregados');
+})();
+
+
+// ===== MÓDULO UBS v6.0: meds-novos-v7.js =====
+// ============================================================================
+// MEDICAÇÕES NOVAS v7.0
+//   - Antifúngicos: fluconazol, nistatina, cetoconazol (sistêmico + tópico)
+//   - Antivirais: aciclovir, oseltamivir
+//   - Anti-helmínticos: albendazol, mebendazol, ivermectina
+//   - TRO/OMS Plano A/B/C
+//   - Dose alta de amoxicilina (80-90 mg/kg/dia) — opção em OMA
+//   - Score Centor pediátrico (faringite)
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const MEDS_NOVAS = [
+    // ===== ANTIFÚNGICOS =====
+    {
+      id: 'fluconazol',
+      nome: 'Fluconazol',
+      classe: 'antifungico',
+      apresentacao: 'Susp 10 mg/mL ou 50 mg/5 mL | Cáps 150 mg',
+      indicacoes: [
+        {nome:'Candidíase oral (muguet) refratária à nistatina', dose:6, unidade:'mg/kg', via:'VO', max:200, intervalo:'1ª dose, depois 3 mg/kg/dia 1×/dia × 7-14 dias'},
+        {nome:'Candidíase esofágica', dose:6, unidade:'mg/kg/dia', via:'VO', max:400, intervalo:'1×/dia × 14-21 dias'},
+        {nome:'Tinha do corpo / cruris extensa', dose:6, unidade:'mg/kg', via:'VO', max:150, intervalo:'1×/semana × 2-4 semanas'},
+        {nome:'Candidíase vaginal (adolescente)', dose:150, unidade:'mg/dose', via:'VO', max:150, intervalo:'dose única'}
+      ],
+      idadeMinima:'≥6 meses (uso fora de bula em <6 meses)',
+      contraindicacoes:['Hipersensibilidade a azóis', 'Gestação 1º trimestre'],
+      efeitosFreq:['Náusea, dor abdominal leve', 'Cefaleia'],
+      efeitosGraves:['Hepatotoxicidade (raro, monitorar TGO/TGP em uso prolongado)', 'QT prolongado', 'Síndrome Stevens-Johnson (raro)'],
+      alertas:[
+        {tipo:'info', texto:'Sempre tente nistatina tópica antes em candidíase oral'},
+        {tipo:'aviso', texto:'Muitas interações via CYP3A4 — checar antes de prescrever'}
+      ],
+      ajusteRenal:'Reduzir 50% se ClCr <50',
+      ajusteHepatico:'Cuidado em hepatopatia',
+      fonte:'SBP, RENAME',
+      cobertura:['pele-leve','gi']
+    },
+    {
+      id: 'nistatina',
+      nome: 'Nistatina (oral)',
+      classe: 'antifungico',
+      apresentacao: 'Susp oral 100.000 UI/mL | Pomada 100.000 UI/g',
+      indicacoes: [
+        {nome:'Candidíase oral (muguet) lactente', dose:0, unidade:'aplicação oral', via:'VO', max:0, intervalo:'1-2 mL em cada lado da boca, 4×/dia × 7-14 dias'},
+        {nome:'Candidíase oral criança >2 anos', dose:0, unidade:'aplicação oral', via:'VO', max:0, intervalo:'4-6 mL bochechar e engolir 4×/dia × 7-14 dias'},
+        {nome:'Dermatite de fralda candidiásica (pomada)', dose:0, unidade:'aplicação local', via:'TÓPICO', max:0, intervalo:'2-4×/dia × 7-14 dias'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Hipersensibilidade'],
+      efeitosFreq:['Sintomas GI leves (pouco absorvida)', 'Gosto desagradável'],
+      efeitosGraves:[],
+      alertas:[
+        {tipo:'info', texto:'1ª linha em candidíase oral — não absorve sistemicamente'},
+        {tipo:'info', texto:'Após mamada: limpar boca, aplicar nas mucosas. Tratar mãe se mamando ao seio (mamilo com creme antifúngico)'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, RENAME',
+      cobertura:['pele-leve','gi']
+    },
+    {
+      id: 'cetoconazol-topico',
+      nome: 'Cetoconazol (tópico)',
+      classe: 'antifungico',
+      apresentacao: 'Creme 2% (20 mg/g) | Shampoo 2%',
+      indicacoes: [
+        {nome:'Pitiríase versicolor / Tinha corporis / cruris / pedis', dose:0, unidade:'aplicação local', via:'TÓPICO', max:0, intervalo:'1-2×/dia × 2-4 semanas'},
+        {nome:'Dermatite seborreica (couro cabeludo) — shampoo', dose:0, unidade:'aplicação no couro cabeludo', via:'TÓPICO', max:0, intervalo:'2-3×/semana × 4 semanas, depois 1×/sem manutenção'}
+      ],
+      idadeMinima:'≥12 anos (creme); shampoo sem idade mínima',
+      contraindicacoes:['Hipersensibilidade'],
+      efeitosFreq:['Eritema, ardor local'],
+      efeitosGraves:['Reação alérgica de contato'],
+      alertas:[{tipo:'info', texto:'Manter 2 sem após cessação dos sintomas (recidiva comum)'}],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, SBD',
+      cobertura:['pele-leve']
+    },
+
+    // ===== ANTIVIRAIS =====
+    {
+      id: 'aciclovir-vo',
+      nome: 'Aciclovir (oral)',
+      classe: 'antiviral',
+      apresentacao: 'Susp 40 mg/mL ou 80 mg/mL | Comp 200/400 mg',
+      indicacoes: [
+        {nome:'Varicela em adolescente / imunocompetente >12a (até 24h do rash)', dose:80, unidade:'mg/kg/dia', via:'VO', max:3200, intervalo:'6/6 h × 5 dias'},
+        {nome:'Herpes simples primário / gengivoestomatite herpética', dose:75, unidade:'mg/kg/dia', via:'VO', max:1000, intervalo:'5×/dia × 7 dias'},
+        {nome:'Herpes recorrente / supressão', dose:30, unidade:'mg/kg/dia', via:'VO', max:800, intervalo:'12/12 h'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Hipersensibilidade'],
+      efeitosFreq:['Náusea, vômito', 'Cefaleia'],
+      efeitosGraves:['Nefrotoxicidade (cristalúria — manter hidratação)', 'Neurotoxicidade (raro)'],
+      alertas:[
+        {tipo:'info', texto:'Varicela em criança hígida: maioria não precisa de antiviral. Indicado se >12a, doença pulmonar/pele crônica, AAS crônico, segundo caso da família'},
+        {tipo:'aviso', texto:'MANTER HIDRATAÇÃO durante tratamento — evita cristalúria'}
+      ],
+      ajusteRenal:'Reduzir dose conforme ClCr',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, AAP',
+      cobertura:['atipicos']
+    },
+    {
+      id: 'oseltamivir',
+      nome: 'Oseltamivir (Tamiflu®)',
+      classe: 'antiviral',
+      apresentacao: 'Susp 6 mg/mL | Cáps 30/45/75 mg',
+      indicacoes: [
+        {nome:'Influenza confirmada/suspeita (iniciar até 48h dos sintomas)', dose:0, unidade:'mg/kg/dose por peso', via:'VO', max:150, intervalo:'12/12 h × 5 dias — ver dose por peso/idade', minNota:'≤15 kg: 30 mg 12/12h · 15-23 kg: 45 mg 12/12h · 23-40 kg: 60 mg 12/12h · >40 kg: 75 mg 12/12h · <1 ano: 3 mg/kg/dose 12/12h'},
+        {nome:'Profilaxia pós-exposição (contacto domiciliar Influenza)', dose:0, unidade:'mg/kg/dose por peso', via:'VO', max:75, intervalo:'1×/dia × 10 dias — metade da dose terapêutica'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Hipersensibilidade'],
+      efeitosFreq:['Náusea, vômito (frequente — administrar com alimento)'],
+      efeitosGraves:['Eventos neuropsiquiátricos (delirium, alucinação — raro)', 'Reação alérgica grave'],
+      alertas:[
+        {tipo:'info', texto:'Indicação SUS: grupos de risco (idade <2a, comorbidade, gestante, indígena, imunodeprimido) ou doença grave'},
+        {tipo:'aviso', texto:'Iniciar nas primeiras 48h dos sintomas — benefício diminui depois'},
+        {tipo:'info', texto:'Doses fixas por peso conforme bula — não é mg/kg simples'}
+      ],
+      ajusteRenal:'Reduzir em ClCr <30',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, MS, CDC',
+      cobertura:['vias-aereas']
+    },
+
+    // ===== ANTI-HELMÍNTICOS =====
+    {
+      id: 'albendazol',
+      nome: 'Albendazol',
+      classe: 'antiparasitario',
+      apresentacao: 'Susp 40 mg/mL | Comp mastigável 400 mg',
+      indicacoes: [
+        {nome:'Ascaridíase / Ancilostomíase / Tricuríase / Enterobíase', dose:400, unidade:'mg/dose', via:'VO', max:400, intervalo:'dose única (repetir em 14 dias se enterobíase)'},
+        {nome:'Giardíase (alternativa ao metronidazol)', dose:400, unidade:'mg/dia', via:'VO', max:400, intervalo:'1×/dia × 5 dias'},
+        {nome:'Estrongiloidíase', dose:400, unidade:'mg/dia', via:'VO', max:400, intervalo:'1×/dia × 3 dias'},
+        {nome:'Larva migrans cutânea', dose:400, unidade:'mg/dia', via:'VO', max:400, intervalo:'1×/dia × 3 dias'}
+      ],
+      idadeMinima:'≥1 ano (cuidado em <1a, dose ajustada)',
+      contraindicacoes:['Gestação', 'Hipersensibilidade'],
+      efeitosFreq:['Dor abdominal leve', 'Cefaleia'],
+      efeitosGraves:['Hepatotoxicidade (raro)', 'Pancitopenia (uso prolongado)'],
+      alertas:[
+        {tipo:'info', texto:'1ª linha para verminoses intestinais em pediatria — dose única para a maioria'},
+        {tipo:'info', texto:'Enterobíase (oxiúrus): repetir em 14 dias para quebrar ciclo. Tratar família junto'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Reduzir em hepatopatia',
+      fonte:'SBP, CAB-MS Parasitoses',
+      cobertura:['gi','giardia','amebiase']
+    },
+    {
+      id: 'mebendazol',
+      nome: 'Mebendazol',
+      classe: 'antiparasitario',
+      apresentacao: 'Susp 20 mg/mL | Comp mastigável 100/500 mg',
+      indicacoes: [
+        {nome:'Ascaridíase / Ancilostomíase / Tricuríase', dose:100, unidade:'mg/dose', via:'VO', max:100, intervalo:'12/12 h × 3 dias'},
+        {nome:'Enterobíase (oxiúrus)', dose:100, unidade:'mg/dose', via:'VO', max:100, intervalo:'dose única (repetir em 14 dias)'}
+      ],
+      idadeMinima:'≥2 anos',
+      contraindicacoes:['Gestação 1º trimestre', 'Hipersensibilidade'],
+      efeitosFreq:['Dor abdominal leve'],
+      efeitosGraves:['Hepatotoxicidade (rara)'],
+      alertas:[{tipo:'info', texto:'Alternativa ao albendazol — dose igual independente do peso (>2a). Albendazol é geralmente preferido (dose única para vários parasitos)'}],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Reduzir em hepatopatia',
+      fonte:'SBP, CAB-MS',
+      cobertura:['gi']
+    },
+    {
+      id: 'ivermectina',
+      nome: 'Ivermectina',
+      classe: 'antiparasitario',
+      apresentacao: 'Comp 6 mg',
+      indicacoes: [
+        {nome:'Escabiose refratária / extensa (>5 anos, >15 kg)', dose:200, unidade:'mcg/kg', via:'VO', max:24, intervalo:'dose única, repetir em 7-14 dias'},
+        {nome:'Estrongiloidíase', dose:200, unidade:'mcg/kg', via:'VO', max:24, intervalo:'1-2 doses (intervalo 14 dias)'},
+        {nome:'Larva migrans cutânea (alternativa)', dose:200, unidade:'mcg/kg', via:'VO', max:24, intervalo:'dose única'}
+      ],
+      idadeMinima:'≥5 anos E ≥15 kg',
+      contraindicacoes:['<15 kg ou <5 anos', 'Gestação', 'Lactação primeiros dias'],
+      efeitosFreq:['Náusea leve', 'Cefaleia', 'Prurido (reação de Mazzotti — sugere parasita morrendo)'],
+      efeitosGraves:['Encefalopatia em pacientes com loaíase (raro no Brasil)'],
+      alertas:[
+        {tipo:'aviso', texto:'NÃO usar em criança <5 anos ou <15 kg — segurança não estabelecida'},
+        {tipo:'info', texto:'Para escabiose: permetrina 5% creme tópica é 1ª linha. Ivermectina VO se falha tópica, escabiose crostosa, ou idoso/imunossuprimido'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, CAB-MS',
+      cobertura:['pele-leve']
+    },
+
+    // ===== AMOXICILINA DOSE ALTA (OMA com pneumococo resistente) =====
+    {
+      id: 'amoxi-dose-alta',
+      nome: 'Amoxicilina (dose alta)',
+      classe: 'antibiotico',
+      apresentacao: 'Susp 50 mg/mL ou 80 mg/mL | Comp 500/875 mg',
+      indicacoes: [
+        {nome:'OMA com risco de pneumococo resistente', dose:90, unidade:'mg/kg/dia', via:'VO', max:4000, intervalo:'12/12 h × 7-10 dias', minNota:'80-90 mg/kg/dia. Fatores de risco: <2a, creche, exposição recente a ATB (3m), falha amoxi dose padrão'},
+        {nome:'PAC ambulatorial com risco de pneumococo resistente', dose:90, unidade:'mg/kg/dia', via:'VO', max:4000, intervalo:'8-12/12 h × 7 dias'},
+        {nome:'Sinusite bacteriana aguda', dose:90, unidade:'mg/kg/dia', via:'VO', max:4000, intervalo:'12/12 h × 10-14 dias'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Alergia a betalactâmicos'],
+      efeitosFreq:['Diarreia (mais frequente que dose padrão)', 'Rash'],
+      efeitosGraves:['Anafilaxia', 'Colite por C. difficile'],
+      alertas:[
+        {tipo:'info', texto:'Indicação principal: OMA em <2a, criança em creche, ou falha a amoxi dose padrão (50 mg/kg/dia)'},
+        {tipo:'aviso', texto:'Se OMA já falhou com dose alta de amoxi → trocar para amoxi+clavulanato dose alta'},
+        {tipo:'info', texto:'Rash em mononucleose: típico, NÃO é alergia verdadeira'}
+      ],
+      ajusteRenal:'Reduzir em IRC',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'AAP, IDSA, SBP',
+      cobertura:['vias-aereas','vias-aereas-strep','dental']
+    },
+
+    // ===== TRO/OMS - PLANOS DE HIDRATAÇÃO =====
+    {
+      id: 'tro-plano-a',
+      nome: 'TRO Plano A (sem desidratação)',
+      classe: 'hidratacao',
+      apresentacao: 'Soro Reidratação Oral (SRO sachê 27,9 g em 1 L água)',
+      indicacoes: [
+        {nome:'Diarreia sem desidratação — manutenção VO', dose:0, unidade:'mL após cada evacuação', via:'VO', max:0, intervalo:'<1 ano: 50-100 mL após cada evacuação · 1-10 anos: 100-200 mL · >10a: à vontade'},
+        {nome:'Manutenção alimentar', dose:0, unidade:'orientação dietética', via:'VO', max:0, intervalo:'Manter aleitamento materno; oferecer alimentos habituais; aumentar líquidos'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Choque (precisa Plano C EV)', 'Íleo paralítico', 'Vômitos intratáveis'],
+      efeitosFreq:[],
+      efeitosGraves:[],
+      alertas:[
+        {tipo:'info', texto:'Sinais de alerta para retornar à UBS/PS: vômitos persistentes, recusa alimentar, piora da diarreia, sinais de desidratação, sangue nas fezes, febre alta, sonolência'},
+        {tipo:'info', texto:'NÃO PRESCREVER: antieméticos rotineiramente, antidiarreicos (loperamida) <6a, antibióticos sem indicação'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'CAB-MS Saúde da Criança nº 33, OMS',
+      cobertura:['gi']
+    },
+    {
+      id: 'tro-plano-b',
+      nome: 'TRO Plano B (desidratação leve/moderada)',
+      classe: 'hidratacao',
+      apresentacao: 'SRO 75 mEq/L de Sódio (padrão OMS)',
+      indicacoes: [
+        {nome:'Desidratação leve a moderada — TRO supervisionada na UBS', dose:75, unidade:'mL/kg em 4 h (VO)', via:'VO', max:0, intervalo:'oferecer pequenos volumes a cada 5-10 min (~5 mL/kg a cada 15 min)'},
+        {nome:'Reavaliação após 4 horas', dose:0, unidade:'reavaliar', via:'—', max:0, intervalo:'Sem desidratação → Plano A · Mantém desidratado → repetir Plano B · Piorou → Plano C'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Choque','Íleo','Vômitos incoercíveis'],
+      efeitosFreq:[],
+      efeitosGraves:[],
+      alertas:[
+        {tipo:'info', texto:'Vômito ocasional: aguardar 10 min e reiniciar mais lento. Vômitos persistentes (>4 em 1h ou recusa): considerar SNG (gotejamento contínuo 20 mL/kg/h) ou Plano C'},
+        {tipo:'info', texto:'Manter aleitamento materno durante toda a hidratação'}
+      ],
+      ajusteRenal:'Cuidado em DRC',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'CAB-MS Saúde da Criança nº 33, OMS',
+      cobertura:['gi']
+    },
+    {
+      id: 'tro-plano-c',
+      nome: 'TRO Plano C (desidratação grave / choque)',
+      classe: 'hidratacao',
+      apresentacao: 'Ringer Lactato ou SF 0,9% EV',
+      indicacoes: [
+        {nome:'Desidratação grave/choque — fase de expansão', dose:20, unidade:'mL/kg em 30 min (em <1a) ou 20-30 min', via:'IV', max:0, intervalo:'Repetir até 3 vezes (60 mL/kg) se necessário'},
+        {nome:'Fase de manutenção (após reposição)', dose:25, unidade:'mL/kg/h', via:'IV', max:0, intervalo:'<12 meses: 70 mL/kg em 5h · >12 meses: 70 mL/kg em 2,5h'},
+        {nome:'Após melhora: transição p/ VO', dose:0, unidade:'reavaliar', via:'VO', max:0, intervalo:'Quando aceitar VO e ativo → Plano B na UBS'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Hipersensibilidade ao Ringer'],
+      efeitosFreq:[],
+      efeitosGraves:['Sobrecarga hídrica em IRC/IC'],
+      alertas:[
+        {tipo:'aviso', texto:'Acesso EV difícil em criança chocada → IO (intraóssea) é alternativa válida'},
+        {tipo:'info', texto:'Sinais de melhora: pulso periférico palpável, enchimento capilar <3s, FC normalizando, diurese retomando'},
+        {tipo:'aviso', texto:'Choque persistente após 60 mL/kg → suspeitar outras causas (sepse, cardiopatia, intoxicação)'}
+      ],
+      ajusteRenal:'Cuidado — monitorar diurese',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'CAB-MS, AHA PALS',
+      cobertura:['gi','sepse']
+    }
+  ];
+
+  // ===== INTEGRAÇÃO =====
+  function adicionarMeds() {
+    if (typeof MEDICACOES === 'undefined' || !Array.isArray(MEDICACOES)) return;
+    MEDS_NOVAS.forEach(function(m){
+      if (MEDICACOES.find(function(x){ return x.id === m.id; })) return;
+      MEDICACOES.push(m);
+    });
+  }
+
+  // Tentar várias vezes — MEDICACOES pode ainda não estar disponível
+  function init() {
+    adicionarMeds();
+    if (typeof window.estenderBusca === 'function') {
+      try { window.estenderBusca(); } catch(e){}
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 100);
+  }
+  setTimeout(init, 500);
+  setTimeout(init, 1500);
+  setTimeout(init, 2500);
+
+  console.log('[MEDS v7.0] '+MEDS_NOVAS.length+' medicações novas carregadas');
+})();
+
+
+// ===== MÓDULO UBS v6.0: melhorias-ux-v7.js =====
+// ============================================================================
+// MELHORIAS UX v7.0
+//   - Persistência localStorage (peso, idade, modo escuro)
+//   - Toast de feedback (copiado, salvo, etc)
+//   - Atalho "/" pra focar busca
+//   - Modo escuro com toggle no header
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const LS_PREFIX = 'penochao_';
+
+  // ===== HELPERS =====
+  function lsGet(k, def) {
+    try { var v = localStorage.getItem(LS_PREFIX + k); return v === null ? def : v; }
+    catch(e) { return def; }
+  }
+  function lsSet(k, v) {
+    try { localStorage.setItem(LS_PREFIX + k, String(v)); }
+    catch(e) {}
+  }
+  function lsDel(k) {
+    try { localStorage.removeItem(LS_PREFIX + k); }
+    catch(e) {}
+  }
+
+  // ===== 1. PERSISTÊNCIA peso/idade =====
+  function setupPersistencia() {
+    var idade = document.getElementById('idade');
+    var peso = document.getElementById('peso');
+
+    if (idade && !idade.dataset.persistHooked) {
+      idade.dataset.persistHooked = '1';
+      var savedI = lsGet('idade');
+      if (savedI && !idade.value) {
+        idade.value = savedI;
+        idade.dispatchEvent(new Event('input', {bubbles:true}));
+      }
+      idade.addEventListener('input', function(){
+        if (idade.value) lsSet('idade', idade.value);
+        else lsDel('idade');
+      });
+    }
+
+    if (peso && !peso.dataset.persistHooked) {
+      peso.dataset.persistHooked = '1';
+      var savedP = lsGet('peso');
+      if (savedP && !peso.value) {
+        peso.value = savedP;
+        peso.dispatchEvent(new Event('input', {bubbles:true}));
+      }
+      peso.addEventListener('input', function(){
+        if (peso.value) lsSet('peso', peso.value);
+        else lsDel('peso');
+      });
+    }
+  }
+
+  // ===== 2. TOAST =====
+  // Sobrescreve copiarPosologiaFrac pra mostrar toast em vez de só mudar botão
+  function setupToast() {
+    // Criar container do toast
+    if (!document.getElementById('toast-container')) {
+      var c = document.createElement('div');
+      c.id = 'toast-container';
+      document.body.appendChild(c);
+    }
+  }
+
+  window.mostrarToast = function(msg, tipo) {
+    try {
+      tipo = tipo || 'sucesso';
+      var c = document.getElementById('toast-container');
+      if (!c) { setupToast(); c = document.getElementById('toast-container'); }
+      var t = document.createElement('div');
+      t.className = 'toast toast-' + tipo;
+      t.innerHTML = (tipo === 'sucesso' ? '✓ ' : (tipo === 'aviso' ? '⚠ ' : '')) + msg;
+      c.appendChild(t);
+      // Animação de entrada
+      setTimeout(function(){ t.classList.add('toast-visivel'); }, 10);
+      setTimeout(function(){
+        t.classList.remove('toast-visivel');
+        setTimeout(function(){ try { c.removeChild(t); } catch(e){} }, 300);
+      }, 2400);
+    } catch(e) {}
+  };
+
+  // Patch copiarPosologiaFrac (cria wrapper que chama o original + toast)
+  function patchCopiar() {
+    if (window._copiarOrigPatched) return;
+    var orig = window.copiarPosologiaFrac;
+    if (typeof orig !== 'function') {
+      setTimeout(patchCopiar, 200);
+      return;
+    }
+    window._copiarOrigPatched = true;
+    window.copiarPosologiaFrac = function(btn, texto) {
+      orig(btn, texto);
+      window.mostrarToast('Posologia copiada');
+      // Adicionar à cesta de receita
+      if (typeof window.addReceita === 'function') {
+        try { window.addReceita(texto, btn); } catch(e){}
+      }
+    };
+  }
+
+  // ===== 3. ATALHO "/" =====
+  function setupAtalho() {
+    if (window._atalhoHooked) return;
+    window._atalhoHooked = true;
+    document.addEventListener('keydown', function(e){
+      // Ignorar se já está num input
+      var alvo = e.target;
+      if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.isContentEditable)) {
+        // Esc fecha qualquer modal
+        if (e.key === 'Escape') {
+          var drop = document.getElementById('busca-suggestions');
+          if (drop) drop.style.display = 'none';
+          if (alvo.id === 'busca') alvo.blur();
+        }
+        return;
+      }
+      if (e.key === '/') {
+        e.preventDefault();
+        var busca = document.getElementById('busca');
+        if (busca) { busca.focus(); busca.select(); }
+      }
+    });
+  }
+
+  // ===== 4. MODO ESCURO =====
+  function setupDarkMode() {
+    var atual = lsGet('darkmode') === '1';
+    if (atual) document.body.classList.add('dark');
+
+    if (document.getElementById('btn-darkmode')) return;
+
+    // Botão toggle no header
+    var header = document.querySelector('.hdr-inner') || document.querySelector('header');
+    if (!header) { setTimeout(setupDarkMode, 200); return; }
+
+    var btn = document.createElement('button');
+    btn.id = 'btn-darkmode';
+    btn.type = 'button';
+    btn.title = 'Modo escuro';
+    btn.innerHTML = atual ? '☀' : '☾';
+    btn.onclick = function() {
+      var dark = document.body.classList.toggle('dark');
+      lsSet('darkmode', dark ? '1' : '0');
+      btn.innerHTML = dark ? '☀' : '☾';
+      window.mostrarToast(dark ? 'Modo escuro ativado' : 'Modo claro ativado');
+    };
+    header.appendChild(btn);
+  }
+
+  // ===== 5. PERSISTIR MODO ATIVO =====
+  function setupModoAtivo() {
+    var modoSalvo = lsGet('modo');
+    if (modoSalvo && typeof setModo === 'function' && typeof estado !== 'undefined') {
+      // só aplicar se for um modo válido e diferente do atual
+      if (['medicacoes','ampolas','protocolos','doencas','ubs'].indexOf(modoSalvo) >= 0
+          && modoSalvo !== estado.modo) {
+        setTimeout(function(){
+          try { setModo(modoSalvo); } catch(e){}
+        }, 500);
+      }
+    }
+    // Hook nos botões de modo
+    document.querySelectorAll('#modos-bar .modo-btn').forEach(function(b){
+      if (b.dataset.persistHooked) return;
+      b.dataset.persistHooked = '1';
+      b.addEventListener('click', function(){
+        var m = b.dataset.modo;
+        if (m) lsSet('modo', m);
+      });
+    });
+  }
+
+  // ===== CSS =====
+  function aplicarCSS() {
+    if (document.getElementById('ux-v7-css')) return;
+    var css = '';
+
+    // Toast
+    css += '#toast-container { position:fixed; top:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }\n';
+    css += '.toast { background:#1c1917; color:#fafaf9; padding:12px 18px; font-family:\'Fraunces\', Georgia, serif; font-size:14px; font-weight:500; box-shadow:0 6px 20px rgba(0,0,0,.25); opacity:0; transform:translateY(-10px); transition:all .25s ease; pointer-events:auto; min-width:200px; max-width:340px; border-left:3px solid #1a7a3d; }\n';
+    css += '.toast-visivel { opacity:1; transform:translateY(0); }\n';
+    css += '.toast-aviso { border-left-color:#c25c1a; }\n';
+    css += '.toast-erro { border-left-color:#7c2128; }\n';
+    css += '@media (max-width:640px) { #toast-container { top:auto; bottom:80px; right:12px; left:12px; } .toast { min-width:0; } }\n';
+
+    // Dark mode toggle button
+    css += '#btn-darkmode { position:absolute; top:14px; right:18px; background:transparent; border:1px solid #57534e; color:#fafaf9; width:34px; height:34px; cursor:pointer; font-size:16px; font-family:inherit; transition:all .15s; line-height:1; padding:0; display:flex; align-items:center; justify-content:center; z-index:10; }\n';
+    css += '#btn-darkmode:hover { background:#fafaf9; color:#1c1917; }\n';
+    css += '@media (max-width:640px) { #btn-darkmode { top:10px; right:10px; width:32px; height:32px; font-size:14px; } }\n';
+
+    // ===== MODO ESCURO — overrides =====
+    css += 'body.dark { background:#0c0a09; color:#e7e5e4; }\n';
+    css += 'body.dark .hdr, body.dark header.hdr { background:#1c1917; }\n';
+    css += 'body.dark .inputs { background:#1c1917; border-bottom-color:#292524; }\n';
+    css += 'body.dark .inputs input { background:#0c0a09; color:#e7e5e4; border-color:#44403c; }\n';
+    css += 'body.dark .inputs label { color:#a8a29e; }\n';
+    css += 'body.dark main, body.dark .container, body.dark .calcs { background:#0c0a09; }\n';
+    css += 'body.dark .med, body.dark .doenca-card, body.dark .protocolo, body.dark .ampola-card { background:#1c1917; border-color:#292524; color:#e7e5e4; }\n';
+    css += 'body.dark .med .med-header, body.dark .med summary { background:#1c1917; color:#e7e5e4; }\n';
+    css += 'body.dark .med-corpo, body.dark .med-detalhes { background:#0c0a09; }\n';
+    css += 'body.dark .indicacao { background:#1c1917; border-color:#292524; color:#e7e5e4; }\n';
+    css += 'body.dark .indicacao .lbl, body.dark .indicacao label { color:#a8a29e; }\n';
+    css += 'body.dark .indicacao b, body.dark .indicacao strong { color:#fafaf9; }\n';
+    css += 'body.dark .alerta-info { background:#1e3a5f; color:#bfdbfe; border-color:#3b82f6; }\n';
+    css += 'body.dark .alerta-aviso, body.dark .alerta-warn { background:#3f2810; color:#fed7aa; border-color:#c25c1a; }\n';
+    css += 'body.dark #modos-bar { background:#1c1917; border-color:#292524; }\n';
+    css += 'body.dark #modos-bar .modo-btn { color:#a8a29e; border-right-color:#292524 !important; }\n';
+    css += 'body.dark #modos-bar .modo-btn:hover { background:#292524 !important; color:#fafaf9 !important; }\n';
+    css += 'body.dark #modos-bar .modo-btn.ativo { background:#0c0a09 !important; color:#fafaf9 !important; }\n';
+    css += 'body.dark .filtros, body.dark .cat-btn, body.dark .cat-ubs-btn { background:#1c1917; color:#a8a29e; border-color:#292524; }\n';
+    css += 'body.dark .cat-btn.ativo, body.dark .cat-ubs-btn.ativo { background:#fafaf9 !important; color:#1c1917 !important; }\n';
+    css += 'body.dark .frac-bloco { background:#0c2a18; border-left-color:#1a7a3d; }\n';
+    css += 'body.dark .frac-titulo { color:#86efac; }\n';
+    css += 'body.dark .frac-card { background:#1c1917; border-color:#292524; color:#e7e5e4; }\n';
+    css += 'body.dark .frac-card-cab { color:#a8a29e; }\n';
+    css += 'body.dark .frac-card-dose { color:#fafaf9; }\n';
+    css += 'body.dark .frac-card-dose b { color:#86efac; }\n';
+    css += 'body.dark .frac-card-warn { background:#3f2810; border-color:#c25c1a; }\n';
+    css += 'body.dark .frac-card-warn .frac-card-cab, body.dark .frac-card-warn .frac-card-dose { color:#fed7aa; }\n';
+    css += 'body.dark .frac-stats { background:#1c1917; border-color:#292524; }\n';
+    css += 'body.dark .frac-stat-lbl { color:#78716c; }\n';
+    css += 'body.dark .frac-stat-val { color:#fafaf9; }\n';
+    css += 'body.dark .frac-stat-val.emerald { color:#86efac; }\n';
+    css += 'body.dark .frac-tab { background:#1c1917; color:#86efac; border-color:#1a7a3d66; }\n';
+    css += 'body.dark .frac-tab.ativo { background:#1a7a3d; color:white; }\n';
+    css += 'body.dark .frac-bloco.frac-fixa { background:#3f2810; border-left-color:#c25c1a; }\n';
+    css += 'body.dark .frac-fixa-card { background:#1c1917; border-color:#c25c1a; color:#fed7aa; }\n';
+    css += 'body.dark .frac-fixa-val, body.dark .frac-fixa-acao b { color:#fafaf9; }\n';
+    css += 'body.dark .frac-copiar-btn { background:#fafaf9; color:#1c1917; }\n';
+    css += 'body.dark .frac-fixa .frac-copiar-btn { background:#c25c1a; color:white; }\n';
+    css += 'body.dark .atb-cobertura-titulo { color:#a8a29e; }\n';
+    css += 'body.dark #busca-suggestions { background:#1c1917; border-color:#292524; color:#e7e5e4; }\n';
+    css += 'body.dark .busca-sug-item { color:#e7e5e4; border-bottom-color:#292524; }\n';
+    css += 'body.dark .busca-sug-item:hover, body.dark .busca-sug-item.highlight { background:#292524; }\n';
+    css += 'body.dark .busca-sug-item .sug-nome b { color:#86efac; background:#1a7a3d33; }\n';
+    css += 'body.dark .busca-sug-item .sug-meta { color:#78716c; }\n';
+    css += 'body.dark .busca-sug-footer { background:#0c0a09; color:#78716c; }\n';
+    css += 'body.dark footer { background:#1c1917; border-color:#292524; }\n';
+    css += 'body.dark footer .light { color:#a8a29e; }\n';
+    css += 'body.dark .empty, body.dark .empty-msg { color:#a8a29e; }\n';
+
+    var s = document.createElement('style');
+    s.id = 'ux-v7-css';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  // ===== INIT =====
+  function init() {
+    try {
+      aplicarCSS();
+      setupToast();
+      setupPersistencia();
+      setupAtalho();
+      setupDarkMode();
+      setupModoAtivo();
+      patchCopiar();
+    } catch(e) { console.warn('[UX] init erro:', e.message); }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 50);
+  }
+  // Reaplicar — DOM pode mudar
+  setTimeout(init, 500);
+  setTimeout(init, 1500);
+  setTimeout(setupModoAtivo, 1800);
+  setTimeout(setupPersistencia, 2000);
+
+  console.log('[UX v7.0] Persistência + toast + atalho / + modo escuro');
+})();
+
+
+// ===== MÓDULO UBS v6.0: receita-builder-v7.js =====
+// ============================================================================
+// RECEITA BUILDER v7.0
+//   - Cesta de posologias: cada "Copiar" durante a consulta adiciona à cesta
+//   - Botão flutuante (FAB) mostra contador
+//   - Painel modal: revisar/editar, copiar tudo, exportar WhatsApp
+//   - Histórico de prescrições (localStorage, últimos 30 dias)
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const LS_PREFIX = 'penochao_';
+  const CESTA_KEY = 'cesta_atual';
+  const HIST_KEY = 'historico_receitas';
+  const MAX_HIST = 50;
+  const HIST_DIAS = 30;
+
+  // ===== ESTADO =====
+  let cesta = []; // [{texto, med, ts}]
+
+  function carregarCesta() {
+    try {
+      var raw = localStorage.getItem(LS_PREFIX + CESTA_KEY);
+      if (raw) cesta = JSON.parse(raw) || [];
+    } catch(e) { cesta = []; }
+  }
+  function salvarCesta() {
+    try { localStorage.setItem(LS_PREFIX + CESTA_KEY, JSON.stringify(cesta)); }
+    catch(e) {}
+  }
+  function carregarHistorico() {
+    try {
+      var raw = localStorage.getItem(LS_PREFIX + HIST_KEY);
+      if (!raw) return [];
+      var hist = JSON.parse(raw) || [];
+      // Limpar mais antigos que HIST_DIAS
+      var corte = Date.now() - HIST_DIAS * 86400000;
+      return hist.filter(function(h){ return h.ts > corte; });
+    } catch(e) { return []; }
+  }
+  function salvarHistorico(hist) {
+    try {
+      var corte = Date.now() - HIST_DIAS * 86400000;
+      var limpo = hist.filter(function(h){ return h.ts > corte; }).slice(-MAX_HIST);
+      localStorage.setItem(LS_PREFIX + HIST_KEY, JSON.stringify(limpo));
+    } catch(e) {}
+  }
+
+  // ===== API pública: adicionar à cesta =====
+  // Chamada pelo wrapper do copiarPosologiaFrac em melhorias-ux-v7.js
+  window.addReceita = function(texto, btn) {
+    if (!texto) return;
+    var medNome = '';
+    try {
+      // Tentar pegar o nome da medicação a partir do botão
+      if (btn) {
+        var medEl = btn.closest('.med');
+        if (medEl) {
+          var h = medEl.querySelector('.med-nome, h2, .med-header b, strong');
+          if (h) medNome = h.textContent.trim();
+        }
+      }
+    } catch(e) {}
+    cesta.push({ texto: texto, med: medNome, ts: Date.now() });
+    salvarCesta();
+    atualizarFab();
+  };
+
+  // ===== FAB (botão flutuante) =====
+  function criarFAB() {
+    if (document.getElementById('receita-fab')) return;
+    var fab = document.createElement('button');
+    fab.id = 'receita-fab';
+    fab.type = 'button';
+    fab.title = 'Receita em construção';
+    fab.innerHTML = '<span class="fab-icone">🧾</span><span class="fab-contador">0</span>';
+    fab.onclick = abrirPainel;
+    document.body.appendChild(fab);
+    atualizarFab();
+  }
+
+  function atualizarFab() {
+    var fab = document.getElementById('receita-fab');
+    if (!fab) return;
+    var c = fab.querySelector('.fab-contador');
+    if (c) c.textContent = cesta.length;
+    if (cesta.length > 0) fab.classList.add('com-itens');
+    else fab.classList.remove('com-itens');
+  }
+
+  // ===== PAINEL MODAL =====
+  function abrirPainel() {
+    var existente = document.getElementById('receita-modal');
+    if (existente) existente.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'receita-modal';
+    modal.className = 'rb-modal';
+    modal.innerHTML = renderPainel();
+    document.body.appendChild(modal);
+
+    // Eventos
+    modal.querySelector('.rb-close').onclick = fecharPainel;
+    modal.addEventListener('click', function(e){
+      if (e.target === modal) fecharPainel();
+    });
+
+    // Tabs
+    modal.querySelectorAll('.rb-tab').forEach(function(t){
+      t.onclick = function(){
+        modal.querySelectorAll('.rb-tab').forEach(function(x){x.classList.remove('ativa')});
+        modal.querySelectorAll('.rb-pane').forEach(function(x){x.classList.remove('ativa')});
+        t.classList.add('ativa');
+        var pane = modal.querySelector('.rb-pane[data-pane="'+t.dataset.tab+'"]');
+        if (pane) pane.classList.add('ativa');
+      };
+    });
+
+    hookAcoes(modal);
+  }
+
+  function fecharPainel() {
+    var m = document.getElementById('receita-modal');
+    if (m) m.remove();
+  }
+
+  function renderPainel() {
+    var hist = carregarHistorico();
+    var html = '<div class="rb-painel">';
+    html += '<div class="rb-cab">';
+    html += '<h2>Receita em construção</h2>';
+    html += '<button class="rb-close" type="button" aria-label="Fechar">×</button>';
+    html += '</div>';
+
+    html += '<div class="rb-tabs">';
+    html += '<button class="rb-tab ativa" data-tab="cesta" type="button">Cesta atual <span class="rb-badge">'+cesta.length+'</span></button>';
+    html += '<button class="rb-tab" data-tab="historico" type="button">Histórico <span class="rb-badge">'+hist.length+'</span></button>';
+    html += '<button class="rb-tab" data-tab="cresc" type="button">Crescimento</button>';
+    html += '<button class="rb-tab" data-tab="centor" type="button">Centor</button>';
+    html += '</div>';
+
+    // PANE: Cesta
+    html += '<div class="rb-pane ativa" data-pane="cesta">';
+    if (cesta.length === 0) {
+      html += '<div class="rb-vazio">';
+      html += '<p><b>Sua cesta está vazia.</b></p>';
+      html += '<p>Sempre que copiar uma posologia (botão 📋 Copiar), ela será adicionada aqui automaticamente.</p>';
+      html += '<p>Depois você pode revisar, editar e exportar tudo de uma vez.</p>';
+      html += '</div>';
+    } else {
+      html += '<div class="rb-itens">';
+      cesta.forEach(function(item, i){
+        html += '<div class="rb-item" data-idx="'+i+'">';
+        if (item.med) html += '<div class="rb-item-med">'+escapeHtml(item.med)+'</div>';
+        html += '<div class="rb-item-texto" contenteditable="true">'+escapeHtml(item.texto)+'</div>';
+        html += '<button class="rb-item-del" type="button" title="Remover">×</button>';
+        html += '</div>';
+      });
+      html += '</div>';
+
+      html += '<div class="rb-acoes">';
+      html += '<button class="rb-btn rb-btn-primary" data-acao="copiar-tudo" type="button">📋 Copiar tudo</button>';
+      html += '<button class="rb-btn" data-acao="whatsapp" type="button">💬 WhatsApp</button>';
+      html += '<button class="rb-btn" data-acao="salvar-hist" type="button">💾 Salvar no histórico</button>';
+      html += '<button class="rb-btn rb-btn-danger" data-acao="limpar" type="button">🗑 Limpar cesta</button>';
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // PANE: Histórico
+    html += '<div class="rb-pane" data-pane="historico">';
+    if (hist.length === 0) {
+      html += '<div class="rb-vazio">';
+      html += '<p><b>Histórico vazio.</b></p>';
+      html += '<p>Quando "Salvar no histórico" for usado, as receitas ficam aqui por '+HIST_DIAS+' dias.</p>';
+      html += '<p>Tudo armazenado apenas neste dispositivo (localStorage do navegador).</p>';
+      html += '</div>';
+    } else {
+      html += '<div class="rb-hist-lista">';
+      hist.slice().reverse().forEach(function(h, i){
+        var realIdx = hist.length - 1 - i;
+        var d = new Date(h.ts);
+        var dataStr = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        html += '<div class="rb-hist-item" data-idx="'+realIdx+'">';
+        html += '<div class="rb-hist-data">'+dataStr+(h.label?' · <b>'+escapeHtml(h.label)+'</b>':'')+'</div>';
+        html += '<div class="rb-hist-corpo">'+escapeHtml(h.texto).replace(/\n/g,'<br>')+'</div>';
+        html += '<div class="rb-hist-acoes">';
+        html += '<button class="rb-btn-mini" data-hist-acao="copiar" data-hist-idx="'+realIdx+'" type="button">📋 Copiar</button>';
+        html += '<button class="rb-btn-mini" data-hist-acao="restaurar" data-hist-idx="'+realIdx+'" type="button">↺ Restaurar p/ cesta</button>';
+        html += '<button class="rb-btn-mini rb-btn-danger" data-hist-acao="del" data-hist-idx="'+realIdx+'" type="button">×</button>';
+        html += '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '<div class="rb-acoes"><button class="rb-btn rb-btn-danger" data-acao="limpar-hist" type="button">🗑 Limpar todo histórico</button></div>';
+    }
+    html += '</div>';
+
+    // PANE: Crescimento
+    html += '<div class="rb-pane" data-pane="cresc">';
+    html += renderCrescimento();
+    html += '</div>';
+
+    // PANE: Centor
+    html += '<div class="rb-pane" data-pane="centor">';
+    html += renderCentor();
+    html += '</div>';
+
+    html += '</div>';
+    return html;
+  }
+
+  function hookAcoes(modal) {
+    // Botões de ação da cesta
+    modal.querySelectorAll('[data-acao]').forEach(function(b){
+      b.onclick = function() {
+        var a = b.dataset.acao;
+        if (a === 'copiar-tudo') copiarTudo();
+        else if (a === 'whatsapp') exportarWhatsApp();
+        else if (a === 'salvar-hist') salvarNoHistorico();
+        else if (a === 'limpar') limparCesta();
+        else if (a === 'limpar-hist') limparHistorico();
+      };
+    });
+    // Remover item da cesta
+    modal.querySelectorAll('.rb-item-del').forEach(function(b){
+      b.onclick = function(){
+        var idx = parseInt(b.parentElement.dataset.idx, 10);
+        if (!isNaN(idx)) {
+          cesta.splice(idx, 1);
+          salvarCesta();
+          atualizarFab();
+          abrirPainel(); // re-render
+        }
+      };
+    });
+    // Editar item da cesta (contenteditable)
+    modal.querySelectorAll('.rb-item-texto').forEach(function(div){
+      div.onblur = function(){
+        var idx = parseInt(div.parentElement.dataset.idx, 10);
+        if (!isNaN(idx)) {
+          cesta[idx].texto = div.textContent.trim();
+          salvarCesta();
+        }
+      };
+    });
+    // Ações de histórico
+    modal.querySelectorAll('[data-hist-acao]').forEach(function(b){
+      b.onclick = function(){
+        var idx = parseInt(b.dataset.histIdx, 10);
+        var hist = carregarHistorico();
+        if (isNaN(idx) || !hist[idx]) return;
+        if (b.dataset.histAcao === 'copiar') {
+          copiarTexto(hist[idx].texto);
+          mostrar('Receita copiada do histórico');
+        } else if (b.dataset.histAcao === 'restaurar') {
+          hist[idx].texto.split(/\n+/).forEach(function(linha){
+            linha = linha.trim();
+            if (linha) cesta.push({ texto: linha, med: '', ts: Date.now() });
+          });
+          salvarCesta();
+          atualizarFab();
+          abrirPainel();
+          mostrar('Restaurado para cesta atual');
+        } else if (b.dataset.histAcao === 'del') {
+          hist.splice(idx, 1);
+          salvarHistorico(hist);
+          abrirPainel();
+        }
+      };
+    });
+
+    // Crescimento — calcular
+    var btnC = modal.querySelector('#cresc-calcular');
+    if (btnC) btnC.onclick = calcularCrescimento;
+    // Centor — calcular
+    var btnCent = modal.querySelector('#centor-calcular');
+    if (btnCent) btnCent.onclick = calcularCentor;
+  }
+
+  // ===== AÇÕES =====
+  function copiarTudo() {
+    var texto = montarTextoCesta();
+    copiarTexto(texto);
+    mostrar('Receita completa copiada ('+cesta.length+' itens)');
+  }
+
+  function exportarWhatsApp() {
+    var texto = montarTextoCesta(true);
+    var url = 'https://wa.me/?text=' + encodeURIComponent(texto);
+    window.open(url, '_blank');
+  }
+
+  function salvarNoHistorico() {
+    if (cesta.length === 0) return;
+    var hist = carregarHistorico();
+    var texto = montarTextoCesta();
+    var label = cesta.map(function(c){return c.med}).filter(Boolean).slice(0,2).join(' · ');
+    hist.push({ texto: texto, label: label, ts: Date.now() });
+    salvarHistorico(hist);
+    mostrar('Salvo no histórico');
+    abrirPainel();
+  }
+
+  function limparCesta() {
+    if (!confirm('Limpar a cesta atual? '+cesta.length+' item(ns) serão removidos.')) return;
+    cesta = [];
+    salvarCesta();
+    atualizarFab();
+    abrirPainel();
+  }
+
+  function limparHistorico() {
+    if (!confirm('Apagar TODO o histórico? Esta ação não pode ser desfeita.')) return;
+    salvarHistorico([]);
+    abrirPainel();
+  }
+
+  function montarTextoCesta(comCabecalho) {
+    var linhas = [];
+    if (comCabecalho) linhas.push('*Orientações de uso:*', '');
+    cesta.forEach(function(item){
+      if (item.med && comCabecalho) linhas.push('▸ ' + item.med);
+      linhas.push(item.texto);
+      if (comCabecalho) linhas.push('');
+    });
+    if (comCabecalho) {
+      linhas.push('---');
+      linhas.push('_Dúvidas? Retorne à UBS / 192 (SAMU) em caso de piora._');
+    }
+    return linhas.join(comCabecalho ? '\n' : '\n\n');
+  }
+
+  // ===== CURVA DE CRESCIMENTO =====
+  // Tabelas OMS simplificadas (peso/idade meninos e meninas, 0-60 meses)
+  // Valores aproximados em kg para percentis P3, P15, P50, P85, P97
+  const TABELA_CRESC = {
+    M: { // Meninos (kg)
+      // [meses, p3, p15, p50, p85, p97]
+      0:  [2.5, 2.9, 3.3, 3.9, 4.4],
+      1:  [3.4, 3.9, 4.5, 5.1, 5.8],
+      2:  [4.4, 4.9, 5.6, 6.3, 7.1],
+      3:  [5.1, 5.7, 6.4, 7.2, 8.0],
+      4:  [5.6, 6.2, 7.0, 7.8, 8.7],
+      6:  [6.4, 7.1, 7.9, 8.9, 9.8],
+      9:  [7.2, 7.9, 8.9, 9.9, 11.0],
+      12: [7.8, 8.6, 9.6, 10.8, 12.0],
+      15: [8.3, 9.2, 10.3, 11.5, 12.8],
+      18: [8.8, 9.7, 10.9, 12.2, 13.7],
+      24: [9.7, 10.8, 12.2, 13.6, 15.3],
+      36: [11.3, 12.7, 14.3, 16.3, 18.3],
+      48: [12.7, 14.4, 16.3, 18.6, 21.2],
+      60: [14.1, 16.0, 18.3, 21.0, 24.2]
+    },
+    F: { // Meninas (kg)
+      0:  [2.4, 2.8, 3.2, 3.7, 4.2],
+      1:  [3.2, 3.6, 4.2, 4.8, 5.5],
+      2:  [4.0, 4.5, 5.1, 5.8, 6.6],
+      3:  [4.6, 5.1, 5.8, 6.6, 7.5],
+      4:  [5.1, 5.6, 6.4, 7.3, 8.2],
+      6:  [5.8, 6.5, 7.3, 8.3, 9.3],
+      9:  [6.6, 7.3, 8.2, 9.3, 10.5],
+      12: [7.1, 7.9, 8.9, 10.2, 11.5],
+      15: [7.7, 8.6, 9.6, 11.0, 12.4],
+      18: [8.2, 9.1, 10.2, 11.7, 13.2],
+      24: [9.0, 10.2, 11.5, 13.1, 14.8],
+      36: [10.8, 12.1, 13.9, 15.9, 18.1],
+      48: [12.3, 13.8, 15.9, 18.3, 21.1],
+      60: [13.7, 15.5, 18.0, 20.7, 23.9]
+    }
+  };
+
+  function renderCrescimento() {
+    var html = '<div class="rb-calc">';
+    html += '<p class="rb-calc-desc">Compare peso/idade com curvas OMS aproximadas (0-60 meses).</p>';
+    html += '<div class="rb-form">';
+    html += '<label>Sexo</label>';
+    html += '<select id="cresc-sexo"><option value="M">Masculino</option><option value="F">Feminino</option></select>';
+    html += '<label>Idade (meses)</label>';
+    html += '<input id="cresc-idade" type="number" min="0" max="60" step="1" placeholder="ex: 18">';
+    html += '<label>Peso (kg)</label>';
+    html += '<input id="cresc-peso" type="number" min="0" max="40" step="0.1" placeholder="ex: 11.2">';
+    html += '<button id="cresc-calcular" class="rb-btn rb-btn-primary" type="button">Calcular percentil</button>';
+    html += '</div>';
+    html += '<div id="cresc-resultado"></div>';
+    html += '<p class="rb-calc-nota">Referência: OMS (Multicentre Growth Reference Study). Avaliação completa requer curva completa com peso/estatura, estatura/idade e IMC.</p>';
+    html += '</div>';
+    return html;
+  }
+
+  function calcularCrescimento() {
+    var sexo = document.getElementById('cresc-sexo').value;
+    var idade = parseFloat(document.getElementById('cresc-idade').value);
+    var peso = parseFloat(document.getElementById('cresc-peso').value);
+    var div = document.getElementById('cresc-resultado');
+    if (!div) return;
+    if (isNaN(idade) || isNaN(peso) || idade < 0 || idade > 60 || peso <= 0) {
+      div.innerHTML = '<div class="rb-resultado rb-erro">Preencha idade (0-60 meses) e peso válidos.</div>';
+      return;
+    }
+    var tab = TABELA_CRESC[sexo];
+    if (!tab) return;
+    // Achar duas idades mais próximas e interpolar
+    var idades = Object.keys(tab).map(Number).sort(function(a,b){return a-b});
+    var i1 = idades[0], i2 = idades[idades.length-1];
+    for (var i = 0; i < idades.length - 1; i++) {
+      if (idade >= idades[i] && idade <= idades[i+1]) {
+        i1 = idades[i]; i2 = idades[i+1];
+        break;
+      }
+    }
+    var v1 = tab[i1], v2 = tab[i2];
+    var t = i1 === i2 ? 0 : (idade - i1) / (i2 - i1);
+    var p3  = v1[0] + (v2[0]-v1[0])*t;
+    var p15 = v1[1] + (v2[1]-v1[1])*t;
+    var p50 = v1[2] + (v2[2]-v1[2])*t;
+    var p85 = v1[3] + (v2[3]-v1[3])*t;
+    var p97 = v1[4] + (v2[4]-v1[4])*t;
+
+    // Classificar
+    var classif = '', alerta = '';
+    if (peso < p3) { classif = 'Abaixo do P3'; alerta = 'aviso'; }
+    else if (peso < p15) classif = 'Entre P3 e P15 (atenção)';
+    else if (peso < p85) classif = 'Entre P15 e P85 (adequado)';
+    else if (peso < p97) classif = 'Entre P85 e P97 (sobrepeso?)';
+    else { classif = 'Acima do P97'; alerta = 'aviso'; }
+
+    var html = '<div class="rb-resultado'+(alerta?' rb-resultado-'+alerta:'')+'">';
+    html += '<h3>'+classif+'</h3>';
+    html += '<div class="rb-cresc-tabela">';
+    html += '<div><span class="rb-cresc-p">P3</span><b>'+p3.toFixed(1)+' kg</b></div>';
+    html += '<div><span class="rb-cresc-p">P15</span><b>'+p15.toFixed(1)+' kg</b></div>';
+    html += '<div class="rb-cresc-mediana"><span class="rb-cresc-p">P50</span><b>'+p50.toFixed(1)+' kg</b></div>';
+    html += '<div><span class="rb-cresc-p">P85</span><b>'+p85.toFixed(1)+' kg</b></div>';
+    html += '<div><span class="rb-cresc-p">P97</span><b>'+p97.toFixed(1)+' kg</b></div>';
+    html += '</div>';
+    html += '<div class="rb-cresc-paciente">Paciente: <b>'+peso.toFixed(1)+' kg</b> aos <b>'+idade+' meses</b></div>';
+    if (alerta) html += '<p class="rb-calc-aviso">⚠ Avaliar com calma — investigar baixa estatura, IMC, déficit/excesso ponderal, alimentação.</p>';
+    html += '</div>';
+    div.innerHTML = html;
+  }
+
+  // ===== SCORE CENTOR PEDIÁTRICO (McIsaac modificado) =====
+  function renderCentor() {
+    var html = '<div class="rb-calc">';
+    html += '<p class="rb-calc-desc">Score McIsaac modificado para faringite — decide quem testa/trata por Streptococcus pyogenes (GABHS).</p>';
+    html += '<div class="rb-form-checks">';
+    html += '<label><input type="checkbox" data-centor="febre"> Febre >38°C</label>';
+    html += '<label><input type="checkbox" data-centor="sem-tosse"> Ausência de tosse</label>';
+    html += '<label><input type="checkbox" data-centor="adeno"> Adenopatia cervical anterior dolorosa</label>';
+    html += '<label><input type="checkbox" data-centor="exsudato"> Exsudato/edema tonsilar</label>';
+    html += '<label><input type="checkbox" data-centor="idade-3-14"> Idade entre 3 e 14 anos (+1)</label>';
+    html += '<label><input type="checkbox" data-centor="idade-15-44"> Idade entre 15 e 44 anos (0)</label>';
+    html += '<label><input type="checkbox" data-centor="idade-45"> Idade ≥45 anos (-1)</label>';
+    html += '</div>';
+    html += '<button id="centor-calcular" class="rb-btn rb-btn-primary" type="button">Calcular score</button>';
+    html += '<div id="centor-resultado"></div>';
+    html += '<p class="rb-calc-nota">Critérios pediátricos: <1 ano e <3 anos — faringite GABHS muito incomum (não pontuar/não tratar empiricamente). Confirme com teste rápido ou cultura sempre que possível.</p>';
+    html += '</div>';
+    return html;
+  }
+
+  function calcularCentor() {
+    var checks = document.querySelectorAll('[data-centor]');
+    var pontos = 0;
+    var marcou = {};
+    checks.forEach(function(c){
+      marcou[c.dataset.centor] = c.checked;
+      if (c.checked) {
+        if (c.dataset.centor === 'idade-45') pontos -= 1;
+        else if (c.dataset.centor === 'idade-15-44') pontos += 0;
+        else pontos += 1;
+      }
+    });
+
+    var prob = '', recom = '', cor = '';
+    if (pontos <= 0) { prob = '~1-2,5%'; recom = 'Não testar nem tratar empiricamente.'; cor = 'ok'; }
+    else if (pontos === 1) { prob = '~5-10%'; recom = 'Não testar nem tratar empiricamente.'; cor = 'ok'; }
+    else if (pontos === 2) { prob = '~11-17%'; recom = 'Teste rápido/cultura. Tratar se positivo.'; cor = 'atencao'; }
+    else if (pontos === 3) { prob = '~28-35%'; recom = 'Teste rápido/cultura. Tratar se positivo.'; cor = 'atencao'; }
+    else { prob = '~51-53%'; recom = 'Testar e tratar empiricamente enquanto aguarda. Considerar tratamento mesmo sem teste em contexto clínico forte.'; cor = 'alerta'; }
+
+    var div = document.getElementById('centor-resultado');
+    if (!div) return;
+    var html = '<div class="rb-resultado rb-resultado-'+cor+'">';
+    html += '<h3>Score: '+pontos+' ponto'+(pontos===1?'':'s')+'</h3>';
+    html += '<p>Probabilidade de GABHS: <b>'+prob+'</b></p>';
+    html += '<p>'+recom+'</p>';
+    html += '<p class="rb-calc-aviso">Em pediatria: <strong>sempre prefira confirmação microbiológica antes de prescrever ATB</strong> — uso empírico contribui para resistência.</p>';
+    html += '</div>';
+    div.innerHTML = html;
+  }
+
+  // ===== UTILS =====
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+  function copiarTexto(t) {
+    if (!t) return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t).catch(function(){ copiarFallback(t); });
+      } else { copiarFallback(t); }
+    } catch(e) { copiarFallback(t); }
+  }
+  function copiarFallback(t) {
+    var ta = document.createElement('textarea');
+    ta.value = t;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+  }
+  function mostrar(msg) {
+    if (typeof window.mostrarToast === 'function') window.mostrarToast(msg);
+  }
+
+  // ===== CSS =====
+  function aplicarCSS() {
+    if (document.getElementById('receita-builder-css')) return;
+    var css = '';
+
+    // FAB
+    css += '#receita-fab { position:fixed; bottom:24px; right:24px; width:60px; height:60px; background:#1c1917; color:white; border:none; border-radius:50%; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; box-shadow:0 6px 20px rgba(0,0,0,.25); z-index:1000; transition:all .2s; font-family:inherit; }\n';
+    css += '#receita-fab:hover { transform:scale(1.08); background:#292524; }\n';
+    css += '#receita-fab.com-itens { background:#1a7a3d; }\n';
+    css += '#receita-fab.com-itens:hover { background:#155e30; }\n';
+    css += '#receita-fab .fab-icone { font-size:24px; line-height:1; }\n';
+    css += '#receita-fab .fab-contador { font-size:10px; font-weight:700; font-family:\'JetBrains Mono\', monospace; line-height:1; margin-top:2px; }\n';
+    css += '@media (max-width:640px) { #receita-fab { bottom:16px; right:16px; width:52px; height:52px; } #receita-fab .fab-icone { font-size:20px; } }\n';
+
+    // Modal
+    css += '.rb-modal { position:fixed; inset:0; background:rgba(28,25,23,.65); z-index:9999; display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; padding:30px 16px; backdrop-filter:blur(2px); }\n';
+    css += '.rb-painel { background:#fafaf9; max-width:680px; width:100%; max-height:calc(100vh - 60px); display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(0,0,0,.3); overflow:hidden; }\n';
+    css += '.rb-cab { display:flex; justify-content:space-between; align-items:center; padding:18px 24px; border-bottom:1px solid #e7e5e4; background:#1c1917; color:white; }\n';
+    css += '.rb-cab h2 { margin:0; font-family:\'Fraunces\', Georgia, serif; font-size:20px; font-weight:600; }\n';
+    css += '.rb-close { background:transparent; border:none; color:white; font-size:28px; cursor:pointer; line-height:1; padding:0; width:32px; height:32px; }\n';
+    css += '.rb-close:hover { color:#c25c1a; }\n';
+    css += '.rb-tabs { display:flex; border-bottom:1px solid #e7e5e4; background:#f5f5f4; overflow-x:auto; }\n';
+    css += '.rb-tab { flex:1; min-width:90px; background:transparent; border:none; padding:12px 8px; font-family:\'JetBrains Mono\', monospace; font-size:11px; font-weight:600; color:#78716c; cursor:pointer; text-transform:uppercase; letter-spacing:.04em; border-bottom:2px solid transparent; transition:all .15s; }\n';
+    css += '.rb-tab:hover { background:#e7e5e4; }\n';
+    css += '.rb-tab.ativa { color:#1c1917; border-bottom-color:#1a7a3d; background:#fafaf9; }\n';
+    css += '.rb-badge { background:#1a7a3d; color:white; padding:1px 6px; font-size:10px; margin-left:4px; }\n';
+    css += '.rb-pane { display:none; padding:20px 24px; overflow-y:auto; flex:1; }\n';
+    css += '.rb-pane.ativa { display:block; }\n';
+    css += '.rb-vazio { padding:30px 12px; text-align:center; color:#78716c; }\n';
+    css += '.rb-vazio b { color:#1c1917; }\n';
+    css += '.rb-vazio p { margin:8px 0; line-height:1.5; }\n';
+
+    // Itens da cesta
+    css += '.rb-itens { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }\n';
+    css += '.rb-item { background:white; border:1px solid #e7e5e4; padding:12px 36px 12px 14px; position:relative; }\n';
+    css += '.rb-item-med { font-family:\'JetBrains Mono\', monospace; font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:#78716c; margin-bottom:4px; }\n';
+    css += '.rb-item-texto { font-family:\'Fraunces\', Georgia, serif; font-size:14px; color:#1c1917; line-height:1.4; outline:none; }\n';
+    css += '.rb-item-texto:focus { background:#fef9c3; }\n';
+    css += '.rb-item-del { position:absolute; top:8px; right:8px; background:transparent; border:none; color:#78716c; font-size:20px; cursor:pointer; line-height:1; padding:2px 6px; }\n';
+    css += '.rb-item-del:hover { color:#7c2128; background:#fee2e2; }\n';
+
+    // Ações
+    css += '.rb-acoes { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }\n';
+    css += '.rb-btn { background:white; color:#1c1917; border:1px solid #1c1917; padding:9px 14px; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .15s; }\n';
+    css += '.rb-btn:hover { background:#1c1917; color:white; }\n';
+    css += '.rb-btn-primary { background:#1a7a3d; color:white; border-color:#1a7a3d; }\n';
+    css += '.rb-btn-primary:hover { background:#155e30; }\n';
+    css += '.rb-btn-danger { color:#7c2128; border-color:#7c2128; }\n';
+    css += '.rb-btn-danger:hover { background:#7c2128; color:white; }\n';
+    css += '.rb-btn-mini { background:white; color:#57534e; border:1px solid #d6d3d1; padding:4px 9px; font-size:11px; font-family:inherit; cursor:pointer; transition:all .15s; }\n';
+    css += '.rb-btn-mini:hover { background:#1c1917; color:white; border-color:#1c1917; }\n';
+    css += '.rb-btn-mini.rb-btn-danger { color:#7c2128; border-color:#7c2128; }\n';
+    css += '.rb-btn-mini.rb-btn-danger:hover { background:#7c2128; color:white; }\n';
+
+    // Histórico
+    css += '.rb-hist-lista { display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow-y:auto; }\n';
+    css += '.rb-hist-item { background:white; border:1px solid #e7e5e4; padding:12px 14px; }\n';
+    css += '.rb-hist-data { font-family:\'JetBrains Mono\', monospace; font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:#78716c; margin-bottom:6px; }\n';
+    css += '.rb-hist-corpo { font-family:\'Fraunces\', Georgia, serif; font-size:13px; color:#1c1917; line-height:1.4; max-height:200px; overflow-y:auto; margin-bottom:8px; }\n';
+    css += '.rb-hist-acoes { display:flex; gap:6px; flex-wrap:wrap; }\n';
+
+    // Calculadoras
+    css += '.rb-calc { padding:8px 0; }\n';
+    css += '.rb-calc-desc { color:#57534e; font-size:13px; margin:0 0 14px; line-height:1.5; }\n';
+    css += '.rb-calc-nota { color:#78716c; font-size:11px; margin-top:14px; line-height:1.4; font-style:italic; }\n';
+    css += '.rb-calc-aviso { color:#7c2128; font-size:12px; margin-top:8px; font-weight:600; }\n';
+    css += '.rb-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; align-items:end; }\n';
+    css += '.rb-form label { font-family:\'JetBrains Mono\', monospace; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#78716c; grid-column:1/-1; margin-bottom:-6px; }\n';
+    css += '.rb-form input, .rb-form select { padding:9px 11px; border:1px solid #d6d3d1; background:white; font-family:\'JetBrains Mono\', monospace; font-size:13px; }\n';
+    css += '.rb-form .rb-btn { grid-column:1/-1; }\n';
+    css += '.rb-form-checks { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }\n';
+    css += '.rb-form-checks label { display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; color:#1c1917; }\n';
+
+    // Resultado
+    css += '.rb-resultado { margin-top:14px; padding:14px 16px; background:white; border-left:3px solid #1a7a3d; }\n';
+    css += '.rb-resultado h3 { margin:0 0 10px; font-family:\'Fraunces\', Georgia, serif; font-size:17px; }\n';
+    css += '.rb-resultado p { margin:6px 0; font-size:13px; }\n';
+    css += '.rb-resultado-aviso, .rb-resultado-atencao { border-left-color:#c25c1a; background:#fff7ed; }\n';
+    css += '.rb-resultado-alerta { border-left-color:#7c2128; background:#fef2f2; }\n';
+    css += '.rb-resultado-erro { border-left-color:#7c2128; background:#fee2e2; color:#7c2128; }\n';
+    css += '.rb-resultado-ok { border-left-color:#1a7a3d; background:#f0fdf4; }\n';
+    css += '.rb-cresc-tabela { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin:10px 0; }\n';
+    css += '.rb-cresc-tabela > div { background:#f5f5f4; padding:8px 4px; text-align:center; }\n';
+    css += '.rb-cresc-tabela > div b { display:block; font-family:\'JetBrains Mono\', monospace; font-size:12px; }\n';
+    css += '.rb-cresc-p { display:block; font-size:9px; color:#78716c; text-transform:uppercase; letter-spacing:.08em; margin-bottom:2px; }\n';
+    css += '.rb-cresc-mediana { background:#dcfce7 !important; }\n';
+    css += '.rb-cresc-paciente { margin-top:10px; font-size:14px; padding:8px 12px; background:#fef9c3; border-left:3px solid #c2410c; }\n';
+
+    // Dark mode
+    css += 'body.dark .rb-modal { background:rgba(0,0,0,.8); }\n';
+    css += 'body.dark .rb-painel { background:#0c0a09; color:#e7e5e4; }\n';
+    css += 'body.dark .rb-cab { background:#000; }\n';
+    css += 'body.dark .rb-tabs { background:#1c1917; border-color:#292524; }\n';
+    css += 'body.dark .rb-tab { color:#a8a29e; }\n';
+    css += 'body.dark .rb-tab:hover { background:#292524; }\n';
+    css += 'body.dark .rb-tab.ativa { color:#fafaf9; background:#0c0a09; }\n';
+    css += 'body.dark .rb-item, body.dark .rb-hist-item { background:#1c1917; border-color:#292524; }\n';
+    css += 'body.dark .rb-item-texto, body.dark .rb-hist-corpo { color:#e7e5e4; }\n';
+    css += 'body.dark .rb-item-texto:focus { background:#3f2810; }\n';
+    css += 'body.dark .rb-btn { background:#1c1917; color:#e7e5e4; border-color:#57534e; }\n';
+    css += 'body.dark .rb-btn:hover { background:#e7e5e4; color:#1c1917; }\n';
+    css += 'body.dark .rb-btn-mini { background:#1c1917; color:#a8a29e; border-color:#44403c; }\n';
+    css += 'body.dark .rb-btn-mini:hover { background:#e7e5e4; color:#1c1917; }\n';
+    css += 'body.dark .rb-form input, body.dark .rb-form select { background:#1c1917; color:#e7e5e4; border-color:#44403c; }\n';
+    css += 'body.dark .rb-resultado { background:#1c1917; }\n';
+    css += 'body.dark .rb-cresc-tabela > div { background:#1c1917; }\n';
+    css += 'body.dark .rb-cresc-mediana { background:#155e30 !important; color:#dcfce7; }\n';
+    css += 'body.dark .rb-cresc-paciente { background:#3f2810; color:#fed7aa; }\n';
+    css += 'body.dark .rb-vazio { color:#a8a29e; }\n';
+    css += 'body.dark .rb-vazio b { color:#fafaf9; }\n';
+
+    var s = document.createElement('style');
+    s.id = 'receita-builder-css';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  // ===== INIT =====
+  function init() {
+    aplicarCSS();
+    carregarCesta();
+    criarFAB();
+    atualizarFab();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 100);
+  }
+  setTimeout(init, 800);
+
+  console.log('[RECEITA v7.0] Cesta + histórico + WhatsApp + crescimento + Centor');
 })();
 
 </script>

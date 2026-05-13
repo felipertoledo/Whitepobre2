@@ -11356,6 +11356,98 @@ if (typeof MEDICACOES !== 'undefined') {
   console.log('[ACESSOS v7.0r] Barra sticky com 4 acessos rápidos descritivos');
 })();
 
+
+// ===== MÓDULO UBS v6.0: cleanup-v7.js =====
+// ============================================================================
+// CLEANUP v7.0
+//   - Esconde FAB redondo da receita (substituído pela barra sticky)
+//   - Move botão "Instalar app" do canto flutuante pro rodapé
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  function aplicarCSS() {
+    if (document.getElementById('cleanup-v7-css')) return;
+    var css = '';
+    // Esconde o FAB redondo da receita
+    css += '#receita-fab { display:none !important; }\n';
+
+    // Botão instalar fica acoplado ao footer (não mais flutuante)
+    css += '#btn-instalar { position:static !important; bottom:auto !important; right:auto !important; box-shadow:none !important; display:inline-flex; align-items:center; gap:6px; padding:8px 16px !important; font-size:13px !important; margin:0 8px 0 0; }\n';
+
+    // Wrapper visual no footer
+    css += '.install-wrap { display:flex; justify-content:center; align-items:center; padding:14px 16px; background:#fafaf9; border-top:1px solid #e7e5e4; }\n';
+    css += '.install-wrap-msg { font-family:\'JetBrains Mono\', monospace; font-size:11px; color:#78716c; letter-spacing:.04em; }\n';
+
+    // Dark mode
+    css += 'body.dark .install-wrap { background:#0c0a09; border-top-color:#292524; }\n';
+    css += 'body.dark .install-wrap-msg { color:#a8a29e; }\n';
+
+    var s = document.createElement('style');
+    s.id = 'cleanup-v7-css';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  // Quando o #btn-instalar for criado pelo evento beforeinstallprompt, movê-lo
+  function moverBotaoInstalar() {
+    var btn = document.getElementById('btn-instalar');
+    if (!btn) return;
+    if (btn.parentElement && btn.parentElement.classList.contains('install-wrap')) return; // já movido
+
+    // Procurar footer existente
+    var footer = document.querySelector('footer');
+    if (!footer) return;
+
+    // Criar wrapper acima do footer (logo antes)
+    var wrap = document.createElement('div');
+    wrap.className = 'install-wrap';
+    var msg = document.createElement('span');
+    msg.className = 'install-wrap-msg';
+    msg.textContent = 'Funciona offline depois de instalar →';
+    wrap.appendChild(msg);
+    wrap.appendChild(btn);
+
+    footer.parentNode.insertBefore(wrap, footer);
+  }
+
+  // Observa o body pra detectar o instante em que o botão é criado
+  function setupObserver() {
+    if (!document.body || typeof MutationObserver === 'undefined') return;
+    var obs = new MutationObserver(function(muts){
+      for (var i = 0; i < muts.length; i++) {
+        var m = muts[i];
+        for (var j = 0; j < m.addedNodes.length; j++) {
+          var n = m.addedNodes[j];
+          if (n && n.id === 'btn-instalar') {
+            setTimeout(moverBotaoInstalar, 50);
+            return;
+          }
+        }
+      }
+    });
+    obs.observe(document.body, { childList:true });
+  }
+
+  function init() {
+    aplicarCSS();
+    setupObserver();
+    // Caso o botão já exista (instalado antes deste script rodar)
+    moverBotaoInstalar();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 50);
+  }
+  setTimeout(init, 800);
+  setTimeout(moverBotaoInstalar, 2000);
+
+  console.log('[CLEANUP v7.0] FAB escondido, instalar app movido pro rodapé');
+})();
+
 </script>
 </body>
 </html>

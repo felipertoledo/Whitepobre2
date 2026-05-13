@@ -10657,7 +10657,7 @@ if (typeof MEDICACOES !== 'undefined') {
   }
 
   // ===== PAINEL MODAL =====
-  function abrirPainel() {
+  function abrirPainel(abaInicial) {
     var existente = document.getElementById('receita-modal');
     if (existente) existente.remove();
 
@@ -10685,7 +10685,19 @@ if (typeof MEDICACOES !== 'undefined') {
     });
 
     hookAcoes(modal);
+
+    // Abrir aba específica se solicitada
+    if (abaInicial) {
+      var tab = modal.querySelector('.rb-tab[data-tab="'+abaInicial+'"]');
+      if (tab) tab.click();
+    }
   }
+
+  // API pública pra abrir direto numa aba
+  window.abrirReceitaBuilder = abrirPainel;
+  window.abrirCrescimento = function() { abrirPainel('cresc'); };
+  window.abrirCentor = function() { abrirPainel('centor'); };
+  window.abrirHistorico = function() { abrirPainel('historico'); };
 
   function fecharPainel() {
     var m = document.getElementById('receita-modal');
@@ -11220,6 +11232,78 @@ if (typeof MEDICACOES !== 'undefined') {
   setTimeout(init, 800);
 
   console.log('[RECEITA v7.0] Cesta + histórico + WhatsApp + crescimento + Centor');
+})();
+
+
+// ===== MÓDULO UBS v6.0: acessos-rapidos-v7.js =====
+// ============================================================================
+// ACESSOS RÁPIDOS v7.0
+//   - Botões visíveis no header: 📊 Crescimento, 🩺 Centor, 🧾 Receita
+//   - Mais descobríveis que o FAB sozinho
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  function criarBotoes() {
+    if (document.getElementById('acessos-rapidos')) return;
+
+    var header = document.querySelector('.hdr-inner') || document.querySelector('header.hdr') || document.querySelector('header');
+    if (!header) { setTimeout(criarBotoes, 200); return; }
+
+    var div = document.createElement('div');
+    div.id = 'acessos-rapidos';
+    div.innerHTML = ''
+      + '<button class="ar-btn" data-acesso="cresc" type="button" title="Curva de crescimento OMS">📊 <span>Crescimento</span></button>'
+      + '<button class="ar-btn" data-acesso="centor" type="button" title="Score Centor pediátrico para faringite">🩺 <span>Centor</span></button>'
+      + '<button class="ar-btn" data-acesso="receita" type="button" title="Receita em construção (cesta de posologias)">🧾 <span>Receita</span></button>'
+      + '<button class="ar-btn" data-acesso="historico" type="button" title="Histórico de receitas (últimos 30 dias)">📚 <span>Histórico</span></button>';
+    header.appendChild(div);
+
+    div.querySelectorAll('.ar-btn').forEach(function(b){
+      b.onclick = function(){
+        var a = b.dataset.acesso;
+        if (a === 'cresc' && window.abrirCrescimento) window.abrirCrescimento();
+        else if (a === 'centor' && window.abrirCentor) window.abrirCentor();
+        else if (a === 'receita' && window.abrirReceitaBuilder) window.abrirReceitaBuilder();
+        else if (a === 'historico' && window.abrirHistorico) window.abrirHistorico();
+      };
+    });
+  }
+
+  function aplicarCSS() {
+    if (document.getElementById('acessos-rapidos-css')) return;
+    var css = '';
+    css += '#acessos-rapidos { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }\n';
+    css += '.ar-btn { background:rgba(255,255,255,.08); color:#fafaf9; border:1px solid rgba(255,255,255,.15); padding:6px 12px; font-family:\'JetBrains Mono\', monospace; font-size:11px; font-weight:600; letter-spacing:.04em; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:5px; }\n';
+    css += '.ar-btn:hover { background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.3); }\n';
+    css += '.ar-btn span { text-transform:uppercase; }\n';
+    css += '@media (max-width:640px) { .ar-btn { font-size:10px; padding:5px 9px; } .ar-btn span { text-transform:uppercase; } }\n';
+    css += '@media (max-width:480px) { .ar-btn span { display:none; } .ar-btn { padding:6px 10px; font-size:14px; min-width:36px; justify-content:center; } }\n';
+
+    css += 'body.dark #acessos-rapidos .ar-btn { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.1); }\n';
+    css += 'body.dark #acessos-rapidos .ar-btn:hover { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.25); }\n';
+
+    var s = document.createElement('style');
+    s.id = 'acessos-rapidos-css';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  function init() {
+    aplicarCSS();
+    criarBotoes();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 100);
+  }
+  setTimeout(init, 800);
+  setTimeout(init, 2000);
+
+  console.log('[ACESSOS v7.0] Botões rápidos: Crescimento, Centor, Receita, Histórico');
 })();
 
 </script>

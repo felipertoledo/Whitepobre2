@@ -11237,30 +11237,62 @@ if (typeof MEDICACOES !== 'undefined') {
 
 // ===== MÓDULO UBS v6.0: acessos-rapidos-v7.js =====
 // ============================================================================
-// ACESSOS RÁPIDOS v7.0
-//   - Botões visíveis no header: 📊 Crescimento, 🩺 Centor, 🧾 Receita
-//   - Mais descobríveis que o FAB sozinho
+// ACESSOS RÁPIDOS v7.0 (revisão)
+//   Barra sticky logo abaixo dos inputs (idade/peso/busca).
+//   Sempre visível ao rolar — labels descritivos visíveis em qualquer tela.
 // ============================================================================
 
 (function(){
   'use strict';
 
-  function criarBotoes() {
-    if (document.getElementById('acessos-rapidos')) return;
+  function criarBarra() {
+    // Remove instância antiga do header se ainda existir
+    var antigo = document.getElementById('acessos-rapidos');
+    if (antigo) antigo.remove();
 
-    var header = document.querySelector('.hdr-inner') || document.querySelector('header.hdr') || document.querySelector('header');
-    if (!header) { setTimeout(criarBotoes, 200); return; }
+    if (document.getElementById('acessos-bar')) return;
 
-    var div = document.createElement('div');
-    div.id = 'acessos-rapidos';
-    div.innerHTML = ''
-      + '<button class="ar-btn" data-acesso="cresc" type="button" title="Curva de crescimento OMS">📊 <span>Crescimento</span></button>'
-      + '<button class="ar-btn" data-acesso="centor" type="button" title="Score Centor pediátrico para faringite">🩺 <span>Centor</span></button>'
-      + '<button class="ar-btn" data-acesso="receita" type="button" title="Receita em construção (cesta de posologias)">🧾 <span>Receita</span></button>'
-      + '<button class="ar-btn" data-acesso="historico" type="button" title="Histórico de receitas (últimos 30 dias)">📚 <span>Histórico</span></button>';
-    header.appendChild(div);
+    var inputs = document.querySelector('.inputs');
+    if (!inputs) { setTimeout(criarBarra, 200); return; }
 
-    div.querySelectorAll('.ar-btn').forEach(function(b){
+    var bar = document.createElement('div');
+    bar.id = 'acessos-bar';
+    bar.innerHTML = ''
+      + '<div class="acessos-inner">'
+      +   '<button class="ac-btn" data-acesso="cresc" type="button" title="Curva de crescimento OMS — percentil de peso por idade">'
+      +     '<span class="ac-ico">📊</span>'
+      +     '<span class="ac-label">'
+      +       '<b>Crescimento</b>'
+      +       '<small>Percentil OMS por peso/idade</small>'
+      +     '</span>'
+      +   '</button>'
+      +   '<button class="ac-btn" data-acesso="centor" type="button" title="Score Centor/McIsaac — decisão de testar/tratar faringite">'
+      +     '<span class="ac-ico">🩺</span>'
+      +     '<span class="ac-label">'
+      +       '<b>Centor</b>'
+      +       '<small>Faringite — testar ou tratar?</small>'
+      +     '</span>'
+      +   '</button>'
+      +   '<button class="ac-btn" data-acesso="receita" type="button" title="Receita em construção — cesta de posologias copiadas durante a consulta">'
+      +     '<span class="ac-ico">🧾</span>'
+      +     '<span class="ac-label">'
+      +       '<b>Receita</b>'
+      +       '<small>Cesta de posologias para WhatsApp</small>'
+      +     '</span>'
+      +   '</button>'
+      +   '<button class="ac-btn" data-acesso="historico" type="button" title="Histórico — últimos 30 dias de receitas salvas">'
+      +     '<span class="ac-ico">📚</span>'
+      +     '<span class="ac-label">'
+      +       '<b>Histórico</b>'
+      +       '<small>Receitas dos últimos 30 dias</small>'
+      +     '</span>'
+      +   '</button>'
+      + '</div>';
+
+    // Inserir LOGO DEPOIS da .inputs (irmão, não filho)
+    inputs.parentNode.insertBefore(bar, inputs.nextSibling);
+
+    bar.querySelectorAll('.ac-btn').forEach(function(b){
       b.onclick = function(){
         var a = b.dataset.acesso;
         if (a === 'cresc' && window.abrirCrescimento) window.abrirCrescimento();
@@ -11272,27 +11304,45 @@ if (typeof MEDICACOES !== 'undefined') {
   }
 
   function aplicarCSS() {
-    if (document.getElementById('acessos-rapidos-css')) return;
+    if (document.getElementById('acessos-bar-css')) return;
     var css = '';
-    css += '#acessos-rapidos { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }\n';
-    css += '.ar-btn { background:rgba(255,255,255,.08); color:#fafaf9; border:1px solid rgba(255,255,255,.15); padding:6px 12px; font-family:\'JetBrains Mono\', monospace; font-size:11px; font-weight:600; letter-spacing:.04em; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:5px; }\n';
-    css += '.ar-btn:hover { background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.3); }\n';
-    css += '.ar-btn span { text-transform:uppercase; }\n';
-    css += '@media (max-width:640px) { .ar-btn { font-size:10px; padding:5px 9px; } .ar-btn span { text-transform:uppercase; } }\n';
-    css += '@media (max-width:480px) { .ar-btn span { display:none; } .ar-btn { padding:6px 10px; font-size:14px; min-width:36px; justify-content:center; } }\n';
 
-    css += 'body.dark #acessos-rapidos .ar-btn { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.1); }\n';
-    css += 'body.dark #acessos-rapidos .ar-btn:hover { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.25); }\n';
+    // Esconde a versão antiga (que ficava no header)
+    css += '#acessos-rapidos { display:none !important; }\n';
+
+    // Barra sticky logo abaixo dos inputs
+    css += '#acessos-bar { position:sticky; top:74px; z-index:49; background:#f5f5f4; border-bottom:1px solid #e7e5e4; box-shadow:0 2px 4px rgba(0,0,0,.04); }\n';
+    css += '.acessos-inner { max-width:1200px; margin:0 auto; padding:8px 16px; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }\n';
+
+    // Botão
+    css += '.ac-btn { display:flex; align-items:center; gap:10px; padding:10px 14px; background:white; border:1px solid #d6d3d1; cursor:pointer; transition:all .15s; text-align:left; font-family:inherit; }\n';
+    css += '.ac-btn:hover { border-color:#1c1917; background:#fafaf9; transform:translateY(-1px); box-shadow:0 2px 6px rgba(0,0,0,.06); }\n';
+    css += '.ac-btn:active { transform:translateY(0); }\n';
+    css += '.ac-ico { font-size:20px; line-height:1; flex-shrink:0; }\n';
+    css += '.ac-label { display:flex; flex-direction:column; gap:1px; min-width:0; flex:1; }\n';
+    css += '.ac-label b { font-family:\'Fraunces\', Georgia, serif; font-size:14px; color:#1c1917; line-height:1.1; font-weight:600; }\n';
+    css += '.ac-label small { font-family:\'JetBrains Mono\', monospace; font-size:10px; color:#78716c; line-height:1.2; letter-spacing:.01em; }\n';
+
+    // Responsive
+    css += '@media (max-width:900px) { .acessos-inner { grid-template-columns:repeat(2,1fr); } }\n';
+    css += '@media (max-width:520px) { .acessos-inner { padding:6px 12px; gap:6px; } .ac-btn { padding:8px 10px; gap:8px; } .ac-label b { font-size:13px; } .ac-label small { font-size:9px; } .ac-ico { font-size:18px; } }\n';
+
+    // Dark mode
+    css += 'body.dark #acessos-bar { background:#0c0a09; border-bottom-color:#292524; }\n';
+    css += 'body.dark .ac-btn { background:#1c1917; border-color:#44403c; }\n';
+    css += 'body.dark .ac-btn:hover { background:#292524; border-color:#a8a29e; }\n';
+    css += 'body.dark .ac-label b { color:#fafaf9; }\n';
+    css += 'body.dark .ac-label small { color:#a8a29e; }\n';
 
     var s = document.createElement('style');
-    s.id = 'acessos-rapidos-css';
+    s.id = 'acessos-bar-css';
     s.textContent = css;
     document.head.appendChild(s);
   }
 
   function init() {
     aplicarCSS();
-    criarBotoes();
+    criarBarra();
   }
 
   if (document.readyState === 'loading') {
@@ -11303,7 +11353,7 @@ if (typeof MEDICACOES !== 'undefined') {
   setTimeout(init, 800);
   setTimeout(init, 2000);
 
-  console.log('[ACESSOS v7.0] Botões rápidos: Crescimento, Centor, Receita, Histórico');
+  console.log('[ACESSOS v7.0r] Barra sticky com 4 acessos rápidos descritivos');
 })();
 
 </script>

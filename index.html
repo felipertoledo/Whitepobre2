@@ -268,7 +268,7 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
         <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
         <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.7.0 · cesta receitas · crescimento · escuro</p>
+      <p class="hdr-version">v.8.0 · gaps APS+PA · amoxi 8/8h</p>
     </div>
     <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
@@ -11449,5 +11449,414 @@ if (typeof MEDICACOES !== 'undefined') {
 })();
 
 </script>
+<!-- INJECT-V8-START -->
+<script>
+// ============================================================================
+// MEDS PATCH v8.0
+//   - Atualiza Amoxicilina e Amoxi+Clav: adiciona variante 8/8 h para casos agudos
+//   - 13 novas medicações para preencher gaps de APS/PA pediátrica
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  // ===== NOVAS INDICAÇÕES PARA AMOXICILINA (8/8h) =====
+  const NOVAS_INDIC_AMOXI = [
+    {
+      nome: 'OMA / Sinusite / PAC AGUDA — intervalo curto 8/8 h',
+      dose: 90,
+      unidade: 'mg/kg/dia',
+      via: 'VO',
+      max: 4000,
+      intervalo: '8/8 h × 10 dias',
+      minNota: 'Posologia 8/8 h prefere-se em: <2 anos, OMA grave/recorrente, sinusite com sintomas severos, PAC, falha do 12/12 h. Tempo acima da MIC é mais estável neste intervalo.'
+    }
+  ];
+
+  const NOVAS_INDIC_AMOXICLAV = [
+    {
+      nome: 'Infecção AGUDA / falha de amoxi — intervalo 8/8 h',
+      dose: 90,
+      unidade: 'mg/kg/dia (componente amoxi)',
+      via: 'VO',
+      max: 4000,
+      intervalo: '8/8 h × 7-10 dias',
+      minNota: 'Para infecções mais agudas/graves: OMA recorrente ou que falhou, sinusite bacteriana com sintomas severos, mordedura humana/animal complicada, ITU complicada. Usar formulação 7:1 (extra-forte 600/42,9 mg/5mL ou comp 875/125 mg) — diarreia menos frequente.'
+    }
+  ];
+
+  // ===== 13 MEDICAÇÕES NOVAS =====
+  const MEDS_PATCH_V8 = [
+
+    // ━━━━━ EMERGÊNCIA / PRÉ-HOSPITALAR ━━━━━
+    {
+      id: 'diazepam-retal',
+      nome: 'Diazepam (retal)',
+      classe: 'anticonvulsivante',
+      apresentacao: 'Solução retal 5 mg/2,5 mL ou 10 mg/2,5 mL (microenema) | Improviso: amp 10 mg/2 mL via retal',
+      indicacoes: [
+        {nome:'Crise convulsiva ativa — pré-hospitalar/casa', dose:0.5, unidade:'mg/kg/dose', via:'RETAL', max:10, intervalo:'dose única; repetir após 5-10 min se não cessou', minNota:'Microenema: 2-5a → 5 mg · 6-11a → 7,5 mg · ≥12a → 10 mg. Posicionar lateralmente, esvaziar reto antes.'}
+      ],
+      idadeMinima:'≥6 meses (uso fora de bula, considerar conforme indicação)',
+      contraindicacoes:['Hipersensibilidade benzodiazepínico', 'Depressão respiratória grave'],
+      efeitosFreq:['Sonolência', 'Hipotonia'],
+      efeitosGraves:['Depressão respiratória (raro em dose única)', 'Hipotensão'],
+      alertas:[
+        {tipo:'info', texto:'Via retal é alternativa quando midazolam bucal/intranasal não está disponível. Início ~5 min'},
+        {tipo:'aviso', texto:'Convulsão >5 min ou recorrente → SAMU/PS. Não fazer mais que 2 doses sem suporte avançado'},
+        {tipo:'info', texto:'Treinar família e cuidadores para uso domiciliar em epilepsias de difícil controle'}
+      ],
+      ajusteRenal:'Sem ajuste para dose única',
+      ajusteHepatico:'Cuidado',
+      fonte:'SBP, AAP, Nelson',
+      cobertura:['sepse']
+    },
+
+    {
+      id: 'midazolam-bucal',
+      nome: 'Midazolam (bucal/intranasal)',
+      classe: 'anticonvulsivante',
+      apresentacao: 'Solução 5 mg/mL ou 1 mg/mL | Ampola IV pode ser usada bucal/IN',
+      indicacoes: [
+        {nome:'Crise convulsiva ativa — bucal (entre gengiva e bochecha)', dose:0.3, unidade:'mg/kg', via:'BUCAL', max:10, intervalo:'dose única; repetir após 10 min se necessário', minNota:'Doses por idade (alt. ao peso): 3-12m → 2,5 mg · 1-4a → 5 mg · 5-9a → 7,5 mg · ≥10a → 10 mg'},
+        {nome:'Crise convulsiva — intranasal (dividir entre narinas)', dose:0.2, unidade:'mg/kg', via:'INTRA-NASAL', max:10, intervalo:'dose única; usar seringa MAD (atomizer) se disponível'}
+      ],
+      idadeMinima:'≥3 meses',
+      contraindicacoes:['Hipersensibilidade', 'Depressão respiratória grave'],
+      efeitosFreq:['Sonolência', 'Ardor nasal (IN)'],
+      efeitosGraves:['Depressão respiratória (monitorar saturação)', 'Hipotensão'],
+      alertas:[
+        {tipo:'info', texto:'1ª LINHA pré-hospitalar moderna em crise convulsiva. Início ~3-5 min, ação semelhante ao diazepam retal mas mais aceito socialmente'},
+        {tipo:'aviso', texto:'Convulsão > 5 min ou recorrente → STATUS EPILEPTICUS → SAMU. Suporte ventilatório à mão'},
+        {tipo:'info', texto:'Bucal: aplicar lentamente, lateralmente. NÃO injetar entre dentes'}
+      ],
+      ajusteRenal:'Cuidado',
+      ajusteHepatico:'Reduzir em hepatopatia',
+      fonte:'SBP, AAP, NICE',
+      cobertura:['sepse']
+    },
+
+    {
+      id: 'adrenalina-neb-crupe',
+      nome: 'Adrenalina nebulizada (crupe)',
+      classe: 'broncodilatador',
+      apresentacao: 'Adrenalina 1:1000 (1 mg/mL) — ampola',
+      indicacoes: [
+        {nome:'Crupe (laringotraqueíte) moderado a grave', dose:0.5, unidade:'mg/kg/dose', via:'NEB', max:5, intervalo:'dose única; pode repetir após 30 min se persistente — observar 4 h após dose', diluicao:'Diluir em SF 0,9% até 3 mL · Volume MIN 3 mL', velocidade:'Nebulizar em ~15 min com O₂ 6-8 L/min', minNota:'5-10 kg → 2,5 mL (2,5 mg) · 10-20 kg → 3-5 mL · >20 kg → até 5 mL. Adrenalina 1:1000 PURA (não usar 1:10.000).'}
+      ],
+      idadeMinima:'Sem idade mínima — crupe é raro >6 anos',
+      contraindicacoes:['Hipersensibilidade'],
+      efeitosFreq:['Taquicardia transitória', 'Tremor', 'Palidez'],
+      efeitosGraves:['Arritmia (em cardiopatas)', 'Hipertensão transitória'],
+      alertas:[
+        {tipo:'aviso', texto:'EFEITO REBOTE possível em 2 h → observar mínimo 4 horas após dose. Se não puder observar, considerar internação'},
+        {tipo:'info', texto:'Combinar SEMPRE com dexametasona VO/IM 0,6 mg/kg (max 10 mg) — efeito anti-inflamatório de 24-48 h'},
+        {tipo:'info', texto:'Crupe LEVE (estridor só ao chorar): só dexametasona VO, não precisa de adrenalina'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, AAP, AHA PALS 2025',
+      cobertura:['vias-aereas']
+    },
+
+    {
+      id: 'carvao-ativado',
+      nome: 'Carvão Ativado',
+      classe: 'antidoto',
+      apresentacao: 'Pó para suspensão 25 g/100 mL ou 50 g/250 mL',
+      indicacoes: [
+        {nome:'Intoxicação aguda (<1-2 h da ingestão) — dose única', dose:1, unidade:'g/kg', via:'VO', max:50, intervalo:'dose única', diluicao:'Diluir em água: 1 g carvão : 5-10 mL água', minNota:'Adultos/adolescentes: 25-50 g. Criança: 1 g/kg. Pode dar via SNG se paciente colaborativo e sem alteração neurológica.'},
+        {nome:'Intoxicação por droga com circulação êntero-hepática (dose múltipla)', dose:0.5, unidade:'g/kg/dose', via:'VO', max:25, intervalo:'4/4 h × 24 h', minNota:'Indicado em: carbamazepina, fenobarbital, dapsona, quinino, teofilina, salicilato em dose tóxica'}
+      ],
+      idadeMinima:'≥1 ano (cuidado em <1a — risco aspiração)',
+      contraindicacoes:[
+        'Via aérea NÃO protegida + paciente com nível de consciência reduzido',
+        'Ingestão de substância CORROSIVA (ácido/álcali) ou hidrocarboneto',
+        'Íleo paralítico ou obstrução intestinal',
+        'Vômito incoercível'
+      ],
+      efeitosFreq:['Fezes pretas', 'Vômito', 'Constipação'],
+      efeitosGraves:['Aspiração pulmonar (grave — observar nível consciência)', 'Obstrução intestinal (dose múltipla)'],
+      alertas:[
+        {tipo:'aviso', texto:'INEFICAZ para: álcool, lítio, metais pesados (ferro, chumbo), ácidos, álcalis, cianeto, hidrocarbonetos'},
+        {tipo:'aviso', texto:'NUNCA usar se via aérea não protegida em paciente sonolento → IOT primeiro'},
+        {tipo:'info', texto:'Idealmente até 1 h após ingestão. Após 2 h, eficácia muito reduzida (exceto formulações de liberação prolongada)'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'CIATox, AAP, Nelson',
+      cobertura:[]
+    },
+
+    {
+      id: 'lidocaina-gel',
+      nome: 'Lidocaína gel/creme (anestesia tópica)',
+      classe: 'topico',
+      apresentacao: 'Gel/creme 2% (20 mg/g) — para mucosa | Pomada 5% — para pele',
+      indicacoes: [
+        {nome:'Anestesia tópica antes de procedimento (sutura, punção venosa)', dose:0, unidade:'aplicação local', via:'TÓPICO', max:0, intervalo:'aplicar fina camada, ocluir com filme plástico 30-60 min antes do procedimento'},
+        {nome:'Mucosite oral / dor por aftas', dose:0, unidade:'aplicação local', via:'TÓPICO', max:0, intervalo:'aplicar pequena quantidade 3-4×/dia, antes das refeições'}
+      ],
+      idadeMinima:'≥1 ano (cuidado em <1 ano — risco absorção sistêmica)',
+      contraindicacoes:['Hipersensibilidade a anestésicos do tipo amida', 'Pele extensivamente lesada', 'Mucosa muito inflamada (absorção sistêmica)'],
+      efeitosFreq:['Eritema leve no local', 'Branqueamento da pele'],
+      efeitosGraves:['Metemoglobinemia (raro — risco em <6 meses, áreas extensas, doses repetidas)', 'Toxicidade sistêmica em doses altas'],
+      alertas:[
+        {tipo:'aviso', texto:'<6 meses: risco de METEMOGLOBINEMIA — evitar ou usar formulação livre de prilocaína'},
+        {tipo:'info', texto:'EMLA® (lidocaína + prilocaína) tem indicação similar, evitar em <3 meses'},
+        {tipo:'info', texto:'Para mucosa oral em criança: <2 anos prefira anestésico local em consultório (risco de engasgo, ingestão)'}
+      ],
+      ajusteRenal:'Sem ajuste em uso tópico',
+      ajusteHepatico:'Sem ajuste em uso tópico',
+      fonte:'SBP, AAP',
+      cobertura:['pele-leve']
+    },
+
+    // ━━━━━ APS / GASTROINTESTINAL ━━━━━
+    {
+      id: 'bisacodil',
+      nome: 'Bisacodil',
+      classe: 'laxante',
+      apresentacao: 'Comp revestido 5 mg | Supositório 10 mg (adulto) e 5 mg (pediátrico)',
+      indicacoes: [
+        {nome:'Constipação aguda — uso de curto prazo', dose:0, unidade:'comp/dia', via:'VO', max:0, intervalo:'<6a: NÃO recomendado · 6-12a: 5 mg (1 comp) 1×/dia à noite · ≥12a: 5-10 mg 1×/dia'},
+        {nome:'Constipação refratária / preparo intestinal — supositório', dose:0, unidade:'supositório', via:'RETAL', max:0, intervalo:'<6a: 5 mg 1×/dia · ≥6a: 10 mg 1×/dia'}
+      ],
+      idadeMinima:'≥6 anos (oral) ou ≥2 anos (supositório, em casos selecionados)',
+      contraindicacoes:['Apendicite, abdome agudo', 'Obstrução intestinal', 'Doença inflamatória intestinal ativa', 'Hipersensibilidade'],
+      efeitosFreq:['Cólica abdominal', 'Diarreia se dose alta'],
+      efeitosGraves:['Distúrbio eletrolítico em uso crônico (hipocalemia)'],
+      alertas:[
+        {tipo:'info', texto:'1ª linha em constipação crônica funcional pediátrica é PEG 3350. Bisacodil é resgate de curto prazo'},
+        {tipo:'aviso', texto:'Evitar uso prolongado (>5 dias) — pode causar dependência laxativa, hipocalemia, atonia colônica'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'NASPGHAN, SBP, RENAME',
+      cobertura:['gi']
+    },
+
+    {
+      id: 'glicerina-supositorio',
+      nome: 'Glicerina (supositório)',
+      classe: 'laxante',
+      apresentacao: 'Supositório pediátrico (1,5-2 g) e adulto (2,5-3 g)',
+      indicacoes: [
+        {nome:'Constipação aguda — alívio rápido em lactente/criança', dose:0, unidade:'supositório', via:'RETAL', max:0, intervalo:'<2a: ½ supositório pediátrico · 2-6a: 1 supositório pediátrico · >6a: 1 supositório adulto · usar SOS, máximo 1-2×/sem'}
+      ],
+      idadeMinima:'Sem idade mínima (ajustar dose)',
+      contraindicacoes:['Fissura anal aguda dolorosa', 'Sangramento retal sem causa esclarecida'],
+      efeitosFreq:['Irritação retal leve', 'Sensação de queimação'],
+      efeitosGraves:['Trauma da mucosa retal por uso repetido'],
+      alertas:[
+        {tipo:'info', texto:'Ação rápida (15-30 min) por irritação osmótica/local. Útil para "destravar" criança constipada antes de iniciar tratamento oral com PEG'},
+        {tipo:'aviso', texto:'NÃO USAR REGULARMENTE — pode condicionar reflexo e mascarar causas. Investigar constipação crônica refratária'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, NASPGHAN',
+      cobertura:['gi']
+    },
+
+    {
+      id: 'hidroxido-aluminio',
+      nome: 'Hidróxido de Alumínio + Magnésio',
+      classe: 'antiacido',
+      apresentacao: 'Suspensão (Mg(OH)₂ 200 mg + Al(OH)₃ 200 mg / 5 mL)',
+      indicacoes: [
+        {nome:'Dispepsia aguda / refluxo sintomático ocasional', dose:0, unidade:'mL', via:'VO', max:0, intervalo:'2-5a: 2,5-5 mL após refeições · 6-12a: 5-10 mL · ≥12a: 10-15 mL · Máx 4×/dia, até 2 semanas'}
+      ],
+      idadeMinima:'≥2 anos',
+      contraindicacoes:['IRC grave (acúmulo de alumínio)', 'Hipofosfatemia', 'Obstrução intestinal'],
+      efeitosFreq:['Constipação (alumínio)', 'Diarreia (magnésio) — formulação combinada equilibra'],
+      efeitosGraves:['Encefalopatia por alumínio em IRC grave', 'Hipomagnesemia em IRC'],
+      alertas:[
+        {tipo:'info', texto:'Uso INTERMITENTE — não substitui IBP em DRGE estabelecida. Início rápido (15 min), duração curta (1-3 h)'},
+        {tipo:'aviso', texto:'Diminui absorção de outras medicações (cipro, tetraciclina, ferro, levotiroxina) — espaçar 2 h'}
+      ],
+      ajusteRenal:'Evitar em IRC',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, RENAME',
+      cobertura:['gi']
+    },
+
+    // ━━━━━ APS / ANTIPARASITÁRIO + ANTIFÚNGICO ━━━━━
+    {
+      id: 'pamoato-pirantel',
+      nome: 'Pamoato de Pirantel',
+      classe: 'antiparasitario',
+      apresentacao: 'Susp 50 mg/mL ou 250 mg/5 mL | Comp 250 mg',
+      indicacoes: [
+        {nome:'Ascaridíase / Ancilostomíase / Enterobíase (oxiúrus)', dose:10, unidade:'mg/kg', via:'VO', max:1000, intervalo:'dose única (repetir em 14 dias se enterobíase)'},
+      ],
+      idadeMinima:'≥1 ano (uso fora de bula em <1 ano em situações específicas)',
+      contraindicacoes:['Hipersensibilidade', 'Insuficiência hepática significativa'],
+      efeitosFreq:['Dor abdominal leve', 'Náusea', 'Cefaleia'],
+      efeitosGraves:['Hepatotoxicidade (rara)'],
+      alertas:[
+        {tipo:'info', texto:'Alternativa quando albendazol/mebendazol não disponíveis ou em alergia. Vantagem: SEGURO na gestação (classe B FDA)'},
+        {tipo:'info', texto:'NÃO eficaz contra: tricuríase, estrongiloides, parasitas teciduais'},
+        {tipo:'aviso', texto:'Evitar uso concomitante com piperazina (antagonismo)'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Reduzir em hepatopatia',
+      fonte:'SBP, CAB-MS Parasitoses',
+      cobertura:['gi']
+    },
+
+    {
+      id: 'miconazol-creme',
+      nome: 'Miconazol (tópico)',
+      classe: 'antifungico-topico',
+      apresentacao: 'Creme/loção 2% (20 mg/g) | Pó 2% | Pomada 2%',
+      indicacoes: [
+        {nome:'Tinha do corpo / cruris / pedis / mãos', dose:0, unidade:'aplicação local fina', via:'TÓPICO', max:0, intervalo:'2×/dia × 2-4 semanas (manter 1 sem após resolução)'},
+        {nome:'Pitiríase versicolor', dose:0, unidade:'aplicação local fina', via:'TÓPICO', max:0, intervalo:'2×/dia × 2-4 semanas'},
+        {nome:'Candidíase cutânea (intertrigo, dermatite de fralda candidiásica)', dose:0, unidade:'aplicação local fina', via:'TÓPICO', max:0, intervalo:'2-3×/dia × 7-14 dias'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Hipersensibilidade a azóis'],
+      efeitosFreq:['Eritema, ardor, prurido local'],
+      efeitosGraves:['Dermatite de contato'],
+      alertas:[
+        {tipo:'info', texto:'Alternativa ao cetoconazol tópico. Bem tolerado em pediatria desde RN. Útil em dermatite de fralda candidiásica'},
+        {tipo:'info', texto:'Para tinha do couro cabeludo: cetoconazol/miconazol tópico INSUFICIENTE — necessita antifúngico VO (griseofulvina/terbinafina)'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, SBD, RENAME',
+      cobertura:['pele-leve']
+    },
+
+    // ━━━━━ APS / VITAMINAS ━━━━━
+    {
+      id: 'acido-folico',
+      nome: 'Ácido Fólico',
+      classe: 'vitamina',
+      apresentacao: 'Comp 5 mg | Solução oral 0,2 mg/mL',
+      indicacoes: [
+        {nome:'Anemia megaloblástica (deficiência de folato)', dose:0, unidade:'mg/dia', via:'VO', max:5, intervalo:'<1 ano: 0,1 mg/dia · 1-3a: 0,3 mg/dia · 4-8a: 0,4 mg/dia · ≥9a: 1 mg/dia · 4-12 sem'},
+        {nome:'Profilaxia em adolescente que planeja gestação', dose:0, unidade:'mcg/dia', via:'VO', max:5, intervalo:'400 mcg/dia (0,4 mg) — iniciar 1 mês antes da concepção e manter 1º trimestre'},
+        {nome:'Suplementação em anemia hemolítica crônica (falciforme, talassemia)', dose:1, unidade:'mg/dia', via:'VO', max:5, intervalo:'1×/dia uso contínuo'}
+      ],
+      idadeMinima:'Sem idade mínima',
+      contraindicacoes:['Anemia perniciosa não tratada (mascara deficiência de B12)'],
+      efeitosFreq:['Bem tolerado'],
+      efeitosGraves:['Raros — irritação GI, reação alérgica'],
+      alertas:[
+        {tipo:'aviso', texto:'NÃO suplementar sem investigar deficiência de B12 concomitante — folato isolado pode mascarar deficiência de B12 e piorar dano neurológico'},
+        {tipo:'info', texto:'Anticonvulsivantes (fenitoína, carbamazepina, valproato) podem reduzir folato — suplementar profilaticamente nesses casos'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Sem ajuste',
+      fonte:'SBP, CAB-MS, RENAME',
+      cobertura:[]
+    },
+
+    {
+      id: 'vitamina-a-megadose',
+      nome: 'Vitamina A (megadose — programa MS)',
+      classe: 'vitamina',
+      apresentacao: 'Cápsulas gelatinosas 100.000 UI (azul) e 200.000 UI (vermelha)',
+      indicacoes: [
+        {nome:'Prevenção de deficiência (programa MS)', dose:0, unidade:'UI dose única', via:'VO', max:0, intervalo:'6-11 meses: 100.000 UI cápsula AZUL — dose única · 12-59 meses: 200.000 UI cápsula VERMELHA — a cada 6 meses'},
+        {nome:'Suplementação terapêutica em xeroftalmia / sarampo grave', dose:0, unidade:'UI', via:'VO', max:0, intervalo:'1 dose em D1 + 1 dose em D2 + 1 dose em D14 (mesma dose acima por faixa etária)'}
+      ],
+      idadeMinima:'≥6 meses',
+      contraindicacoes:['Hipervitaminose A', 'Gestação (megadose teratogênica)', 'Hipersensibilidade'],
+      efeitosFreq:['Náusea leve transitória'],
+      efeitosGraves:['Hipertensão intracraniana benigna (raro, dose única)', 'Toxicidade crônica se uso repetido inadequado'],
+      alertas:[
+        {tipo:'info', texto:'Programa Nacional Suplementação Vitamina A — universalmente recomendado em áreas de risco para deficiência (Norte/Nordeste, populações vulneráveis)'},
+        {tipo:'aviso', texto:'NÃO repetir antes de 6 meses (criança 12-59m). Em <12m não repetir antes de novo critério'},
+        {tipo:'info', texto:'Em sarampo grave: 3 doses (D1, D2, D14) reduz mortalidade ~60%'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Cuidado em hepatopatia',
+      fonte:'MS Programa Vitamina A, OMS, SBP',
+      cobertura:[]
+    },
+
+    {
+      id: 'vitamina-k',
+      nome: 'Vitamina K1 (Fitomenadiona)',
+      classe: 'vitamina',
+      apresentacao: 'Ampola 10 mg/mL (1 mL) | Solução oral 2 mg/mL',
+      indicacoes: [
+        {nome:'Profilaxia de doença hemorrágica do RN — pós-nascimento', dose:0, unidade:'mg', via:'IM', max:1, intervalo:'1 mg IM dose única na 1ª hora pós-nascimento · RN <1500g: 0,5 mg IM'},
+        {nome:'Tratamento de doença hemorrágica do RN', dose:0, unidade:'mg', via:'IV', max:5, intervalo:'1-5 mg IV lento (ou IM/SC) — repetir conforme INR'},
+        {nome:'Sangramento por anticoagulante cumarínico (varfarina) — reversão', dose:0, unidade:'mg', via:'VO/IV', max:10, intervalo:'INR alto sem sangramento: 1-2,5 mg VO · Sangramento: 5-10 mg IV lento'}
+      ],
+      idadeMinima:'Sem idade mínima (uso essencial em RN)',
+      contraindicacoes:['Hipersensibilidade'],
+      efeitosFreq:['Dor local na injeção IM'],
+      efeitosGraves:['Reação anafilactoide IV rápido (RARO, mas fatal — diluir e infundir lentamente)', 'Hiperbilirrubinemia em RN pré-termo dose alta'],
+      alertas:[
+        {tipo:'aviso', texto:'IV deve ser SEMPRE LENTO (≥30 segundos) e diluído (mínimo 1:10) — risco de anafilactoide'},
+        {tipo:'info', texto:'Profilaxia neonatal universal (1 mg IM) — recomendação OMS e MS. Alternativa: 3 doses VO de 2 mg (nascimento, 7 dias, 30 dias) — menor eficácia, não preferida'},
+        {tipo:'info', texto:'Em RN de mãe usando anticonvulsivante/varfarina: avaliar dose adicional'}
+      ],
+      ajusteRenal:'Sem ajuste',
+      ajusteHepatico:'Pouca resposta em hepatopatia grave',
+      fonte:'SBP, OMS, MS',
+      cobertura:[]
+    }
+  ];
+
+  // ===== APLICAR PATCH =====
+  function aplicar() {
+    if (typeof MEDICACOES === 'undefined' || !Array.isArray(MEDICACOES)) {
+      setTimeout(aplicar, 300);
+      return;
+    }
+
+    // 1. Adicionar 8/8h às indicações da Amoxicilina existente
+    var amoxi = MEDICACOES.find(function(m){ return m.id === 'amoxicilina'; });
+    if (amoxi && amoxi.indicacoes) {
+      var temAguda = amoxi.indicacoes.find(function(i){ return /8\/8/.test(i.intervalo || ''); });
+      if (!temAguda) {
+        NOVAS_INDIC_AMOXI.forEach(function(i){ amoxi.indicacoes.push(i); });
+      }
+    }
+
+    // 2. Adicionar 8/8h ao Amoxi+Clav existente
+    var amoxClav = MEDICACOES.find(function(m){
+      return m.id === 'amox-clav' || m.id === 'amoxi-clavulanato' || m.id === 'amox-clavulanato'
+          || /clavulanato/i.test(m.nome || '');
+    });
+    if (amoxClav && amoxClav.indicacoes) {
+      var temAgClav = amoxClav.indicacoes.find(function(i){ return /8\/8/.test(i.intervalo || '') && /agud/i.test(i.nome || ''); });
+      if (!temAgClav) {
+        NOVAS_INDIC_AMOXICLAV.forEach(function(i){ amoxClav.indicacoes.push(i); });
+      }
+    }
+
+    // 3. Adicionar novas medicações
+    MEDS_PATCH_V8.forEach(function(m){
+      if (MEDICACOES.find(function(x){ return x.id === m.id; })) return;
+      MEDICACOES.push(m);
+    });
+
+    // 4. Re-estender busca para incluir novos termos
+    if (typeof window.estenderBusca === 'function') {
+      try { window.estenderBusca(); } catch(e){}
+    }
+  }
+
+  // Aplicar em momentos diferentes (MEDICACOES carrega em vários scripts)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', aplicar);
+  } else {
+    setTimeout(aplicar, 100);
+  }
+  setTimeout(aplicar, 600);
+  setTimeout(aplicar, 1500);
+  setTimeout(aplicar, 3000);
+
+  console.log('[PATCH v8.0] Amoxi+Amox-Clav 8/8h + '+MEDS_PATCH_V8.length+' medicações novas');
+})();
+
+</script>
+<!-- INJECT-V8-END -->
 </body>
 </html>

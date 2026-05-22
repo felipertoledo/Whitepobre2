@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1c1917">
+<meta name="theme-color" content="#1a7a3d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -268,7 +268,7 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
         <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
         <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.8.0 · gaps APS+PA · amoxi 8/8h</p>
+      <p class="hdr-version">v.8.1 · sincronia com Vovôminic + footer</p>
     </div>
     <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
@@ -343,8 +343,6 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
 </footer>
 
 <script>
-
-// === ped-app-v2.js ===
 const MEDICACOES = [
   {id:'adrenalina-pcr',nome:'Adrenalina (Epinefrina)',classe:'reanimacao',apresentacao:'Ampola 1 mg/mL (1:1.000)',
    indicacoes:[
@@ -674,7 +672,7 @@ const MEDICACOES = [
    efeitosGraves:['Broncoespasmo em asmáticos','FA induzida'],
    alertas:[{tipo:'critico',texto:'BOLUS ULTRA-RÁPIDO seguido de flush — meia-vida 10s. Acesso PROXIMAL ao coração'},{tipo:'info',texto:'Avisar paciente/família: sensação desagradável de "morte iminente" por 5-10s é esperada'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'AHA PALS 2025'},
-  // ==================== ANTIBIÓTICOS VO ADICIONAIS ====================
+
   {id:'cefalexina',nome:'Cefalexina',classe:'antibiotico',apresentacao:'Susp 50 mg/mL ou 25 mg/mL | Cáps 250/500 mg',
    indicacoes:[
     {nome:'ITU baixa não complicada',dose:50,unidade:'mg/kg/dia',via:'VO',max:2000,intervalo:'6/6 h × 7-10 dias',diluicao:'—',velocidade:'—',minNota:'25-50 mg/kg/dia | máx 4 g/dia'},
@@ -758,7 +756,6 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'Reação dissulfiram-like com álcool — orientar abstinência durante e até 48h após'},{tipo:'info',texto:'Considerar sabor ruim em criança — pode levar a recusa'}],
    ajusteRenal:'Sem ajuste se ClCr >10',ajusteHepatico:'Reduzir 50% em hepatopatia grave',fonte:'SBP'},
 
-  // ==================== ANTIPARASITÁRIOS ====================
   {id:'albendazol',nome:'Albendazol',classe:'antiparasitario',apresentacao:'Susp 40 mg/mL | Comp 200/400 mg',
    indicacoes:[
     {nome:'Helmintíase comum (áscaris, enterobíase, ancilóstomo, tricuríase)',dose:400,unidade:'mg',via:'VO',max:400,intervalo:'dose única (repetir 2 sem se enterobíase)',diluicao:'—',velocidade:'—',minNota:'12-24 meses: 200 mg | ≥2 anos: 400 mg'},
@@ -818,7 +815,6 @@ const MEDICACOES = [
    alertas:[{tipo:'critico',texto:'Em neurocisticercose: SEMPRE associar corticoide para prevenir edema cerebral'},{tipo:'info',texto:'Tomar comprimido inteiro com água (gosto muito amargo se mastigado)'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Reduzir em Child B/C',fonte:'MS; SBP'},
 
-  // ==================== AINES ADICIONAIS ====================
   {id:'nimesulida',nome:'Nimesulida',classe:'analgesico',apresentacao:'Susp oral 10 mg/mL | Comp 100 mg',
    indicacoes:[
     {nome:'Dor / inflamação',dose:2.5,unidade:'mg/kg/dia',via:'VO',max:200,intervalo:'12/12 h × ≤7 dias',diluicao:'Após refeição',velocidade:'—',minNota:'Máx 5 mg/kg/dia | curso ≤7 dias'}
@@ -828,7 +824,7 @@ const MEDICACOES = [
    efeitosGraves:['HEPATOTOXICIDADE FATAL (motivo da restrição etária)','SSJ','IRA'],
    alertas:[{tipo:'critico',texto:'CONTRAINDICADA <12 anos — alerta ANVISA por hepatotoxicidade fatal em pediatria'},{tipo:'critico',texto:'Curso máximo 7 dias — não estender'}],
    ajusteRenal:'Cautela',ajusteHepatico:'CONTRAINDICADA em hepatopatia',fonte:'ANVISA; EMA'},
-  // ==================== ANTI-HISTAMÍNICOS AMBULATORIAIS ====================
+
   {id:'loratadina',nome:'Loratadina',classe:'antihistaminico',apresentacao:'Xarope 1 mg/mL | Comp 10 mg',
    indicacoes:[
     {nome:'Rinite alérgica / urticária crônica',dose:0.2,unidade:'mg/kg/dia',via:'VO',max:10,intervalo:'1×/dia',diluicao:'—',velocidade:'—',minNota:'2-12 anos: <30kg = 5 mg | >30kg = 10 mg | ≥12 anos: 10 mg'}
@@ -869,7 +865,6 @@ const MEDICACOES = [
    alertas:[{tipo:'aviso',texto:'Alerta EMA 2015 — risco cardíaco. Avaliar QT em uso prolongado/dose alta'}],
    ajusteRenal:'Reduzir 50% se ClCr <50',ajusteHepatico:'Reduzir em hepatopatia',fonte:'SBP'},
 
-  // ==================== ANTIEMÉTICOS AMBULATORIAIS ====================
   {id:'metoclopramida',nome:'Metoclopramida',classe:'antiemetico',apresentacao:'Sol oral 4 mg/mL | Comp 10 mg | Amp 5 mg/mL',
    indicacoes:[
     {nome:'Náusea/vômito (>1 ano)',dose:0.1,unidade:'mg/kg/dose',via:'VO/IV',max:10,intervalo:'8/8 h',diluicao:'IV: diluir',velocidade:'IV: 15 min',minNota:'Máx 0,5 mg/kg/dia | curso curto ≤5 dias'}
@@ -900,7 +895,6 @@ const MEDICACOES = [
    alertas:[{tipo:'info',texto:'Útil em cinetose (mais que ondansetrona). Sedação importante'}],
    ajusteRenal:'Cautela',ajusteHepatico:'Cautela',fonte:'SBP'},
 
-  // ==================== CORTICOIDE ORAL ====================
   {id:'prednisolona',nome:'Prednisolona',classe:'corticoide',apresentacao:'Sol oral 1 mg/mL ou 3 mg/mL | Comp 5/20 mg',
    indicacoes:[
     {nome:'Crise asma',dose:1,unidade:'mg/kg/dia',via:'VO',max:40,intervalo:'1×/dia × 3-5 dias',diluicao:'—',velocidade:'—',minNota:'1-2 mg/kg/dia | máx 60 mg/dia'},
@@ -923,7 +917,6 @@ const MEDICACOES = [
    alertas:[{tipo:'info',texto:'Pró-droga ativada no fígado — em <12 anos preferir prednisolona (pronta atividade)'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Preferir prednisolona em hepatopatia',fonte:'SBP'},
 
-  // ==================== INALATÓRIOS / MANUTENÇÃO ASMA ====================
   {id:'budesonida',nome:'Budesonida (inalatória)',classe:'broncodilatador',apresentacao:'Susp nebul 0,25/0,5 mg/mL | Spray 100/200 mcg | Cápsula inal 200/400 mcg',
    indicacoes:[
     {nome:'Crupe (grave) — nebulização',dose:2,unidade:'mg',via:'NEB',max:2,intervalo:'dose única',diluicao:'Diluir em SF qsp 4 mL',velocidade:'O₂ 6 L/min'},
@@ -957,7 +950,6 @@ const MEDICACOES = [
    alertas:[{tipo:'info',texto:'≈2× mais potente que budesonida — usar metade da dose para mesmo controle'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Cautela',fonte:'GINA 2024'},
 
-  // ==================== GASTROINTESTINAL ====================
   {id:'omeprazol',nome:'Omeprazol',classe:'gastrointestinal',apresentacao:'Cáps 10/20/40 mg | Solução pediátrica preparada (manipulação)',
    indicacoes:[
     {nome:'DRGE / esofagite',dose:1,unidade:'mg/kg/dia',via:'VO',max:40,intervalo:'1×/dia em jejum (30 min antes café)',diluicao:'Cápsula pode ser aberta — não mastigar grânulos',velocidade:'—',minNota:'0,7-3,3 mg/kg/dia | 5-10 kg: 5 mg | 10-20 kg: 10 mg | >20 kg: 20 mg'},
@@ -1012,7 +1004,7 @@ const MEDICACOES = [
    efeitosGraves:['Hipernatremia se mal preparado (concentrar demais)'],
    alertas:[{tipo:'critico',texto:'INSTRUIR diluição correta: 1 sachê = 1 LITRO de água. Nunca menos água'},{tipo:'info',texto:'Plano C (choque): SF 0,9% 20 mL/kg em 5-15 min, repetir até 60 mL/kg'}],
    ajusteRenal:'Cautela em IRC',ajusteHepatico:'Sem ajuste',fonte:'MS; SBP Gastro'},
-  // ==================== ANTIVIRAIS ====================
+
   {id:'aciclovir',nome:'Aciclovir',classe:'antiviral',apresentacao:'Susp 40 mg/mL | Comp 200/400 mg | Frasco 250 mg (IV)',
    indicacoes:[
     {nome:'Varicela (≥12 anos ou risco)',dose:80,unidade:'mg/kg/dia',via:'VO',max:3200,intervalo:'5×/dia × 5-7 dias',diluicao:'—',velocidade:'—',minNota:'20 mg/kg/dose, máx 800 mg/dose | iniciar ≤24-72h do exantema'},
@@ -1037,7 +1029,6 @@ const MEDICACOES = [
    alertas:[{tipo:'aviso',texto:'Iniciar idealmente em ≤48h do início dos sintomas. Em grupos de risco/grave, considerar mesmo após 48h'},{tipo:'info',texto:'Tomar com alimento reduz náusea'}],
    ajusteRenal:'Reduzir 50% se ClCr 30-60; mais se <30',ajusteHepatico:'Sem ajuste',fonte:'MS; SBP Infectologia'},
 
-  // ==================== ANTIFÚNGICOS ====================
   {id:'nistatina-oral',nome:'Nistatina (oral)',classe:'antifungico',apresentacao:'Susp oral 100.000 UI/mL',
    indicacoes:[
     {nome:'Candidíase oral (sapinho)',dose:100000,unidade:'UI/dose',via:'VO',max:600000,intervalo:'4×/dia × 7-14 dias',diluicao:'—',velocidade:'Aplicar com swab/dedo na mucosa',minNota:'Lactente: 1 mL 4×/d | criança: 4-6 mL 4×/d | reter na boca antes de engolir'}
@@ -1060,7 +1051,6 @@ const MEDICACOES = [
    alertas:[{tipo:'aviso',texto:'Inibidor CYP3A4 — múltiplas interações (fenitoína, midazolam, varfarina, ciclosporina)'}],
    ajusteRenal:'Reduzir 50% se ClCr <50',ajusteHepatico:'Cautela',fonte:'SBP Infectologia'},
 
-  // ==================== TÓPICOS ====================
   {id:'mupirocina',nome:'Mupirocina (tópico)',classe:'topico',apresentacao:'Pomada 2% (20 mg/g)',
    indicacoes:[
     {nome:'Impetigo / infecções pele localizadas',dose:0,unidade:'aplicação local',via:'TÓPICO',max:0,intervalo:'3×/dia × 5-7 dias',diluicao:'Aplicar fina camada',velocidade:'—'},
@@ -1103,7 +1093,6 @@ const MEDICACOES = [
    alertas:[{tipo:'aviso',texto:'Não usar em face/dobras por >7 dias. Não ocluir'},{tipo:'info',texto:'Curso curto — se não melhorar em 7 dias, reavaliar'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'SBP Dermato'},
 
-  // ==================== ORL ====================
   {id:'cipro-otologico',nome:'Ciprofloxacino (otológico)',classe:'orl',apresentacao:'Sol otológica 0,3%',
    indicacoes:[
     {nome:'Otite externa aguda',dose:0,unidade:'gotas',via:'OTOLÓGICO',max:0,intervalo:'3-4 gotas 12/12 h × 7 dias',diluicao:'—',velocidade:'—'},
@@ -1125,7 +1114,6 @@ const MEDICACOES = [
    alertas:[{tipo:'info',texto:'Lactente: deitar de lado, instilar na narina superior — aspirar com pera após'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'SBP'},
 
-  // ==================== VITAMINAS / SUPLEMENTOS ====================
   {id:'vitamina-d',nome:'Vitamina D (Colecalciferol)',classe:'suplemento',apresentacao:'Gotas 200/400/2.000 UI/gota | Solução 100.000 UI/mL',
    indicacoes:[
     {nome:'Profilaxia (todos lactentes em aleitamento exclusivo)',dose:400,unidade:'UI/dia',via:'VO',max:400,intervalo:'1×/dia',diluicao:'—',velocidade:'—',minNota:'SBP: 400 UI/dia <1 ano | 600 UI/dia 1-2 anos'},
@@ -1161,7 +1149,6 @@ const MEDICACOES = [
    alertas:[{tipo:'info',texto:'Reduz duração e gravidade da diarreia em ~25% (OMS) — protocolo padrão MS'},{tipo:'aviso',texto:'Tomar com alimento se náusea'}],
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Sem ajuste',fonte:'OMS; MS'},
 
-  // ==================== ALERTAS — MEDICAÇÕES COM RESTRIÇÃO ====================
   {id:'codeina',nome:'⚠️ Codeína',classe:'alerta',apresentacao:'Comp 30/60 mg | Sol oral 3 mg/mL (sempre associada a paracetamol no Brasil)',
    indicacoes:[
     {nome:'⛔ CONTRAINDICADA <12 anos',dose:0,unidade:'—',via:'—',max:0,intervalo:'—',diluicao:'—',velocidade:'—',minNota:'Não usar em pediatria <12a (ANVISA, EMA, FDA — RDC 2018)'}
@@ -1247,17 +1234,14 @@ const CLASSES = [
   {id:'alerta',nome:'⚠ Restrição',cor:'#991b1b',sigla:'!'}
 ];
 
-// ESTADO
 let estado = {peso:null,idade:null,busca:'',classe:'todas',expandidas:new Set()};
 
-// HELPERS
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const classeNome = id => CLASSES.find(c => c.id === id)?.nome || '';
 const classeCor = id => CLASSES.find(c => c.id === id)?.cor || '#1c1917';
 const classeSigla = id => CLASSES.find(c => c.id === id)?.sigla || '';
 
-// CALCULADORAS
 const calcPeso = idade => idade < 1 ? null : (idade <= 10 ? (idade + 4) * 2 : idade * 3 + 7);
 const calcTOT = idade => {
   if (idade < 1) return {semCuff:'3,5',comCuff:'3,0',profundidade:'10,5'};
@@ -1288,7 +1272,6 @@ const calcDose = (dose, peso, max) => {
   return {valor: parseFloat(valor.toFixed(2)), capped: false};
 };
 
-// RENDER CALCULADORAS
 function renderCalcs() {
   const c = $('calcs-content');
   if (!estado.peso && !estado.idade) {
@@ -1320,7 +1303,6 @@ function renderCalcs() {
   c.innerHTML = html;
 }
 
-// RENDER FILTROS
 function renderFiltros() {
   const f = $('filtros');
   f.innerHTML = CLASSES.map(c => {
@@ -1330,7 +1312,6 @@ function renderFiltros() {
   }).join('');
 }
 
-// RENDER LISTA
 function filtrar() {
   let lista = MEDICACOES;
   if (estado.classe !== 'todas') lista = lista.filter(m => m.classe === estado.classe);
@@ -1434,7 +1415,6 @@ function renderMed(m) {
   return html;
 }
 
-// AÇÕES
 function setClasse(id) {
   estado.classe = id;
   renderFiltros();
@@ -1446,7 +1426,6 @@ function toggleMed(id) {
   renderLista();
 }
 
-// LISTENERS
 $('idade').addEventListener('input', e => {
   const v = parseFloat(e.target.value);
   estado.idade = isNaN(v) ? null : v;
@@ -1471,16 +1450,10 @@ $('busca').addEventListener('input', e => {
   renderLista();
 });
 
-// INIT
 renderCalcs();
 renderFiltros();
 renderLista();
 
-
-// === protocolos.js ===
-// ============================================================================
-// PROTOCOLOS DE BOLSO
-// ============================================================================
 const PROTOCOLOS = [
   {
     id:'p-anafilaxia',
@@ -1726,13 +1699,6 @@ const PROTOCOLOS = [
   }
 ];
 
-
-// === calc-prot-pwa.js ===
-// ============================================================================
-// CALCULADORAS ADICIONAIS (V2)
-// ============================================================================
-
-// Holliday-Segar com perdas (manutenção + reposição de desidratação)
 function calcHollidayPerdas(peso, percDesidrat) {
   if (!peso) return null;
   let mlH;
@@ -1740,7 +1706,7 @@ function calcHollidayPerdas(peso, percDesidrat) {
   else if (peso <= 20) mlH = 40 + (peso - 10) * 2;
   else mlH = 60 + (peso - 20);
   const mlD = mlH * 24;
-  // Reposição de desidratação: % × peso × 1000 = mL totais a repor
+
   const reposicaoTotal = percDesidrat ? (peso * percDesidrat * 10) : 0; // % * 10 mL/kg = % corporal
   return {
     mlH: mlH.toFixed(0),
@@ -1752,7 +1718,6 @@ function calcHollidayPerdas(peso, percDesidrat) {
   };
 }
 
-// Parkland (queimadura)
 function calcParkland(peso, scq) {
   if (!peso || !scq) return null;
   const total = 4 * peso * scq;
@@ -1767,15 +1732,13 @@ function calcParkland(peso, scq) {
   };
 }
 
-// VIG (velocidade de infusão de glicose) neonatal
 function calcVIG(peso, taxa, concentracao) {
   if (!peso || !taxa || !concentracao) return null;
-  // VIG (mg/kg/min) = (mL/h × concentração %) / (peso × 6)
+
   const vig = (taxa * concentracao) / (peso * 6);
   return vig.toFixed(2);
 }
 
-// Glasgow Pediátrico Modificado
 const GLASGOW_PED = {
   ocular: [
     {p: 4, txt: 'Espontânea'},
@@ -1807,13 +1770,11 @@ const GLASGOW_PED = {
   ]
 };
 
-// Superfície corporal (Mosteller)
 function calcBSA(peso, altura) {
   if (!peso || !altura) return null;
   return Math.sqrt((peso * altura) / 3600).toFixed(2);
 }
 
-// Gotejamento (mL/h → gtt/min, usando equipo padrão 20 gtt/mL)
 function calcGotejamento(volume, tempoH, equipo) {
   if (!volume || !tempoH) return null;
   equipo = equipo || 20; // 20 gtt/mL padrão (macro), 60 gtt/mL micro
@@ -1824,18 +1785,15 @@ function calcGotejamento(volume, tempoH, equipo) {
   };
 }
 
-// Diluição de adrenalina (1:10.000)
 function preparoAdrenalinaPCR(peso) {
   if (!peso) return null;
-  // Adrenalina 1:10.000 = 0,1 mg/mL
-  // Dose 0,01 mg/kg = 0,1 mL/kg da 1:10.000
+
   return {
     doseMg: (0.01 * peso).toFixed(2),
     doseMl: (0.1 * peso).toFixed(2)
   };
 }
 
-// Dose adrenalina IM anafilaxia
 function doseAdrenalinaIM(peso, idade) {
   if (!peso) return null;
   let dose = 0.01 * peso;
@@ -1849,9 +1807,6 @@ function doseAdrenalinaIM(peso, idade) {
   };
 }
 
-// ============================================================================
-// ESTADO GLOBAL ESTENDIDO
-// ============================================================================
 estado.modo = 'medicacoes'; // 'medicacoes' | 'protocolos'
 estado.calcsAvancadas = false;
 estado.percDesidrat = null;
@@ -1860,9 +1815,6 @@ estado.taxaInfusao = null;
 estado.concGlicose = null;
 estado.altura = null;
 
-// ============================================================================
-// RENDER CALCULADORAS AVANÇADAS
-// ============================================================================
 function renderCalcsAvancadas() {
   if (!estado.calcsAvancadas) return '';
   const peso = estado.peso;
@@ -1870,7 +1822,6 @@ function renderCalcsAvancadas() {
   let html = '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #44403c">';
   html += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:#a8a29e;margin-bottom:12px">Calculadoras Avançadas</div>';
 
-  // Inputs adicionais
   html += `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px">
     <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#a8a29e;display:block;margin-bottom:3px">Desidratação %</label>
       <input type="number" step="1" id="perc-desidrat" value="${estado.percDesidrat || ''}" placeholder="5/10/15" style="width:100%;background:#1c1917;border:1px solid #44403c;color:#f5f5f4;padding:6px 8px;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none"></div>
@@ -1886,7 +1837,6 @@ function renderCalcsAvancadas() {
 
   html += '<div class="calc-grid">';
 
-  // Adrenalina prepronta
   if (peso) {
     const adrPCR = preparoAdrenalinaPCR(peso);
     const adrIM = doseAdrenalinaIM(peso, estado.idade);
@@ -1899,7 +1849,6 @@ function renderCalcsAvancadas() {
     </div>`;
   }
 
-  // Holliday + perdas
   if (peso) {
     const h = calcHollidayPerdas(peso, estado.percDesidrat);
     html += `<div class="calc-card"><div class="calc-label">Holliday + Reposição</div>
@@ -1914,7 +1863,6 @@ function renderCalcsAvancadas() {
     html += '</div>';
   }
 
-  // Parkland
   if (peso && estado.scq) {
     const p = calcParkland(peso, estado.scq);
     html += `<div class="calc-card"><div class="calc-label">Parkland (Queimadura)</div>
@@ -1925,7 +1873,6 @@ function renderCalcsAvancadas() {
     </div>`;
   }
 
-  // VIG
   if (peso && estado.taxaInfusao && estado.concGlicose) {
     const vig = calcVIG(peso, estado.taxaInfusao, estado.concGlicose);
     let alvo = '';
@@ -1940,7 +1887,6 @@ function renderCalcsAvancadas() {
     </div>`;
   }
 
-  // BSA
   if (peso && estado.altura) {
     const bsa = calcBSA(peso, estado.altura);
     html += `<div class="calc-card"><div class="calc-label">Superfície Corporal (Mosteller)</div>
@@ -1950,7 +1896,6 @@ function renderCalcsAvancadas() {
     </div>`;
   }
 
-  // Nomograma NAC (info)
   html += `<div class="calc-card"><div class="calc-label">NAC (Paracetamol)</div>
     <div class="row" style="font-size:11px;color:#fcd34d">Indicar se nomograma >150 mcg/mL às 4h</div>
     <div class="row sep" style="font-size:11px">Esquema IV (Prescott 21h):</div>
@@ -1959,7 +1904,6 @@ function renderCalcsAvancadas() {
     <div class="row" style="font-size:11px">3ª: <b class="amber">100 mg/kg</b> em 16h</div>
   </div>`;
 
-  // Glasgow ped
   html += `<div class="calc-card"><div class="calc-label">Glasgow Pediátrico (3-15)</div>
     <div class="row" style="font-size:11px"><b>O</b>: 4 espont / 3 ao chamado / 2 dor / 1 nada</div>
     <div class="row" style="font-size:11px"><b>V (>5a)</b>: 5 orient / 4 confusa / 3 inadeq / 2 sons / 1 nada</div>
@@ -1972,16 +1916,15 @@ function renderCalcsAvancadas() {
   return html;
 }
 
-// Sobrescrever renderCalcs original para incluir avançadas
 const _origRenderCalcs = renderCalcs;
 renderCalcs = function() {
   _origRenderCalcs();
   const c = $('calcs-content');
   if (!c) return;
-  // Adicionar botão "+/- Avançadas"
+
   const btn = `<div style="margin-top:14px;text-align:center"><button id="btn-calc-avanc" style="background:transparent;border:1px solid #44403c;color:#a8a29e;padding:6px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.15em;cursor:pointer;font-family:inherit">${estado.calcsAvancadas ? '− Esconder avançadas' : '+ Calculadoras avançadas'}</button></div>`;
   c.innerHTML += btn + renderCalcsAvancadas();
-  // Re-bind botão e inputs avançados
+
   const b = $('btn-calc-avanc');
   if (b) b.onclick = () => { estado.calcsAvancadas = !estado.calcsAvancadas; renderCalcs(); };
   ['perc-desidrat', 'scq', 'altura', 'taxa-inf', 'conc-gli'].forEach(id => {
@@ -2001,9 +1944,6 @@ renderCalcs = function() {
   });
 };
 
-// ============================================================================
-// PROTOCOLOS — RENDER
-// ============================================================================
 function renderProtocolos() {
   $('contagem').textContent = `${PROTOCOLOS.length} protocolos`;
   const filtrados = estado.busca.trim()
@@ -2056,25 +1996,21 @@ function renderProtocolo(p) {
   return html;
 }
 
-// ============================================================================
-// MODO TOGGLE (Medicações vs Protocolos)
-// ============================================================================
 function setModo(modo) {
   estado.modo = modo;
   estado.expandidas.clear();
-  // Esconder/mostrar filtro de classes
+
   const filtros = $('filtros');
   if (filtros) filtros.style.display = modo === 'medicacoes' ? 'flex' : 'none';
-  // Re-renderizar
+
   if (modo === 'medicacoes') renderLista();
   else renderProtocolos();
-  // Atualizar botões de modo
+
   document.querySelectorAll('.modo-btn').forEach(b => {
     b.classList.toggle('ativo', b.dataset.modo === modo);
   });
 }
 
-// Adicionar barra de modo no DOM
 function injetarBarraModo() {
   const main = document.querySelector('main');
   const filtros = $('filtros');
@@ -2086,17 +2022,14 @@ function injetarBarraModo() {
     <button class="modo-btn ativo" data-modo="medicacoes" onclick="setModo('medicacoes')" style="flex:1;padding:10px;background:transparent;border:none;font-family:'Fraunces',Georgia,serif;font-size:15px;font-weight:500;cursor:pointer;border-right:1px solid #d6d3d1;letter-spacing:-.01em">💊 Medicações</button>
     <button class="modo-btn" data-modo="protocolos" onclick="setModo('protocolos')" style="flex:1;padding:10px;background:transparent;border:none;font-family:'Fraunces',Georgia,serif;font-size:15px;font-weight:500;cursor:pointer;letter-spacing:-.01em">📋 Protocolos</button>`;
   main.insertBefore(bar, filtros);
-  // CSS do botão ativo
+
   const style = document.createElement('style');
   style.textContent = `.modo-btn.ativo{background:#1c1917;color:#fafaf9}.modo-btn:not(.ativo):hover{background:#f5f5f4}`;
   document.head.appendChild(style);
 }
 
-// ============================================================================
-// PWA — Manifest, Service Worker (best-effort), Install Prompt
-// ============================================================================
 function setupPWA() {
-  // Manifest inline via blob URL
+
   const manifest = {
     name: 'Pediatria com o Pé no Chão',
     short_name: 'Pé no Chão',
@@ -2127,7 +2060,6 @@ function setupPWA() {
   link.href = URL.createObjectURL(blob);
   document.head.appendChild(link);
 
-  // Botão de instalar
   let deferredPrompt = null;
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
@@ -2152,13 +2084,11 @@ function setupPWA() {
     document.body.appendChild(btn);
   }
 
-  // Esconder botão se já em modo standalone
   if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
     const b = $('btn-instalar');
     if (b) b.remove();
   }
 
-  // Service Worker via blob (best-effort — funciona em navegadores que aceitam blob: como SW)
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     const swCode = `
       const CACHE = 'ped-emergencia-v1';
@@ -2185,16 +2115,11 @@ function setupPWA() {
     try {
       const swBlob = new Blob([swCode], {type: 'application/javascript'});
       const swURL = URL.createObjectURL(swBlob);
-      navigator.serviceWorker.register(swURL).catch(() => {/* silencioso */});
-    } catch (e) { /* ignora */ }
+      navigator.serviceWorker.register(swURL).catch(() => {});
+    } catch (e) {  }
   }
 }
 
-
-
-// ============================================================================
-// FIX: toggleMed e busca devem respeitar o modo (medicações vs protocolos)
-// ============================================================================
 toggleMed = function(id) {
   if (estado.expandidas.has(id)) estado.expandidas.delete(id);
   else estado.expandidas.add(id);
@@ -2202,7 +2127,6 @@ toggleMed = function(id) {
   else renderLista();
 };
 
-// Re-vincular o input de busca para considerar o modo
 try {
   const _buscaInput = document.getElementById('busca');
   if (_buscaInput && _buscaInput.parentNode && typeof _buscaInput.parentNode.replaceChild === 'function') {
@@ -2215,31 +2139,22 @@ try {
       else renderLista();
     });
   }
-} catch (e) { /* DOM não pronto, será refeito no integrador */ }
+} catch (e) {  }
 
-// ============================================================================
-// INIT — chama as inicializações novas após o init original
-// ============================================================================
 document.addEventListener('DOMContentLoaded', () => {
   injetarBarraModo();
   setupPWA();
   renderCalcs(); // re-render para incluir botão avançadas
 });
-// Caso DOMContentLoaded já tenha disparado:
+
 if (document.readyState !== 'loading') {
   injetarBarraModo();
   setupPWA();
   renderCalcs();
 }
 
-
-// === extras-4.js ===
-// ============================================================================
-// FÁRMACOS NOVOS: Mucolíticos / Antitussígenos / Desloratadina
-// ============================================================================
-
 const MED_EXTRAS_4 = [
-  // ==================== MUCOLÍTICOS / ANTITUSSÍGENOS ====================
+
   {id:'ambroxol',nome:'Ambroxol',classe:'mucolitico',apresentacao:'Xarope 3 mg/mL (lactente) ou 6 mg/mL | Comp 30 mg | Solução IV/inal',
    indicacoes:[
     {nome:'Mucolítico em IVAS/bronquite (uso restrito)',dose:1.2,unidade:'mg/kg/dia',via:'VO',max:90,intervalo:'8-12/12 h',diluicao:'Xarope 3 mg/mL: 0,4 mL/kg/dia',velocidade:'—',minNota:'<2a (xarope 3 mg/mL): 1,25 mL 12/12h | 2-5a: 2,5 mL 8/8h | 6-12a: 5 mL 8/8h | >12a: 10 mL 8/8h'}
@@ -2294,7 +2209,6 @@ const MED_EXTRAS_4 = [
    ],
    ajusteRenal:'Reduzir se ClCr <30',ajusteHepatico:'Cautela',fonte:'ANVISA; SBP'},
 
-  // ==================== ANTI-HISTAMÍNICO 2ª GERAÇÃO ====================
   {id:'desloratadina',nome:'Desloratadina',classe:'antihistaminico',apresentacao:'Xarope 0,5 mg/mL | Comp 5 mg',
    indicacoes:[
     {nome:'Rinite alérgica perene/sazonal',dose:0.05,unidade:'mg/kg/dose',via:'VO',max:5,intervalo:'1×/dia',diluicao:'—',velocidade:'—',minNota:'6-11m: 1 mg (2 mL) 1×/d | 1-5a: 1,25 mg (2,5 mL) | 6-11a: 2,5 mg (5 mL) | ≥12a: 5 mg'},
@@ -2310,10 +2224,8 @@ const MED_EXTRAS_4 = [
    ajusteRenal:'1×/dia em dias alternados se ClCr <30',ajusteHepatico:'Reduzir em hepatopatia grave',fonte:'SBP DC Alergia 2021; EAACI'}
 ];
 
-
-// === extras-v5.js ===
 const MED_V5 = [
-  // ==================== MUCOLÍTICOS / EXPECTORANTES ====================
+
   {id:'ambroxol',nome:'Ambroxol',classe:'mucolitico',apresentacao:'Xarope 3 mg/mL (pediátrico) ou 6 mg/mL (adulto) | Comp 30 mg',
    indicacoes:[
     {nome:'Tosse produtiva / hipersecreção',dose:1.2,unidade:'mg/kg/dia',via:'VO',max:90,intervalo:'8/8 h',diluicao:'—',velocidade:'—',minNota:'<2a: 7,5 mg 12/12h | 2-5a: 7,5 mg 8/8h | 6-12a: 15 mg 8/8h | >12a: 30 mg 8/8h'}
@@ -2360,7 +2272,6 @@ const MED_V5 = [
    alertas:[{tipo:'critico',texto:'Alerta EMA 2015: contraindicado <2 anos'}],
    ajusteRenal:'Reduzir',ajusteHepatico:'Cautela',fonte:'EMA; SBP'},
 
-  // ==================== ANTI-HISTAMÍNICO ADICIONAL ====================
   {id:'desloratadina',nome:'Desloratadina',classe:'antihistaminico',apresentacao:'Xarope 0,5 mg/mL | Comp 5 mg',
    indicacoes:[
     {nome:'Rinite alérgica / urticária crônica',dose:0.0625,unidade:'mg/kg/dia',via:'VO',max:5,intervalo:'1×/dia',diluicao:'—',velocidade:'—',minNota:'6-11m: 1 mg | 1-5a: 1,25 mg | 6-11a: 2,5 mg | ≥12a: 5 mg'}
@@ -2371,7 +2282,6 @@ const MED_V5 = [
    alertas:[{tipo:'info',texto:'Metabólito ativo da loratadina — efeito mais rápido e potência similar. Sem sedação relevante'}],
    ajusteRenal:'1×/dia em dias alternados se ClCr <30',ajusteHepatico:'Dose reduzida em hepatopatia',fonte:'SBP DC Alergia'},
 
-  // ==================== ANTICONVULSIVANTES ADICIONAIS ====================
   {id:'levetiracetam',nome:'Levetiracetam',classe:'anticonvulsivante',apresentacao:'Sol oral 100 mg/mL | Comp 250/500/750/1000 mg | Amp 100 mg/mL',
    indicacoes:[
     {nome:'Status epilepticus (2ª linha — alt à fenitoína)',dose:60,unidade:'mg/kg',via:'IV',max:4500,intervalo:'dose de ataque única',diluicao:'Diluir em 100 mL SF',velocidade:'5-15 min'},
@@ -2408,7 +2318,6 @@ const MED_V5 = [
    ],
    ajusteRenal:'Reduzir',ajusteHepatico:'CONTRAINDICADO em hepatopatia',fonte:'SBP Neurologia'},
 
-  // ==================== CARDIOVASCULAR / DIURÉTICO ====================
   {id:'furosemida',nome:'Furosemida',classe:'cardio',apresentacao:'Sol oral 10 mg/mL (manipulada) | Comp 40 mg | Amp 10 mg/mL',
    indicacoes:[
     {nome:'IC / edema pulmonar agudo',dose:1,unidade:'mg/kg/dose',via:'IV/IM',max:40,intervalo:'pode repetir 8-12/12 h',diluicao:'IV: lenta (≤4 mg/min)',velocidade:'IV: ototoxicidade se rápido'},
@@ -2461,7 +2370,6 @@ const MED_V5 = [
    ],
    ajusteRenal:'Reduzir dose 50% se ClCr <50',ajusteHepatico:'Sem ajuste',fonte:'SBP Cardio'},
 
-  // ==================== ATB ESPECÍFICO ====================
   {id:'doxiciclina',nome:'Doxiciclina',classe:'antibiotico',apresentacao:'Comp 100 mg | Susp manipulada 25 mg/mL',
    indicacoes:[
     {nome:'Febre maculosa / rickettsiose (1ª linha INDEPENDENTE da idade)',dose:2.2,unidade:'mg/kg/dose',via:'VO/IV',max:100,intervalo:'12/12 h × 7 dias OU até 3 dias afebril',diluicao:'IV: diluir em SF/SG5%',velocidade:'IV: 1-4h',minNota:'≤45 kg: 2,2 mg/kg/dose | >45 kg: 100 mg dose'},
@@ -2482,9 +2390,6 @@ const MED_V5 = [
    ajusteRenal:'Sem ajuste',ajusteHepatico:'Cautela',fonte:'SBP Infectologia; CDC'}
 ];
 
-// ============================================================================
-// PROTOCOLO IVAS — adicionar ao array PROTOCOLOS
-// ============================================================================
 const PROTOCOLOS_V5 = [
   {
     id:'p-ivas',
@@ -2507,13 +2412,6 @@ const PROTOCOLOS_V5 = [
     fonte:'AAP; SBP DC Pneumo; NICE'
   }
 ];
-
-
-
-// === doencas-1.js ===
-// ============================================================================
-// DOENÇAS — PARTE 1: IVAS + GI + Exantemáticas + Respiratórias ambulatoriais
-// ============================================================================
 
 const SVG_LESOES_1 = {
   sarampo: `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><circle cx="100" cy="40" r="28" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><path d="M 75 65 Q 100 75 125 65 L 130 110 L 145 180 L 125 235 L 75 235 L 55 180 L 70 110 Z" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><path d="M 70 110 L 40 160 L 35 200" stroke="#a8987d" stroke-width="1.5" fill="none"/><path d="M 130 110 L 160 160 L 165 200" stroke="#a8987d" stroke-width="1.5" fill="none"/><g fill="#dc2626" opacity="0.6"><circle cx="80" cy="35" r="2.5"/><circle cx="100" cy="30" r="2.5"/><circle cx="115" cy="40" r="2.5"/><circle cx="90" cy="50" r="2.5"/><circle cx="110" cy="55" r="2.5"/><circle cx="85" cy="85" r="2.8"/><circle cx="105" cy="90" r="2.8"/><circle cx="115" cy="105" r="2.8"/><circle cx="90" cy="120" r="2.5"/><circle cx="100" cy="140" r="2.5"/><circle cx="115" cy="135" r="2.5"/></g><circle cx="100" cy="40" r="28" fill="none" stroke="#dc2626" stroke-width="2" opacity="0.4"/><text x="100" y="270" font-size="10" text-anchor="middle" fill="#666" font-family="sans-serif">Exantema craniocaudal + Koplik</text></svg>`,
@@ -2763,31 +2661,25 @@ const DOENCAS_1 = [
    medsRel:['paracetamol','dipirona'],fonte:'AAP 2014; SBP DC Pneumo'}
 ];
 
-
-// === doencas-2.js ===
-// ============================================================================
-// DOENÇAS — PARTE 2: Dermatoses (com SVG) + Exantemáticas
-// ============================================================================
-
 const SVG_LESOES = {
   varicela: `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><circle cx="100" cy="40" r="28" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><path d="M 75 65 Q 100 75 125 65 L 130 110 L 145 180 L 125 235 L 75 235 L 55 180 L 70 110 Z" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><path d="M 70 110 L 40 160 L 35 200" stroke="#a8987d" stroke-width="1.5" fill="none"/><path d="M 130 110 L 160 160 L 165 200" stroke="#a8987d" stroke-width="1.5" fill="none"/><circle cx="85" cy="100" r="2.5" fill="#dc2626"/><circle cx="110" cy="135" r="2.5" fill="#dc2626"/><circle cx="55" cy="170" r="2.5" fill="#dc2626"/><circle cx="100" cy="115" r="3" fill="#b91c1c"/><circle cx="120" cy="170" r="3" fill="#b91c1c"/><circle cx="90" cy="200" r="3" fill="#b91c1c"/><circle cx="115" cy="100" r="3.5" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><circle cx="80" cy="150" r="3.5" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><circle cx="130" cy="190" r="3.5" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><circle cx="95" cy="170" r="3" fill="#7c2d12"/><circle cx="70" cy="125" r="3" fill="#7c2d12"/><circle cx="130" cy="135" r="3" fill="#7c2d12"/><circle cx="92" cy="35" r="2" fill="#dc2626"/><circle cx="105" cy="30" r="2" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><text x="100" y="270" font-size="11" text-anchor="middle" fill="#666" font-family="sans-serif">Lesões em diferentes estágios</text></svg>`,
-  
+
   impetigo: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><rect width="200" height="200" fill="#fde8d0"/><ellipse cx="100" cy="100" rx="45" ry="35" fill="#fcd34d" opacity="0.4"/><path d="M 75 90 Q 80 85 88 87 Q 92 90 90 95 Q 85 98 78 96 Z" fill="#d97706"/><path d="M 95 105 Q 105 100 115 105 Q 118 112 110 116 Q 100 116 95 110 Z" fill="#b45309"/><path d="M 70 110 Q 78 108 82 113 Q 80 120 75 120 Q 68 117 70 110 Z" fill="#d97706"/><path d="M 110 88 Q 118 85 122 92 Q 118 98 112 95 Z" fill="#92400e"/><ellipse cx="82" cy="93" rx="12" ry="10" fill="none" stroke="#dc2626" stroke-width="1.5" opacity="0.6"/><ellipse cx="105" cy="110" rx="14" ry="10" fill="none" stroke="#dc2626" stroke-width="1.5" opacity="0.6"/><text x="100" y="195" font-size="11" text-anchor="middle" fill="#666" font-family="sans-serif">Crostas melicéricas (cor de mel)</text></svg>`,
-  
+
   dermatite_atopica: `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><circle cx="100" cy="40" r="28" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><path d="M 75 65 Q 100 75 125 65 L 130 110 L 145 180 L 125 235 L 75 235 L 55 180 L 70 110 Z" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><path d="M 70 110 L 40 160 L 35 200" stroke="#a8987d" stroke-width="1.5" fill="none"/><path d="M 130 110 L 160 160 L 165 200" stroke="#a8987d" stroke-width="1.5" fill="none"/><ellipse cx="80" cy="45" rx="10" ry="8" fill="#fca5a5" opacity="0.7"/><ellipse cx="120" cy="45" rx="10" ry="8" fill="#fca5a5" opacity="0.7"/><ellipse cx="100" cy="68" rx="14" ry="4" fill="#fca5a5" opacity="0.7"/><ellipse cx="40" cy="160" rx="10" ry="8" fill="#fca5a5" opacity="0.7"/><ellipse cx="160" cy="160" rx="10" ry="8" fill="#fca5a5" opacity="0.7"/><ellipse cx="85" cy="200" rx="10" ry="8" fill="#fca5a5" opacity="0.7"/><ellipse cx="115" cy="200" rx="10" ry="8" fill="#fca5a5" opacity="0.7"/><text x="100" y="270" font-size="11" text-anchor="middle" fill="#666" font-family="sans-serif">Distribuição flexural + face</text></svg>`,
-  
+
   eritema_infeccioso: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><ellipse cx="100" cy="105" rx="65" ry="80" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><ellipse cx="80" cy="90" rx="6" ry="3" fill="#fff"/><circle cx="80" cy="90" r="1.5" fill="#333"/><ellipse cx="120" cy="90" rx="6" ry="3" fill="#fff"/><circle cx="120" cy="90" r="1.5" fill="#333"/><path d="M 90 135 Q 100 142 110 135" fill="none" stroke="#7c2d12" stroke-width="1.5"/><ellipse cx="65" cy="115" rx="22" ry="18" fill="#dc2626" opacity="0.55"/><ellipse cx="135" cy="115" rx="22" ry="18" fill="#dc2626" opacity="0.55"/><ellipse cx="100" cy="135" rx="20" ry="15" fill="#fde8d0" opacity="0.9"/><text x="100" y="195" font-size="10" text-anchor="middle" fill="#666" font-family="sans-serif">"Slapped cheek" + palidez perioral</text></svg>`,
-  
+
   escarlatina: `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><circle cx="100" cy="40" r="28" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><path d="M 75 65 Q 100 75 125 65 L 130 110 L 145 180 L 125 235 L 75 235 L 55 180 L 70 110 Z" fill="#fbbf24" opacity="0.4" stroke="#a8987d" stroke-width="1.5"/><g fill="#dc2626" opacity="0.4"><circle cx="80" cy="100" r="0.8"/><circle cx="90" cy="105" r="0.8"/><circle cx="100" cy="110" r="0.8"/><circle cx="110" cy="115" r="0.8"/><circle cx="120" cy="100" r="0.8"/><circle cx="85" cy="120" r="0.8"/><circle cx="95" cy="125" r="0.8"/><circle cx="105" cy="130" r="0.8"/><circle cx="115" cy="125" r="0.8"/><circle cx="75" cy="140" r="0.8"/><circle cx="100" cy="150" r="0.8"/><circle cx="125" cy="140" r="0.8"/><circle cx="70" cy="160" r="0.8"/><circle cx="90" cy="165" r="0.8"/><circle cx="110" cy="170" r="0.8"/><circle cx="130" cy="160" r="0.8"/><circle cx="80" cy="180" r="0.8"/><circle cx="120" cy="180" r="0.8"/><circle cx="100" cy="195" r="0.8"/><circle cx="85" cy="210" r="0.8"/><circle cx="115" cy="210" r="0.8"/></g><line x1="40" y1="155" x2="50" y2="170" stroke="#7f1d1d" stroke-width="1.5"/><line x1="40" y1="160" x2="50" y2="175" stroke="#7f1d1d" stroke-width="1.5"/><line x1="160" y1="155" x2="150" y2="170" stroke="#7f1d1d" stroke-width="1.5"/><line x1="160" y1="160" x2="150" y2="175" stroke="#7f1d1d" stroke-width="1.5"/><ellipse cx="100" cy="48" rx="12" ry="6" fill="#fde8d0"/><text x="100" y="270" font-size="10" text-anchor="middle" fill="#666" font-family="sans-serif">Exantema "lixa" + Pastia + palidez perioral</text></svg>`,
-  
+
   mao_pe_boca: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><path d="M 30 50 Q 30 30 40 30 L 50 35 L 60 30 Q 65 32 65 38 L 60 60 Q 60 80 55 95 L 40 100 Q 25 95 25 80 Z" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><ellipse cx="42" cy="60" rx="3" ry="4" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><ellipse cx="50" cy="78" rx="3" ry="4" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><ellipse cx="38" cy="85" rx="3" ry="4" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><text x="45" y="120" font-size="9" text-anchor="middle" fill="#666" font-family="sans-serif">Mão</text><path d="M 130 70 L 175 60 Q 180 65 180 75 L 170 95 Q 160 100 150 95 L 130 92 Q 125 85 130 70 Z" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><ellipse cx="155" cy="78" rx="3" ry="4" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><ellipse cx="165" cy="85" rx="3" ry="4" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><ellipse cx="145" cy="85" rx="3" ry="4" fill="#fef3c7" stroke="#dc2626" stroke-width="1"/><text x="155" y="115" font-size="9" text-anchor="middle" fill="#666" font-family="sans-serif">Pé</text><ellipse cx="100" cy="155" rx="35" ry="20" fill="#fca5a5" opacity="0.4" stroke="#a8987d" stroke-width="1"/><line x1="65" y1="155" x2="135" y2="155" stroke="#7c2d12" stroke-width="1.5"/><ellipse cx="80" cy="148" rx="2.5" ry="3" fill="#fca5a5" stroke="#dc2626" stroke-width="0.8"/><ellipse cx="100" cy="143" rx="2.5" ry="3" fill="#fca5a5" stroke="#dc2626" stroke-width="0.8"/><ellipse cx="120" cy="148" rx="2.5" ry="3" fill="#fca5a5" stroke="#dc2626" stroke-width="0.8"/><ellipse cx="90" cy="162" rx="2.5" ry="3" fill="#fca5a5" stroke="#dc2626" stroke-width="0.8"/><ellipse cx="110" cy="162" rx="2.5" ry="3" fill="#fca5a5" stroke="#dc2626" stroke-width="0.8"/><text x="100" y="195" font-size="10" text-anchor="middle" fill="#666" font-family="sans-serif">Vesículas em mãos, pés, boca</text></svg>`,
-  
+
   pediculose: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><ellipse cx="100" cy="60" rx="80" ry="30" fill="#a8987d"/><g stroke="#7c2d12" stroke-width="1.5" fill="none"><line x1="40" y1="55" x2="35" y2="180"/><line x1="55" y1="50" x2="50" y2="180"/><line x1="70" y1="48" x2="68" y2="180"/><line x1="85" y1="45" x2="83" y2="180"/><line x1="100" y1="44" x2="100" y2="180"/><line x1="115" y1="45" x2="117" y2="180"/><line x1="130" y1="48" x2="132" y2="180"/><line x1="145" y1="50" x2="150" y2="180"/><line x1="160" y1="55" x2="165" y2="180"/></g><ellipse cx="55" cy="75" rx="2" ry="3" fill="#fef3c7" stroke="#7c2d12" stroke-width="0.5"/><ellipse cx="70" cy="73" rx="2" ry="3" fill="#fef3c7" stroke="#7c2d12" stroke-width="0.5"/><ellipse cx="85" cy="80" rx="2" ry="3" fill="#fef3c7" stroke="#7c2d12" stroke-width="0.5"/><ellipse cx="100" cy="77" rx="2" ry="3" fill="#fef3c7" stroke="#7c2d12" stroke-width="0.5"/><ellipse cx="115" cy="80" rx="2" ry="3" fill="#fef3c7" stroke="#7c2d12" stroke-width="0.5"/><ellipse cx="130" cy="75" rx="2" ry="3" fill="#fef3c7" stroke="#7c2d12" stroke-width="0.5"/><ellipse cx="145" cy="78" rx="2" ry="3" fill="#fef3c7" stroke="#7c2d12" stroke-width="0.5"/><ellipse cx="90" cy="100" rx="5" ry="8" fill="#7c2d12"/><line x1="86" y1="95" x2="80" y2="92" stroke="#7c2d12" stroke-width="1"/><line x1="94" y1="95" x2="100" y2="92" stroke="#7c2d12" stroke-width="1"/><line x1="86" y1="105" x2="80" y2="110" stroke="#7c2d12" stroke-width="1"/><line x1="94" y1="105" x2="100" y2="110" stroke="#7c2d12" stroke-width="1"/><text x="100" y="195" font-size="10" text-anchor="middle" fill="#666" font-family="sans-serif">Lêndeas + piolho</text></svg>`,
-  
+
   dermatite_fralda: `<svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><path d="M 50 30 L 150 30 L 160 80 L 130 130 Q 100 145 70 130 L 40 80 Z" fill="#fde8d0" stroke="#a8987d" stroke-width="1.5"/><ellipse cx="100" cy="80" rx="50" ry="35" fill="#fca5a5" opacity="0.7"/><circle cx="65" cy="50" r="2.5" fill="#fef3c7" stroke="#dc2626" stroke-width="0.8"/><circle cx="135" cy="50" r="2.5" fill="#fef3c7" stroke="#dc2626" stroke-width="0.8"/><circle cx="55" cy="100" r="2.5" fill="#fef3c7" stroke="#dc2626" stroke-width="0.8"/><circle cx="145" cy="100" r="2.5" fill="#fef3c7" stroke="#dc2626" stroke-width="0.8"/><circle cx="80" cy="130" r="2.5" fill="#fef3c7" stroke="#dc2626" stroke-width="0.8"/><circle cx="120" cy="130" r="2.5" fill="#fef3c7" stroke="#dc2626" stroke-width="0.8"/><circle cx="100" cy="80" r="42" fill="none" stroke="#7c2d12" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/><text x="100" y="170" font-size="10" text-anchor="middle" fill="#666" font-family="sans-serif">Eritema + pústulas satélites = candidíase</text></svg>`,
-  
+
   urticaria: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><rect width="200" height="200" fill="#fde8d0"/><path d="M 30 50 Q 50 35 70 45 Q 85 55 80 75 Q 70 90 50 85 Q 30 75 30 50" fill="#fca5a5" opacity="0.7" stroke="#dc2626" stroke-width="1"/><path d="M 40 60 Q 50 55 60 60 Q 65 70 55 75 Q 45 75 40 65 Z" fill="#fde8d0" opacity="0.7"/><path d="M 110 70 Q 140 60 160 80 Q 165 105 145 115 Q 120 115 110 95 Q 105 80 110 70" fill="#fca5a5" opacity="0.7" stroke="#dc2626" stroke-width="1"/><path d="M 125 85 Q 140 80 150 90 Q 145 100 135 100 Q 125 95 125 85" fill="#fde8d0" opacity="0.7"/><path d="M 60 130 Q 100 120 130 140 Q 130 165 100 170 Q 65 165 55 145 Q 55 138 60 130" fill="#fca5a5" opacity="0.7" stroke="#dc2626" stroke-width="1"/><text x="100" y="195" font-size="10" text-anchor="middle" fill="#666" font-family="sans-serif">Placas evanescentes + centro pálido</text></svg>`,
-  
+
   escabiose: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;height:auto"><rect width="200" height="200" fill="#fde8d0"/><path d="M 50 80 L 50 130 L 60 140 L 60 150 L 65 155 L 70 150 M 65 145 L 75 145 L 85 145 L 95 145 L 105 145 L 115 145 L 125 145 L 135 145 L 145 145 M 50 130 L 70 145" fill="none" stroke="#a8987d" stroke-width="1.5"/><path d="M 60 100 Q 65 95 70 100 Q 65 105 60 100" fill="none" stroke="#7c2d12" stroke-width="1.5"/><path d="M 80 95 Q 85 90 90 95 Q 85 100 80 95" fill="none" stroke="#7c2d12" stroke-width="1.5"/><path d="M 100 92 Q 105 87 110 92 Q 105 97 100 92" fill="none" stroke="#7c2d12" stroke-width="1.5"/><circle cx="62" cy="98" r="2" fill="#dc2626"/><circle cx="82" cy="93" r="2" fill="#dc2626"/><circle cx="102" cy="90" r="2" fill="#dc2626"/><circle cx="120" cy="125" r="2" fill="#dc2626"/><circle cx="140" cy="130" r="2" fill="#dc2626"/><circle cx="75" cy="135" r="2" fill="#dc2626"/><text x="100" y="180" font-size="10" text-anchor="middle" fill="#666" font-family="sans-serif">Túneis + pápulas em interdígitos</text></svg>`
 };
 
@@ -2809,7 +2701,7 @@ const DOENCAS_2 = [
    alertas:['NÃO USAR AAS — Síndrome de Reye','NÃO USAR ibuprofeno — associação com fasciíte necrosante por Strep A em varicela','Atenção à impetiginização (pus, eritema progressivo, febre alta tardia)','Pneumonia varicelosa, encefalite, varicela hemorrágica = formas graves'],
    referenciar:'Imunossuprimido, gestante, RN cuja mãe teve varicela 5d antes a 2d depois do parto, complicação (pneumonia, encefalite), suspeita de bacteremia/sepse',
    medsRel:['paracetamol','dipirona','aciclovir','hidroxizina','dexclorfeniramina'],fonte:'SBP DC Imunizações; AAP'},
-  
+
   {id:'d-impetigo',nome:'Impetigo',cat:'dermato',emoji:'🟡',cor:'#7a3c5a',svg:'impetigo',
    apresentacao:'NÃO BOLHOSO (70%): pápulas → vesículas → pústulas → crosta cor de mel ("melicérica"), peri-orificial. BOLHOSO: bolhas flácidas que rompem deixando colarete descamativo (S. aureus, mais em <2a).',
    agentes:'S. aureus (predominante), Streptococcus pyogenes (grupo A)',
@@ -2825,7 +2717,7 @@ const DOENCAS_2 = [
    alertas:['Glomerulonefrite pós-estreptocócica (5-10% após cepa nefritogênica) — proteinúria, hematúria, edema 1-3 sem após. ATB NÃO previne GNDA','Impetigo extenso febril e séptico → ectima ou escarlatina','Recorrência: avaliar portador nasal (família), atópica não controlada'],
    referenciar:'Impetigo extenso, sinais sistêmicos, falha de 2 cursos de ATB, recidiva frequente, suspeita de MRSA',
    medsRel:['mupirocina','cefalexina','amox-clav','clindamicina-vo'],fonte:'SBP DC Dermato; AAP'},
-  
+
   {id:'d-dermatite-atopica',nome:'Dermatite Atópica',cat:'dermato',emoji:'🌿',cor:'#7a3c5a',svg:'dermatite_atopica',
    apresentacao:'Prurido + xerose + lesões eczematosas. POR IDADE: lactente (face, extensores); criança (flexuras — cubital, poplítea, pescoço); adolescente (mãos, pálpebras, flexuras).',
    agentes:'Multifatorial: barreira cutânea defeituosa (filagrina), inflamação Th2, atopia',
@@ -2846,7 +2738,7 @@ const DOENCAS_2 = [
    alertas:['NÃO usar corticoide potente em face/dobras (atrofia, telangiectasia, estria)','Surto súbito + dor + vesículas + febre = eczema herpético (Kaposi varicelliforme) → URGÊNCIA → aciclovir IV','Crianças com DA grave têm maior risco de asma, rinite alérgica (marcha atópica)'],
    referenciar:'Eczema herpético, infecção bacteriana extensa/refratária, refratária a corticoide tópico potência adequada × 2 sem, falha medrar associada',
    medsRel:['corticoide-topico','hidroxizina','dexclorfeniramina','desloratadina','cefalexina','aciclovir'],fonte:'SBP DC Dermato; AAD'},
-  
+
   {id:'d-dermatite-fralda',nome:'Dermatite de Fralda',cat:'dermato',emoji:'👶',cor:'#7a3c5a',svg:'dermatite_fralda',
    apresentacao:'Eritema + descamação na área de contato. IRRITATIVA (poupa dobras), CANDIDIÁSICA (envolve dobras + pústulas satélites + colarete) ou MISTA. Pico 9-12 meses.',
    agentes:'Irritativa: urina/fezes + oclusão + fricção. Candidíase: Candida albicans',
@@ -2867,7 +2759,7 @@ const DOENCAS_2 = [
    alertas:['Eritema persistente + irritabilidade + perda peso = pensar acrodermatite enteropática (déficit zinco)','Sinais de impetigo (crostas amareladas) → ATB tópico (mupirocina) ± sistêmico se extenso','Refratário a 2 sem de tratamento: revisar diagnóstico'],
    referenciar:'Refratária a 2-4 semanas, lesões atípicas, sangramento, falha medrar associada',
    medsRel:['corticoide-topico','nistatina-oral','dexametasona'],fonte:'SBP DC Dermato'},
-  
+
   {id:'d-eritema-infeccioso',nome:'Eritema Infeccioso (5ª doença)',cat:'dermato',emoji:'🌹',cor:'#7a3c5a',svg:'eritema_infeccioso',
    apresentacao:'Pródromo discreto (febre baixa, sintomas inespecíficos 5-7 dias). Depois: eritema FACIAL intenso ("face esbofeteada") + palidez perioral. Após 1-4 dias: exantema rendilhado em tronco e extensores que aparece e some com calor/luz solar (1-3 semanas, vai e vem).',
    agentes:'Parvovírus B19',
@@ -2882,7 +2774,7 @@ const DOENCAS_2 = [
    alertas:['GESTANTE: B19 pode causar HIDROPSIA FETAL (especialmente <20 sem) — orientar afastamento de FASE PRODRÔMICA','CRISE APLÁSICA em hemoglobinopatia (falciforme, esferocitose, talassemia) — pode ser grave','PACIENTE IMUNOSSUPRIMIDO: viremia persistente + anemia crônica (avaliar IVIG)','Artralgia/artrite (mais em adolescentes/adultos) — autolimitada'],
    referenciar:'Gestante exposta (sorologia + USG), paciente com hemoglobinopatia + sintomas, imunossuprimido com anemia, artrite persistente',
    medsRel:['paracetamol','dipirona'],fonte:'SBP DC Infecto; AAP'},
-  
+
   {id:'d-roseola',nome:'Roséola (Exantema Súbito)',cat:'dermato',emoji:'🌸',cor:'#7a3c5a',
    apresentacao:'Lactente 6m-2a. Febre alta súbita (39-40°C) por 3-5 dias COM CRIANÇA EM BOM ESTADO GERAL. Defervescência crítica → exantema maculopapular róseo no tronco que se espalha para pescoço/membros, dura 1-2 dias.',
    agentes:'Herpesvírus humano 6 (HHV-6) predominante; HHV-7',
@@ -2897,7 +2789,7 @@ const DOENCAS_2 = [
    alertas:['CONVULSÃO FEBRIL ocorre em 5-15% (HHV-6 tem tropismo SNC) — orientar conduta','Lactente <3 meses com febre alta: NUNCA assumir roséola sem investigação (risco de IBI)','Criança em bom estado geral durante febre alta é ponto-chave para suspeição'],
    referenciar:'Convulsão complicada, febre persistente >5 dias, alteração estado geral, suspeita de IBI',
    medsRel:['paracetamol','dipirona'],fonte:'SBP DC Infecto'},
-  
+
   {id:'d-mao-pe-boca',nome:'Doença Mão-Pé-Boca',cat:'dermato',emoji:'✋',cor:'#7a3c5a',svg:'mao_pe_boca',
    apresentacao:'Pródromo curto: febre baixa, mal-estar 1-2 dias. Depois: úlceras DOLOROSAS na boca (palato, língua) + vesículas com halo eritematoso em MÃOS e PÉS. Recusa alimentar comum por dor oral.',
    agentes:'Coxsackievirus A16 (mais comum), Enterovirus 71 (formas mais graves), Coxsackie A6 (forma atípica extensa)',
@@ -2915,7 +2807,7 @@ const DOENCAS_2 = [
    alertas:['EV-71 pode causar encefalite, meningite, miocardite — quadro neurológico = URGÊNCIA','Coxsackie A6 (forma atípica): exantema mais extenso, descamação + onicomadese semanas depois','Recusa alimentar persistente + sinais de desidratação → internar','Lactente <6m: risco de complicação maior'],
    referenciar:'Sinais neurológicos (cefaleia intensa, alteração consciência, ataxia, mioclonia), miocardite (dor torácica, taquicardia, IC), desidratação grave',
    medsRel:['paracetamol','dipirona','ibuprofeno','sro'],fonte:'SBP DC Infecto'},
-  
+
   {id:'d-escarlatina',nome:'Escarlatina',cat:'dermato',emoji:'🍓',cor:'#7a3c5a',svg:'escarlatina',
    apresentacao:'Faringoamigdalite estreptocócica + exantema típico: textura "lixa" (papular fino, eritematoso) + acentuação em flexuras (sinal Pastia) + palidez perioral (sinal Filatov) + língua "framboesa" (após dia 4-5). Descamação em mãos e pés após 7-14 dias.',
    agentes:'Streptococcus pyogenes produtor de toxina eritrogênica (grupo A)',
@@ -2932,7 +2824,7 @@ const DOENCAS_2 = [
    alertas:['Tratamento previne febre reumática (tem que ser ≤9 dias do início)','GLOMERULONEFRITE pós-estreptocócica: monitorar urina 4-6 sem após (proteinúria, hematúria, edema)','Atenção à Doença de Kawasaki — descartar em todo "exantema febril" persistente','Língua framboesa: característica mas aparece tardiamente'],
    referenciar:'Suspeita de Kawasaki, complicação supurativa (abscesso peritonsilar), GNDA, falha terapêutica (raro)',
    medsRel:['amoxicilina','cefalexina','azitromicina','paracetamol','dipirona'],fonte:'SBP DC Infecto; AAP'},
-  
+
   {id:'d-pediculose',nome:'Pediculose (Piolho)',cat:'dermato',emoji:'🦟',cor:'#7a3c5a',svg:'pediculose',
    apresentacao:'Prurido intenso no couro cabeludo, especialmente regiões occipital e retroauricular. Lêndeas (ovos) brancas/amareladas aderidas próximas ao couro cabeludo. Piolho adulto raro de visualizar. Escarificação, possível impetiginização secundária.',
    agentes:'Pediculus humanus capitis (piolho da cabeça)',
@@ -2951,7 +2843,7 @@ const DOENCAS_2 = [
    alertas:['Lêndeas muito próximas ao couro (≤6 mm) = infestação ATIVA. Distantes = passadas','RESISTÊNCIA à permetrina é crescente — pode precisar mudar para ivermectina','Não compartilhar pentes, escovas, bonés, faixas, coque (cabelo preso reduz transmissão)','Impetigo secundário (sangramento, crostas) → ATB tópico/sistêmico'],
    referenciar:'Refratário a 2-3 ciclos de tratamento adequado, infestação extensa, impetiginização grave',
    medsRel:['permetrina','ivermectina','mupirocina','cefalexina'],fonte:'SBP DC Dermato'},
-  
+
   {id:'d-escabiose',nome:'Escabiose (Sarna)',cat:'dermato',emoji:'🪲',cor:'#7a3c5a',svg:'escabiose',
    apresentacao:'PRURIDO INTENSO, especialmente noturno. Lesões: pápulas, vesículas, escoriações, túneis (sinal patognomônico — sulcos lineares 2-15 mm). Distribuição CLÁSSICA: interdigitos, punhos, axilas, área umbilical, genitália, glúteos. Em LACTENTE: pode acometer face, palmas, plantas (atípico).',
    agentes:'Sarcoptes scabiei var. hominis',
@@ -2969,7 +2861,7 @@ const DOENCAS_2 = [
    alertas:['Falha frequente por: tratamento parcial, não tratar contactantes, não tratar ambiente, não cobrir áreas atípicas em lactente','Prurido persistente ≠ falha — pode ser hipersensibilidade ao ácaro morto (1-4 semanas)','Lactente: NÃO esquecer de tratar face, couro cabeludo, palmas, plantas','Notificação de surto (creche, escola, abrigo)'],
    referenciar:'Escabiose crostosa, refratário a 2 ciclos com tratamento adequado de contactantes/ambiente, surto institucional',
    medsRel:['permetrina','ivermectina','hidroxizina','cefalexina'],fonte:'SBP DC Dermato; CDC'},
-  
+
   {id:'d-urticaria',nome:'Urticária Aguda',cat:'dermato',emoji:'🌺',cor:'#7a3c5a',svg:'urticaria',
    apresentacao:'Placas eritematosas pruriginosas, EVANESCENTES (cada lesão dura <24h), com centro frequentemente pálido. Pode ter angioedema (edema de lábios, face, mãos, pés). Aguda <6 semanas; crônica ≥6 semanas.',
    agentes:'Aguda em criança: viral (mais comum), alimentos (leite, ovo, amendoim, mariscos, frutos do mar), medicamentos (β-lactâmicos, AINEs), picada de inseto, contato. Crônica frequentemente idiopática.',
@@ -2987,12 +2879,6 @@ const DOENCAS_2 = [
    referenciar:'Anafilaxia, urticária crônica (>6 sem), suspeita de doença sistêmica (vasculite, mastocitose), refratária a anti-H1 em dose máxima',
    medsRel:['loratadina','desloratadina','cetirizina','hidroxizina','dexclorfeniramina','prednisolona','adrenalina-pcr'],fonte:'SBP DC Alergia; EAACI'}
 ];
-
-
-// === doencas-3.js ===
-// ============================================================================
-// DOENÇAS — PARTE 3: Outras (ITU, conjuntivite, anemia, estomatite)
-// ============================================================================
 
 const DOENCAS_3 = [
   {id:'d-itu',nome:'Infecção do Trato Urinário (ITU)',cat:'outras',emoji:'💧',cor:'#3a7a4d',
@@ -3021,7 +2907,7 @@ const DOENCAS_3 = [
    alertas:['LACTENTE <3 MESES com febre sem foco: sempre investigar com urocultura — alta prevalência (10%)','Em adolescente sexualmente ativa: sempre considerar ISTs no diagnóstico diferencial','Falha de ATB empírico em 48h: revisar antibiograma (resistência E. coli a SMX-TMP é alta)','Cicatriz renal pode causar HAS, IRC, complicação na gestação — diagnóstico precoce importa'],
    referenciar:'Pielonefrite com toxemia, abscesso renal, falha de tratamento, anomalia anatômica suspeita, ITU recorrente >2 episódios em 6 meses',
    medsRel:['cefalexina','nitrofurantoina','smx-tmp','ceftriaxona','amoxicilina'],fonte:'SBP DC Nefro; AAP'},
-  
+
   {id:'d-conjuntivite',nome:'Conjuntivite',cat:'outras',emoji:'👁️',cor:'#3a7a4d',
    apresentacao:'Hiperemia conjuntival + secreção. VIRAL (mais comum): bilateral, secreção aquosa, adenopatia pré-auricular, sinais de IVAS. BACTERIANA: secreção purulenta, "olho colado" pela manhã, geralmente bilateral em pediatria. ALÉRGICA: prurido intenso, secreção mucoide, bilateral, sazonal/recorrente.',
    agentes:'Viral: adenovírus (mais comum), enterovirus, herpes simples. Bacteriana: H. influenzae não-tipável, S. pneumoniae, S. aureus, M. catarrhalis. RN: gonococo (1-3 dias), Chlamydia (5-14 dias)',
@@ -3050,7 +2936,7 @@ const DOENCAS_3 = [
    alertas:['Conjuntivite COM dor importante, fotofobia, alteração visual, hipoema → URGÊNCIA OFTALMO (pode ser uveíte, ceratite, ferimento)','RN com olho purulento <30d: sempre investigar gonococo + chlamydia (pode causar perfuração corneana)','Conjuntivite herpética: vesículas em pálpebra, ceratite (necessita avaliação especializada — aciclovir + NÃO USAR corticoide)','Surto em creche: comum por adenovírus — orientar afastamento e higiene'],
    referenciar:'RN com conjuntivite, dor ocular importante, alteração visual, refratário a 5-7 dias de tratamento adequado, suspeita de herpes ocular ou córnea acometida',
    medsRel:['loratadina','desloratadina','cetirizina'],fonte:'SBP DC Oftalmo'},
-  
+
   {id:'d-estomatite-herpetica',nome:'Gengivoestomatite Herpética Primária',cat:'outras',emoji:'😣',cor:'#3a7a4d',
    apresentacao:'Lactente/criança 6m-5a (1ª exposição ao HSV-1). Febre alta abrupta + recusa alimentar + sialorreia + halitose intensa + lesões orais: gengiva edemaciada hiperêmica + úlceras dolorosas em mucosa oral, língua, lábios. Lesões periorais (vesículas → crostas) na fase tardia. Adenopatia cervical. Duração 7-14 dias.',
    agentes:'Herpes simples vírus tipo 1 (HSV-1) — primoinfecção',
@@ -3070,7 +2956,7 @@ const DOENCAS_3 = [
    alertas:['QUASE TODA criança terá HSV — 1ª infecção sintomática em 10%, recidivas (herpes labial) em alguns','Eczema herpético em criança com dermatite atópica = URGÊNCIA (Kaposi varicelliforme) — aciclovir IV','Encefalite herpética rara mas grave — alteração mental, convulsão → punção lombar, RM, aciclovir IV imediato','Após resolução, vírus permanece latente — recidivas como herpes labial recorrente'],
    referenciar:'Desidratação grave, suspeita de complicação (encefalite, eczema herpético), imunossupressão, refratário ao tratamento',
    medsRel:['aciclovir','paracetamol','dipirona','ibuprofeno','sro'],fonte:'SBP DC Infecto'},
-  
+
   {id:'d-anemia-ferropriva',nome:'Anemia Ferropriva',cat:'outras',emoji:'🩸',cor:'#3a7a4d',
    apresentacao:'Pico 6m-2a e adolescência. Maioria assintomática. Sintomas: palidez, fadiga, irritabilidade, anorexia, picamalácia (geofagia, comer gelo), pobre desempenho escolar/cognitivo. Em estágio avançado: taquicardia, sopro sistólico, baqueteamento.',
    agentes:'INGESTÃO INSUFICIENTE: aleitamento materno exclusivo prolongado sem suplementação, alimentação inadequada (leite de vaca <1a, dieta pobre em ferro). PERDAS: prematuridade, sangramento crônico (parasitose, refluxo, doença celíaca), distúrbios de absorção',
@@ -3090,7 +2976,7 @@ const DOENCAS_3 = [
    alertas:['EFEITOS NEUROCOGNITIVOS persistentes — mesmo após tratamento, pode haver impacto cognitivo. Prevenir é melhor','Cuidado com OVERDOSE acidental (>20 mg/kg = grave) — guardar longe de criança em frasco com tampa de segurança','Manchas dentárias com gotas — diluir em pouca água/suco e usar canudinho ou aplicar atrás dos dentes','Falha terapêutica: principal causa é má adesão (sabor, manchas, constipação). Considerar mudar para outras formas (ferro polimaltose tem melhor tolerância)','Sangramento oculto positivo + anemia: investigar TGI (D. celíaca, varizes, parasitose)'],
    referenciar:'Anemia que não responde a 3 meses de ferro com adesão adequada, suspeita de hemoglobinopatia, sangramento de fonte não identificada, anemia + falha medrar',
    medsRel:['sulfato-ferroso','zinco','albendazol'],fonte:'SBP DC Hemato; SBP Nutro 2022'},
-  
+
   {id:'d-coqueluche',nome:'Coqueluche',cat:'respiratoria',emoji:'😷',cor:'#1f5a78',
    apresentacao:'3 fases. CATARRAL (1-2 sem): IVAS comum, tosse leve. PAROXÍSTICA (2-6 sem): tosse paroxística + GUINCHO inspiratório + cianose ± vômito pós-tosse + linfocitose periférica. CONVALESCENÇA (sem-meses): tosse residual. LACTENTE jovem: pode não ter guincho, apresentar APNEIA.',
    agentes:'Bordetella pertussis',
@@ -3111,7 +2997,7 @@ const DOENCAS_3 = [
    alertas:['LACTENTE <6 MESES: alta letalidade (apneia, hipertensão pulmonar, encefalopatia) — sempre internar','Vacina materna no 3º trimestre (dTpa) protege RN — orientar gestantes e familiares','Surto: notificação + bloqueio em comunicantes + revisar caderneta vacinal','Linfocitose >20.000 com linfócitos atípicos é sugestiva (não específica)'],
    referenciar:'<3 meses, apneia, cianose, complicação, falha de tratamento ambulatorial',
    medsRel:['azitromicina','claritromicina','smx-tmp'],fonte:'MS; SBP DC Infecto'},
-  
+
   {id:'d-otite-externa',nome:'Otite Externa Aguda',cat:'respiratoria',emoji:'👂',cor:'#1f5a78',
    apresentacao:'Otalgia que PIORA com manipulação tragal/pavilhão (sinal do tragus +). Edema + eritema do conduto, secreção. Sem alteração da membrana timpânica (que pode estar visível ou não pelo edema). Frequente após natação ("otite do nadador") ou trauma local.',
    agentes:'Pseudomonas aeruginosa (mais comum), S. aureus, Enterobactérias, fúngica (Candida, Aspergillus — após uso prolongado de ATB tópico)',
@@ -3131,22 +3017,12 @@ const DOENCAS_3 = [
    medsRel:['cipro-otologico','paracetamol','dipirona','ibuprofeno'],fonte:'SBP DC ORL'}
 ];
 
-
-// === integrador-final.js ===
-// ============================================================================
-// INTEGRAÇÃO FINAL — Mescla fármacos extras, doenças, protocolo IVAS
-// e implementa o 3º modo "Doenças Comuns"
-// ============================================================================
-
-// ---- 1. DEDUP de fármacos: remover de MED_V5 os que estão em MED_EXTRAS_4 ----
 const _idsExtras4 = new Set(MED_EXTRAS_4.map(m => m.id));
-// Tirar também 'acetilcisteina-vo' do V5 (conceito duplicado com 'nac-oral')
+
 const MED_V5_LIMPO = MED_V5.filter(m => !_idsExtras4.has(m.id) && m.id !== 'acetilcisteina-vo');
 
-// Adicionar fármacos novos em MEDICACOES
 MEDICACOES.push(...MED_EXTRAS_4, ...MED_V5_LIMPO);
 
-// Adicionar classes 'mucolitico' e 'antitussigeno' se ainda não existirem
 if (!CLASSES.find(c => c.id === 'mucolitico')) {
   CLASSES.push({id:'mucolitico', nome:'Mucolíticos', cor:'#1f5a78', sigla:'MC'});
 }
@@ -3163,7 +3039,6 @@ if (!CLASSES.find(c => c.id === 'antihipertensivo')) {
   CLASSES.push({id:'antihipertensivo', nome:'Anti-hipertensivos', cor:'#7c2128', sigla:'AH'});
 }
 
-// ---- 2. Adicionar PROTOCOLOS_V5 ao PROTOCOLOS (sem duplicar) ----
 if (typeof PROTOCOLOS_V5 !== 'undefined') {
   const _idsProto = new Set(PROTOCOLOS.map(p => p.id));
   PROTOCOLOS_V5.forEach(p => {
@@ -3171,31 +3046,26 @@ if (typeof PROTOCOLOS_V5 !== 'undefined') {
   });
 }
 
-// ---- 3. Mesclar SVG_LESOES_1 em SVG_LESOES ----
 if (typeof SVG_LESOES_1 !== 'undefined') {
   Object.assign(SVG_LESOES, SVG_LESOES_1);
 }
 
-// ---- 4. Mesclar DOENCAS_1 + DOENCAS_2 + DOENCAS_3 em uma só lista ----
 const DOENCAS = [
   ...(typeof DOENCAS_1 !== 'undefined' ? DOENCAS_1 : []),
   ...(typeof DOENCAS_2 !== 'undefined' ? DOENCAS_2 : []),
   ...(typeof DOENCAS_3 !== 'undefined' ? DOENCAS_3 : [])
 ];
 
-// Normalizar campos: aceitar tanto 'cat' quanto 'categoria', 'emoji' quanto 'icone',
-// 'diferenciais' quanto 'diferencial', 'medsRel' quanto 'medicacoesRelacionadas'
 DOENCAS.forEach(d => {
   if (!d.categoria && d.cat) d.categoria = d.cat;
   if (!d.icone && d.emoji) d.icone = d.emoji;
   if (!d.diferencial && d.diferenciais) d.diferencial = d.diferenciais;
   if (!d.medicacoesRelacionadas && d.medsRel) d.medicacoesRelacionadas = d.medsRel;
   if (!d.quandoEscalar && d.referenciar) d.quandoEscalar = d.referenciar;
-  // Normalizar 'respiratoria' → 'ivas' (mantém esquema unificado)
+
   if (d.categoria === 'respiratoria') d.categoria = 'ivas';
 });
 
-// ---- 5. Categorias de doenças com cor + ícone ----
 const CATEGORIAS_DOENCA = [
   {id:'todas', nome:'Todas', icone:'∀', cor:'#1c1917'},
   {id:'ivas', nome:'IVAS / Vias Aéreas', icone:'🤧', cor:'#1f5a78'},
@@ -3206,9 +3076,6 @@ const CATEGORIAS_DOENCA = [
 
 estado.catDoenca = 'todas';
 
-// ============================================================================
-// RENDER DOENÇAS — UI
-// ============================================================================
 function renderDoencas() {
   const filtroBusca = estado.busca.trim().toLowerCase();
   const filtroCat = estado.catDoenca;
@@ -3248,7 +3115,6 @@ function renderDoenca(d) {
   if (expandida) {
     html += '<div class="med-content"><div class="med-content-inner">';
 
-    // SVG ilustrativo (se houver)
     if (d.svg && typeof SVG_LESOES !== 'undefined' && SVG_LESOES[d.svg]) {
       html += `<div style="margin-bottom:14px;padding:14px;background:#fafaf9;border:1px solid #e7e5e4;text-align:center">
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#78716c;margin-bottom:8px">Padrão de lesão (ilustrativo)</div>
@@ -3257,17 +3123,14 @@ function renderDoenca(d) {
       </div>`;
     }
 
-    // Apresentação completa
     html += `<div class="sec-title">Apresentação</div>
       <p style="font-size:13.5px;line-height:1.55;margin:0 0 14px 0">${esc(d.apresentacao)}</p>`;
 
-    // Agentes etiológicos
     if (d.agentes) {
       html += `<div class="sec-title">Agentes</div>
         <p style="font-size:13px;color:#57534e;margin:0 0 14px 0">${esc(d.agentes)}</p>`;
     }
 
-    // Diferenciais
     const diff = d.diferencial || d.diferenciais;
     if (diff && diff.length) {
       html += `<div class="sec-title">Diferenciais</div>
@@ -3276,7 +3139,6 @@ function renderDoenca(d) {
       html += '</ul>';
     }
 
-    // Conduta numerada
     if (d.conduta && d.conduta.length) {
       html += `<div class="sec-title">Conduta</div>
         <ol style="list-style:none;padding:0;margin:0 0 14px 0;counter-reset:item">`;
@@ -3289,7 +3151,6 @@ function renderDoenca(d) {
       html += '</ol>';
     }
 
-    // Alertas
     if (d.alertas && d.alertas.length) {
       html += `<div class="sec-title" style="color:#a16207">⚠ Atenção</div>
         <div style="background:#fffbeb;border-left:4px solid #d97706;padding:10px 12px;font-size:13px;color:#78350f;margin-bottom:14px">`;
@@ -3299,13 +3160,11 @@ function renderDoenca(d) {
       html += '</div>';
     }
 
-    // Quando escalar
     if (d.quandoEscalar) {
       html += `<div class="sec-title" style="color:#7c2128">Quando escalar</div>
         <div style="background:#fef2f2;border-left:4px solid #b91c1c;padding:10px 12px;font-size:13px;color:#7f1d1d;margin-bottom:14px">${esc(d.quandoEscalar)}</div>`;
     }
 
-    // Medicações relacionadas (atalhos clicáveis)
     if (d.medicacoesRelacionadas && d.medicacoesRelacionadas.length) {
       html += `<div class="sec-title">Medicações relacionadas</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">`;
@@ -3318,7 +3177,6 @@ function renderDoenca(d) {
       html += '</div>';
     }
 
-    // Fonte
     if (d.fonte) {
       html += `<p class="fonte">Fonte: ${esc(d.fonte)}</p>`;
     }
@@ -3329,7 +3187,6 @@ function renderDoenca(d) {
   return html;
 }
 
-// Atalho: clicar em "medicação relacionada" leva ao modo medicações com o card expandido
 function irParaMed(id) {
   setModo('medicacoes');
   estado.classe = 'todas';
@@ -3345,29 +3202,25 @@ function irParaMed(id) {
   }, 100);
 }
 
-// ============================================================================
-// SOBRESCRITAS — setModo (3 modos), injetarBarraModo (3 botões)
-// ============================================================================
 setModo = function(modo) {
   estado.modo = modo;
   estado.expandidas.clear();
-  // Filtros: classes de medicação só no modo medicacoes
+
   const filtros = $('filtros');
   if (filtros) filtros.style.display = modo === 'medicacoes' ? 'flex' : 'none';
-  // Filtro de categorias só no modo doenças
+
   const catBar = $('cat-doenca-bar');
   if (catBar) catBar.style.display = modo === 'doencas' ? 'flex' : 'none';
-  // Re-render
+
   if (modo === 'medicacoes') renderLista();
   else if (modo === 'protocolos') renderProtocolos();
   else if (modo === 'doencas') renderDoencas();
-  // Atualizar botões
+
   document.querySelectorAll('.modo-btn').forEach(b => {
     b.classList.toggle('ativo', b.dataset.modo === modo);
   });
 };
 
-// Sobrescrever toggleMed pra cobrir os 3 modos
 toggleMed = function(id) {
   if (estado.expandidas.has(id)) estado.expandidas.delete(id);
   else estado.expandidas.add(id);
@@ -3393,9 +3246,8 @@ function renderCatDoencaBar() {
   ).join('');
 }
 
-// Reescrever a barra de modos pra ter 3 botões
 function injetarBarraModoFinal() {
-  // Remover barra antiga se existir
+
   const oldBar = $('modos-bar');
   if (oldBar) oldBar.remove();
   const oldCatBar = $('cat-doenca-bar');
@@ -3405,7 +3257,6 @@ function injetarBarraModoFinal() {
   const filtros = $('filtros');
   if (!main || !filtros) return;
 
-  // Barra de 3 modos
   const bar = document.createElement('div');
   bar.id = 'modos-bar';
   bar.style.cssText = 'display:flex;gap:0;margin-bottom:12px;border:1px solid #d6d3d1;background:#fafaf9';
@@ -3415,14 +3266,12 @@ function injetarBarraModoFinal() {
     <button class="modo-btn" data-modo="doencas" onclick="setModo('doencas')" style="flex:1;padding:10px 6px;background:transparent;border:none;font-family:'Fraunces',Georgia,serif;font-size:14px;font-weight:500;cursor:pointer;letter-spacing:-.01em">🏥 Doenças</button>`;
   main.insertBefore(bar, filtros);
 
-  // Barra de categorias de doenças (oculta inicialmente)
   const catBar = document.createElement('div');
   catBar.id = 'cat-doenca-bar';
   catBar.style.cssText = 'display:none;gap:6px;margin-bottom:12px;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px';
   main.insertBefore(catBar, filtros);
   renderCatDoencaBar();
 
-  // CSS pro botão ativo (já injetado antes, mas garantir)
   if (!document.getElementById('modo-btn-css')) {
     const style = document.createElement('style');
     style.id = 'modo-btn-css';
@@ -3431,10 +3280,9 @@ function injetarBarraModoFinal() {
   }
 }
 
-// Re-disparar a injeção
 function _initIntegradorFinal() {
   injetarBarraModoFinal();
-  // Re-bind do campo de busca para os 3 modos
+
   try {
     const buscaEl = document.getElementById('busca');
     if (buscaEl && buscaEl.parentNode) {
@@ -3447,8 +3295,8 @@ function _initIntegradorFinal() {
         else renderLista();
       });
     }
-  } catch (e) { /* silencioso */ }
-  // Re-render lista de medicações (agora com fármacos novos)
+  } catch (e) {  }
+
   if (typeof renderFiltros === 'function') renderFiltros();
   if (typeof renderLista === 'function') renderLista();
 }
@@ -3459,16 +3307,8 @@ if (document.readyState !== 'loading') {
   document.addEventListener('DOMContentLoaded', _initIntegradorFinal);
 }
 
-
-// === meds-escopolamina.js ===
-// ============================================================================
-// MED_ESCOPOLAMINA — adições solicitadas v5.1
-// Escopolamina (Buscopan) e Escopolamina + Dipirona (Buscopan Composto)
-// Fontes: Bula Anvisa Buscopan Pediátrico/Composto; Manual Einstein; SBP
-// ============================================================================
-
 const MED_ESCOPOLAMINA = [
-  // ==================== ESCOPOLAMINA (BUTILBROMETO) — VO ====================
+
   {id:'escopolamina',nome:'Escopolamina (Butilbrometo de Hioscina)',classe:'gastrointestinal',
    apresentacao:'Buscopan® Pediátrico solução gotas 10 mg/mL (1 gota = 0,5 mg | 1 mL = 20 gotas) | Buscopan® drágea 10 mg | Ampola 20 mg/mL × 1 mL (IM/IV)',
    indicacoes:[
@@ -3502,7 +3342,6 @@ const MED_ESCOPOLAMINA = [
    ajusteHepatico:'Cautela em hepatopatia grave',
    fonte:'Bula Anvisa Buscopan Pediátrico (Boehringer); Manual Einstein; SBP DC Gastroenterologia'},
 
-  // ==================== ESCOPOLAMINA + DIPIRONA — VO ====================
   {id:'escopolamina-dipirona',nome:'Escopolamina + Dipirona (Buscopan Composto)',classe:'gastrointestinal',
    apresentacao:'Buscopan Composto® comprimido: 10 mg escopolamina + 250 mg dipirona | Buscopan Composto® ampola 5 mL: 4 mg escopolamina + 2,5 g dipirona (use ampola se peso permitir dose IV)',
    indicacoes:[
@@ -3534,20 +3373,12 @@ const MED_ESCOPOLAMINA = [
    fonte:'Bula Anvisa Buscopan Composto (Boehringer); SBP; Manual Einstein de Farmácia Clínica'}
 ];
 
-// Adicionar ao banco principal
 if (typeof MEDICACOES !== 'undefined') {
   MEDICACOES.push(...MED_ESCOPOLAMINA);
 }
 
-
-// === ampolas-1.js ===
-// ============================================================================
-// BANCO DE AMPOLAS — CÁLCULO DE DILUIÇÃO PRÁTICO POR PESO
-// Parte 1: Analgesia, antitérmica, antiemética, anti-histamínica
-// ============================================================================
-
 const AMPOLAS_1 = [
-  // ============== ANALGÉSICOS / ANTITÉRMICOS ==============
+
   {
     id:'a-dipirona',
     nome:'Dipirona (Metamizol)',
@@ -3704,7 +3535,6 @@ const AMPOLAS_1 = [
     fonte:'AHA; ABRAMEDE'
   },
 
-  // ============== ANTIEMÉTICOS ==============
   {
     id:'a-metoclopramida',
     nome:'Metoclopramida',
@@ -3804,7 +3634,6 @@ const AMPOLAS_1 = [
     fonte:'ANVISA; bula referência'
   },
 
-  // ============== ANTI-HISTAMÍNICOS / SEDAÇÃO ANTI-H ==============
   {
     id:'a-prometazina',
     nome:'Prometazina',
@@ -3854,7 +3683,6 @@ const AMPOLAS_1 = [
     fonte:'ANVISA; bula'
   },
 
-  // ============== ANTIESPASMÓDICOS ==============
   {
     id:'a-buscopan-simples',
     nome:'Escopolamina (Hioscina, Butilbrometo)',
@@ -3902,15 +3730,8 @@ const AMPOLAS_1 = [
   }
 ];
 
-
-// === ampolas-2.js ===
-// ============================================================================
-// BANCO DE AMPOLAS — Parte 2
-// Corticoides, sedação, anticonvulsivantes, ATB, vasoativas, eletrólitos, antídotos
-// ============================================================================
-
 const AMPOLAS_2 = [
-  // ============== CORTICOIDES ==============
+
   {
     id:'a-hidrocortisona-100',
     nome:'Hidrocortisona 100 mg',
@@ -4017,7 +3838,6 @@ const AMPOLAS_2 = [
     fonte:'ANVISA; bula'
   },
 
-  // ============== ANTICONVULSIVANTES / SEDAÇÃO ==============
   {
     id:'a-diazepam',
     nome:'Diazepam',
@@ -4126,7 +3946,6 @@ const AMPOLAS_2 = [
     fonte:'AES; SBP'
   },
 
-  // ============== ANTIBIÓTICOS PARENTERAIS COMUNS ==============
   {
     id:'a-ceftriaxona',
     nome:'Ceftriaxona',
@@ -4247,7 +4066,6 @@ const AMPOLAS_2 = [
     fonte:'SBP; IDSA'
   },
 
-  // ============== CARDIOVASCULAR / VASOATIVAS ==============
   {
     id:'a-adrenalina',
     nome:'Adrenalina (Epinefrina)',
@@ -4329,7 +4147,6 @@ const AMPOLAS_2 = [
     fonte:'SBP Cardio; AHA'
   },
 
-  // ============== ELETRÓLITOS / SOROS HIPERTÔNICOS ==============
   {
     id:'a-glicose50',
     nome:'Glicose 50%',
@@ -4411,7 +4228,6 @@ const AMPOLAS_2 = [
     fonte:'PALS; SBP'
   },
 
-  // ============== ANTÍDOTOS ==============
   {
     id:'a-naloxona',
     nome:'Naloxona',
@@ -4461,19 +4277,11 @@ const AMPOLAS_2 = [
   }
 ];
 
-
-// === integrador-v5.js ===
-// ============================================================================
-// INTEGRAÇÃO V5 — Ampolas (4º modo) + SVGs aprimorados das dermatoses
-// ============================================================================
-
-// ---- Mesclar ampolas ----
 const AMPOLAS = [
   ...(typeof AMPOLAS_1 !== 'undefined' ? AMPOLAS_1 : []),
   ...(typeof AMPOLAS_2 !== 'undefined' ? AMPOLAS_2 : [])
 ];
 
-// Categorias de ampolas
 const CATEGORIAS_AMPOLA = [
   {id:'todas', nome:'Todas', icone:'∀', cor:'#1c1917'},
   {id:'analgesia', nome:'Analgesia', icone:'💊', cor:'#7c2128'},
@@ -4493,12 +4301,8 @@ const CATEGORIAS_AMPOLA = [
 estado.catAmpola = 'todas';
 estado.modo = estado.modo || 'medicacoes';
 
-// ============================================================================
-// CÁLCULO PRINCIPAL DE DILUIÇÃO
-// ============================================================================
 function calcularAmpola(amp, doseObj, peso) {
-  // doseObj: { dosePorKg, unidade, max, ... }
-  // amp.concentracao: mg/mL ou mcg/mL ou mEq/mL ou UI/mL
+
   if (!peso || !doseObj || doseObj.dosePorKg === 0) return null;
 
   let doseTotal = doseObj.dosePorKg * peso;
@@ -4508,8 +4312,6 @@ function calcularAmpola(amp, doseObj, peso) {
     limitada = true;
   }
 
-  // Detectar se a unidade é volumétrica (mL/kg, mL, mL/h)
-  // Nesse caso, o doseTotal JÁ é o volume — não dividir por concentração
   const unidadeLower = (doseObj.unidade || '').toLowerCase();
   const unidadeVolumetrica = unidadeLower.startsWith('ml');
 
@@ -4518,7 +4320,7 @@ function calcularAmpola(amp, doseObj, peso) {
     volumeAmp = doseTotal;
     volumeAmpAlt = null;
   } else {
-    // Unidade em massa (mg, mcg, mEq, UI) — dividir por concentração
+
     volumeAmp = doseTotal / amp.concentracao;
     volumeAmpAlt = amp.concentracaoAlt ? doseTotal / amp.concentracaoAlt : null;
   }
@@ -4535,7 +4337,7 @@ function calcularAmpola(amp, doseObj, peso) {
 function fmt(n, casas) {
   if (n === null || n === undefined || isNaN(n)) return '—';
   if (casas === undefined) casas = 2;
-  // Arredondar com casas inteligentes
+
   if (n >= 100) return n.toFixed(0);
   if (n >= 10) return n.toFixed(1);
   if (n >= 1) return n.toFixed(2);
@@ -4543,9 +4345,6 @@ function fmt(n, casas) {
   return n.toFixed(3);
 }
 
-// ============================================================================
-// RENDER AMPOLAS
-// ============================================================================
 function renderAmpolas() {
   const filtroBusca = estado.busca.trim().toLowerCase();
   const filtroCat = estado.catAmpola;
@@ -4564,7 +4363,6 @@ function renderAmpolas() {
     return;
   }
 
-  // Aviso se sem peso
   let aviso = '';
   if (!estado.peso) {
     aviso = '<div style="background:#fffbeb;border:1px solid #f59e0b;color:#78350f;padding:10px 14px;margin-bottom:14px;font-size:13px;font-weight:500">⚠️ Defina o peso da criança no painel acima para ver os volumes em mL prontos pra puxar.</div>';
@@ -4593,7 +4391,6 @@ function renderAmpola(amp) {
   if (expandida) {
     html += '<div class="med-content"><div class="med-content-inner">';
 
-    // Apresentações
     html += `<div class="sec-title">Apresentação</div>
       <ul style="list-style:none;padding:0;margin:0 0 12px 0">`;
     amp.apresentacao.forEach(ap => {
@@ -4601,7 +4398,6 @@ function renderAmpola(amp) {
     });
     html += '</ul>';
 
-    // Doses + cálculo
     html += `<div class="sec-title">Doses & Cálculo</div>`;
     if (amp.doses && amp.doses.length) {
       amp.doses.forEach(d => {
@@ -4614,7 +4410,7 @@ function renderAmpola(amp) {
           </div>`;
 
         if (calc && d.dosePorKg > 0) {
-          // Cor de fundo do bloco de cálculo
+
           html += `<div style="background:${cat.cor};color:white;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:13px">
             <div style="opacity:.8;font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Para ${estado.peso} kg</div>
             <div style="font-size:15px;font-weight:600">Dose: ${fmt(calc.doseTotal)} ${calc.unidade}${calc.limitada ? ' (máx atingida)' : ''}</div>
@@ -4628,7 +4424,6 @@ function renderAmpola(amp) {
       });
     }
 
-    // Doses por peso fixo (ex: penicilina benzatina)
     if (amp.dosesPorPeso) {
       html += `<div class="sec-title">Dose por faixa de peso</div>
         <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px">`;
@@ -4642,7 +4437,6 @@ function renderAmpola(amp) {
       html += '</table>';
     }
 
-    // Doses especiais
     if (amp.dosesEspeciais) {
       html += `<div class="sec-title">Doses especiais</div>
         <ul style="margin:0 0 12px 0;padding-left:18px;font-size:13px;line-height:1.6">`;
@@ -4650,7 +4444,6 @@ function renderAmpola(amp) {
       html += '</ul>';
     }
 
-    // Diluição prática (caixa destacada)
     html += `<div class="sec-title">Como diluir</div>
       <div style="background:#1c1917;color:#fafaf9;padding:12px;font-size:13px;line-height:1.55;margin-bottom:12px">
         <div style="display:flex;gap:10px;margin-bottom:8px"><span style="background:#10b981;color:white;padding:2px 6px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em">IV</span>
@@ -4667,12 +4460,10 @@ function renderAmpola(amp) {
           <span>${esc(amp.diluicaoRetal)}</span></div>` : ''}
       </div>`;
 
-    // Via geral
     html += `<div style="font-size:12px;color:#57534e;margin-bottom:10px">
       <strong>Vias:</strong> ${esc(amp.via)} · <strong>Idade mín:</strong> ${esc(amp.idadeMin)}
     </div>`;
 
-    // Alertas
     if (amp.alertas && amp.alertas.length) {
       html += `<div class="sec-title" style="color:#a16207">⚠ Atenção</div>
         <div style="background:#fffbeb;border-left:4px solid #d97706;padding:10px 12px;font-size:13px;color:#78350f;margin-bottom:10px">`;
@@ -4689,20 +4480,17 @@ function renderAmpola(amp) {
   return html;
 }
 
-// ============================================================================
-// SOBRESCRITAS — setModo agora suporta 4 modos
-// ============================================================================
 const _setModoAnterior = setModo;
 setModo = function(modo) {
   estado.modo = modo;
   estado.expandidas.clear();
-  // Filtros de classe (medicações)
+
   const filtros = $('filtros');
   if (filtros) filtros.style.display = modo === 'medicacoes' ? 'flex' : 'none';
-  // Filtro categorias doenças
+
   const catBar = $('cat-doenca-bar');
   if (catBar) catBar.style.display = modo === 'doencas' ? 'flex' : 'none';
-  // Filtro categorias ampolas
+
   const ampBar = $('cat-ampola-bar');
   if (ampBar) ampBar.style.display = modo === 'ampolas' ? 'flex' : 'none';
 
@@ -4716,7 +4504,6 @@ setModo = function(modo) {
   });
 };
 
-// toggleMed cobrindo 4 modos
 toggleMed = function(id) {
   if (estado.expandidas.has(id)) estado.expandidas.delete(id);
   else estado.expandidas.add(id);
@@ -4743,7 +4530,6 @@ function renderCatAmpolaBar() {
   ).join('');
 }
 
-// Reescrever a barra de modos pra 4 botões
 function injetarBarraModoFinalV2() {
   const oldBar = $('modos-bar');
   if (oldBar) oldBar.remove();
@@ -4766,14 +4552,12 @@ function injetarBarraModoFinalV2() {
     <button class="modo-btn" data-modo="doencas" onclick="setModo('doencas')" style="flex:1;min-width:100px;padding:10px 4px;background:transparent;border:none;font-family:'Fraunces',Georgia,serif;font-size:13px;font-weight:500;cursor:pointer;letter-spacing:-.01em">🏥 Doenças</button>`;
   main.insertBefore(bar, filtros);
 
-  // Barra cat doenças
   const catBarD = document.createElement('div');
   catBarD.id = 'cat-doenca-bar';
   catBarD.style.cssText = 'display:none;gap:6px;margin-bottom:12px;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px';
   main.insertBefore(catBarD, filtros);
   if (typeof renderCatDoencaBar === 'function') renderCatDoencaBar();
 
-  // Barra cat ampolas
   const catBarA = document.createElement('div');
   catBarA.id = 'cat-ampola-bar';
   catBarA.style.cssText = 'display:none;gap:6px;margin-bottom:12px;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px';
@@ -4788,13 +4572,6 @@ function injetarBarraModoFinalV2() {
   }
 }
 
-// ============================================================================
-// SVGs APRIMORADOS DAS DERMATOSES
-// Substituir os esquemáticos por SVGs com:
-//  - Silhueta com distribuição da lesão
-//  - Inset (close-up) mostrando a lesão de perto
-//  - Anotações
-// ============================================================================
 const SVG_LESOES_V2 = {
   varicela: `<svg viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#fafaf9">
     <!-- Silhueta -->
@@ -5294,15 +5071,11 @@ const SVG_LESOES_V2 = {
   </svg>`
 };
 
-// Mesclar SVGs aprimorados (sobrescrevem os anteriores)
 Object.assign(SVG_LESOES, SVG_LESOES_V2);
 
-// ============================================================================
-// REINIT — sobrescrever a injeção
-// ============================================================================
 function _reinitV5() {
   injetarBarraModoFinalV2();
-  // Re-bind do campo de busca para os 4 modos
+
   try {
     const buscaEl = document.getElementById('busca');
     if (buscaEl && buscaEl.parentNode) {
@@ -5316,8 +5089,8 @@ function _reinitV5() {
         else renderLista();
       });
     }
-  } catch (e) { /* silencioso */ }
-  // Re-render a lista atual
+  } catch (e) {  }
+
   setModo(estado.modo || 'medicacoes');
 }
 
@@ -5331,16 +5104,8 @@ if (document.readyState !== 'loading') {
 
 <script>
 
-// ===== MÓDULO UBS v6.0: doencas-ubs-1.js =====
-// ============================================================================
-// DOENÇAS UBS — Parte 1: Respiratórias crônicas + Dermatologia crônica
-// Atendimento longitudinal em APS · Crianças e adolescentes 0-18 anos
-// Fontes: PCDT-MS, CABs, Tratado MFC Gusso 2ª ed, Duncan 5ª ed,
-//         Tratado SBP 6ª ed 2024, SBD, GINA 2025
-// ============================================================================
-
 const DOENCAS_UBS_1 = [
-  // ========== A. RESPIRATÓRIAS CRÔNICAS ==========
+
   {
     id:'u-asma-controle', nome:'Asma — controle crônico', cat:'respiratoria', icone:'🌬️', cor:'#1f5a78',
     quando:'Sibilância recorrente + diagnóstico baseado em clínica + espirometria (≥6a) com VEF1/CVF reduzido + reversibilidade ≥12% pós-BD. <6a: clínico + resposta a teste terapêutico. Prevalência ~20% em crianças BR.',
@@ -5410,7 +5175,6 @@ const DOENCAS_UBS_1 = [
     fonte:'CHEST 2020 Pediatric Cough Guidelines; SBP-DC Pneumologia; TMFC cap. 196'
   },
 
-  // ========== B. DERMATOLÓGICAS CRÔNICAS ==========
   {
     id:'u-dermatite-atopica-cronica', nome:'Dermatite atópica (manejo crônico)', cat:'dermato', icone:'🌹', cor:'#7c2128',
     svg:'dermatite_atopica',
@@ -5568,19 +5332,12 @@ const DOENCAS_UBS_1 = [
   }
 ];
 
-// Adicionar ao banco principal de DOENCAS
 if (typeof DOENCAS !== 'undefined') {
   DOENCAS.push(...DOENCAS_UBS_1);
 }
 
-
-// ===== MÓDULO UBS v6.0: doencas-ubs-2.js =====
-// ============================================================================
-// DOENÇAS UBS — Parte 2: GI funcionais + Endócrino/Hemato
-// ============================================================================
-
 const DOENCAS_UBS_2 = [
-  // ========== C. GASTROINTESTINAIS FUNCIONAIS ==========
+
   {
     id:'u-colica-lactente-cronica', nome:'Cólica do lactente (Roma IV)', cat:'gi', icone:'👶', cor:'#a05a2c',
     quando:'Critérios Roma IV: lactente <5 meses com episódios de irritabilidade, agitação ou choro intenso recorrentes, sem causa óbvia, autolimitados (>3h/dia, >3 dias/sem), sem falha de crescimento. Pico 6 sem, resolução 3-4 meses.',
@@ -5747,7 +5504,6 @@ const DOENCAS_UBS_2 = [
     fonte:'Roma IV; ESPGHAN; SBP-DC Gastroenterologia; TMFC'
   },
 
-  // ========== D. ENDOCRINOMETABÓLICAS ==========
   {
     id:'u-obesidade-pediatrica', nome:'Obesidade infantil/adolescente', cat:'endocrino', icone:'⚖️', cor:'#5a4f8a',
     quando:'Diagnóstico pelo IMC z-score (curvas OMS 2006/2007): obesidade z-score >+2 (ou >+3 obesidade grave); sobrepeso z-score +1 a +2. Avaliar crescimento + circunferência abdominal + PA + estágio puberal. Comorbidades: HAS, dislipidemia, esteatose hepática, DM2, SOP, apneia obstrutiva, dor articular, transtornos psicológicos.',
@@ -5885,21 +5641,12 @@ const DOENCAS_UBS_2 = [
   }
 ];
 
-// Adicionar ao banco principal
 if (typeof DOENCAS !== 'undefined') {
   DOENCAS.push(...DOENCAS_UBS_2);
 }
 
-
-// ===== MÓDULO UBS v6.0: doencas-ubs-3.js =====
-// ============================================================================
-// DOENÇAS UBS — Parte 3: Neurologia + Psiquiatria Pediátrica completa
-// Leque completo: TDAH, TEA, Depressão, Ansiedade, Bipolar, Tourette, TA,
-// Insônia, Enurese, Crise aguda
-// ============================================================================
-
 const DOENCAS_UBS_3 = [
-  // ========== E. NEUROLÓGICAS ==========
+
   {
     id:'u-enxaqueca-pediatrica', nome:'Enxaqueca pediátrica e cefaleia primária', cat:'neuro', icone:'🧠', cor:'#4a3052',
     quando:'Cefaleia primária mais comum em criança/adolescente. ICHD-3 adaptado pediátrico: cefaleia 2-72h (mais curta que adulto), bilateral frontotemporal em <12a (pode ser unilateral ≥12a), pulsátil, intensidade moderada-grave, piora com atividade, com náusea/vômitos e/ou foto/fonofobia. Aura visual em 15-30%. Pico início 7-12 anos. Cefaleia tensional: bilateral em peso, leve-moderada, sem náusea importante.',
@@ -5966,7 +5713,6 @@ const DOENCAS_UBS_3 = [
     fonte:'ILAE; SBN-Infantil; SBP-DC Neurologia; Tratado SBP'
   },
 
-  // ========== F. PSIQUIATRIA PEDIÁTRICA ==========
   {
     id:'u-tdah', nome:'TDAH — Transtorno do Déficit de Atenção/Hiperatividade', cat:'psiq', icone:'🎯', cor:'#5a4f8a',
     quando:'Prevalência BR 7,6% em 6-17 anos. DSM-5-TR: ≥6 sintomas de desatenção e/ou hiperatividade-impulsividade por ≥6 meses, em ≥2 contextos (casa + escola), início <12 anos, prejuízo funcional. Apresentação predominantemente desatenta, hiperativa-impulsiva ou combinada. ALTA comorbidade: transtornos de aprendizagem (40%), TOD (40%), ansiedade (25%), depressão (15%), TEA, tiques, sono.',
@@ -6352,19 +6098,12 @@ const DOENCAS_UBS_3 = [
   }
 ];
 
-// Adicionar ao banco principal
 if (typeof DOENCAS !== 'undefined') {
   DOENCAS.push(...DOENCAS_UBS_3);
 }
 
-
-// ===== MÓDULO UBS v6.0: doencas-ubs-4.js =====
-// ============================================================================
-// DOENÇAS UBS — Parte 4: Infecto + Uro + Adolescente + Puericultura
-// ============================================================================
-
 const DOENCAS_UBS_4 = [
-  // ========== G. INFECTOPARASITÁRIAS RECORRENTES ==========
+
   {
     id:'u-helmintos', nome:'Helmintíases (verminoses)', cat:'parasito', icone:'🪱', cor:'#5d7a3a',
     quando:'Endêmicas no Brasil. Espécies frequentes: Ascaris lumbricoides, Trichuris trichiura, Ancylostoma/Necator (ancilostomose), Strongyloides stercoralis, Enterobius vermicularis (oxiúros — prurido anal noturno em criança), Hymenolepis nana, Taenia spp. Manifestações: assintomático (maioria), dor abdominal, diarreia, anemia (ancilostomíase), prurido anal (oxiuríase), tosse e infiltrado pulmonar (ciclo de Loeffler), eosinofilia, baixo crescimento.',
@@ -6419,7 +6158,6 @@ const DOENCAS_UBS_4 = [
     fonte:'PCDT-MS; SBP-DC Infectologia; Tratado SBP'
   },
 
-  // ========== H. UROLÓGICAS PEDIÁTRICAS ==========
   {
     id:'u-itu-recorrente-profilaxia', nome:'ITU recorrente (profilaxia em pediatria)', cat:'uro', icone:'💧', cor:'#3c7a7a',
     quando:'ITU é uma das infecções bacterianas mais comuns em pediatria. RECORRÊNCIA: ≥2 ITUs em 6 meses ou ≥3 em 12 meses, OU ITU febril em <2 anos com fator de risco (RVU, uropatia obstrutiva, disfunção miccional). PROFILAXIA AB indicada conforme critérios SBP/SBN.',
@@ -6482,7 +6220,6 @@ const DOENCAS_UBS_4 = [
     fonte:'AAP; SBP-DC Urologia; SBU; ESPU'
   },
 
-  // ========== J. SAÚDE DO ADOLESCENTE ==========
   {
     id:'u-contracepcao-adolescente', nome:'Contracepção em adolescente', cat:'adolescente', icone:'💊', cor:'#a05a2c',
     quando:'Adolescente sexualmente ativo OU com previsão de início de atividade sexual tem direito à contracepção (ECA + CFM). PRIVACIDADE garantida — não é necessário consentimento parental para prescrição de contraceptivo (Resolução CFM 1/2024). Sempre DUPLA PROTEÇÃO (preservativo + método hormonal/LARC).',
@@ -6555,7 +6292,6 @@ const DOENCAS_UBS_4 = [
     fonte:'PCDT IST/MS atualizado 2024-2025; PCDT PrEP/PEP atualizado 2024-2025; SBP-DC Adolescência; SBI; Tratado SBP'
   },
 
-  // ========== K. PUERICULTURA E SUPLEMENTAÇÃO ==========
   {
     id:'u-puericultura-suplementacao', nome:'Suplementação longitudinal e puericultura', cat:'puericultura', icone:'🍼', cor:'#3a7a4d',
     quando:'Acompanhamento longitudinal de crescimento e desenvolvimento + suplementação preventiva conforme MS/SBP. Calendário de consultas: 1ª sem, 1m, 2m, 4m, 6m, 9m, 12m, 18m, 24m, anuais até 5a, depois a cada 1-2 anos.',
@@ -6618,25 +6354,12 @@ const DOENCAS_UBS_4 = [
   }
 ];
 
-// Adicionar ao banco principal
 if (typeof DOENCAS !== 'undefined') {
   DOENCAS.push(...DOENCAS_UBS_4);
 }
 
-
-// ===== MÓDULO UBS v6.0: meds-ubs.js =====
-// ============================================================================
-// MEDICAÇÕES UBS — Atendimento longitudinal pediátrico
-// Cada medicação tem campos extras:
-//   sus: 'sus-ubs' | 'pfpb' | 'ceaf' | 'particular' | 'farmasus' | 'sae'
-//   receita: 'A3' | 'B1' | 'C1' | 'comum'
-// Mapas visuais:
-//   🟢 sus-ubs (CBAF/REMUME) | 🔵 pfpb (Farmácia Popular) | 🟣 ceaf (alto custo)
-//   🟠 particular | ⚫ farmasus (Portaria 344/98) | 🔴 sae (TB/HIV/hep)
-// ============================================================================
-
 const MED_UBS = [
-  // ==================== PSIQUIATRIA PEDIÁTRICA ====================
+
   {
     id:'metilfenidato-ir', nome:'Metilfenidato IR (Ritalina®)', classe:'estimulante-tdah', sus:'farmasus', receita:'A3',
     apresentacao:'Comp 10 mg',
@@ -7010,7 +6733,6 @@ const MED_UBS = [
     fonte:'AAP; ABP'
   },
 
-  // ==================== RESPIRATÓRIO CRÔNICO ====================
   {
     id:'beclometasona', nome:'Beclometasona (CI inalatória)', classe:'corticoide-inalatorio', sus:'pfpb', receita:'comum',
     apresentacao:'Spray dosimetrado 50/250 mcg; aerolin 50 mcg',
@@ -7093,7 +6815,6 @@ const MED_UBS = [
     fonte:'ARIA 2020; FDA'
   },
 
-  // ==================== DERMATOLOGIA ====================
   {
     id:'hidrocortisona-1', nome:'Hidrocortisona 1% creme', classe:'corticoide-topico-baixa', sus:'sus-ubs', receita:'comum',
     apresentacao:'Creme 1% — bisnagas 30 g',
@@ -7250,7 +6971,6 @@ const MED_UBS = [
     fonte:'PCDT-MS; SBP-DC Infectologia'
   },
 
-  // ==================== GASTROINTESTINAL ====================
   {
     id:'lactulose', nome:'Lactulose', classe:'laxante-osmotico', sus:'sus-ubs', receita:'comum',
     apresentacao:'Xarope 667 mg/mL',
@@ -7322,7 +7042,6 @@ const MED_UBS = [
     fonte:'Anvisa 2014; ESPGHAN'
   },
 
-  // ==================== ENDÓCRINO/METABÓLICO ====================
   {
     id:'metformina', nome:'Metformina', classe:'biguanida', sus:'sus-ubs', receita:'comum',
     apresentacao:'Comp 500/850/1000 mg; XR 500/750 mg',
@@ -7388,7 +7107,6 @@ const MED_UBS = [
     fonte:'PCDT-MS Doença Falciforme atualizado 2024 (CONITEC); SBHH'
   },
 
-  // ==================== CARDIOLÓGICOS ====================
   {
     id:'propranolol', nome:'Propranolol', classe:'beta-bloqueador', sus:'sus-ubs', receita:'comum',
     apresentacao:'Comp 10/40/80 mg',
@@ -7422,7 +7140,6 @@ const MED_UBS = [
     fonte:'AAN/AHS; ABP'
   },
 
-  // ==================== INFECTOLOGIA / IST ====================
   {
     id:'tenofovir-emtricitabina', nome:'Tenofovir + Emtricitabina (PrEP/PEP)', classe:'antirretroviral', sus:'sae', receita:'comum',
     apresentacao:'Comp 300+200 mg',
@@ -7439,7 +7156,6 @@ const MED_UBS = [
     fonte:'PCDT PrEP/MS; PCDT PEP/MS'
   },
 
-  // ==================== CONTRACEPÇÃO ====================
   {
     id:'etinilestradiol-levonorgestrel', nome:'Etinilestradiol 30 mcg + Levonorgestrel 150 mcg', classe:'aco-combinado', sus:'sus-ubs', receita:'comum',
     apresentacao:'Cartela 21 comp (Ciclo 21®, Microvlar®, Level®)',
@@ -7485,7 +7201,6 @@ const MED_UBS = [
     fonte:'SBP+Febrasgo 2024; Lei 14.443/2022'
   },
 
-  // ==================== UROLÓGICOS / INFECCIOSOS ====================
   {
     id:'smx-tmp', nome:'Sulfametoxazol + Trimetoprim (SMX-TMP)', classe:'antibiotico-sulfa', sus:'sus-ubs', receita:'comum',
     apresentacao:'Comp 400+80 mg; suspensão 200+40 mg/5 mL',
@@ -7569,7 +7284,6 @@ const MED_UBS = [
     fonte:'PCDT; SBP-DC Infectologia'
   },
 
-  // ==================== ANTI-H1 SEDATIVO E OUTROS ====================
   {
     id:'hidroxizina', nome:'Hidroxizina', classe:'anti-h1-sedativo', sus:'sus-ubs', receita:'comum',
     apresentacao:'Comp 25 mg; xarope 2 mg/mL',
@@ -7603,24 +7317,13 @@ const MED_UBS = [
   }
 ];
 
-// Adicionar ao banco principal
 if (typeof MEDICACOES !== 'undefined') {
   MEDICACOES.push(...MED_UBS);
 }
 
-
-// ===== MÓDULO UBS v6.0: integrador-v6-ubs.js =====
-// ============================================================================
-// INTEGRADOR v6 — Aba UBS (5ª aba) + suporte a meds com schema UBS
-// FIX: sobrescreve renderMed para meds com .sus, sobrescreve setModo,
-//      observa criação/modificação de #modos-bar via MutationObserver
-// DEVE SER O ÚLTIMO MÓDULO carregado
-// ============================================================================
-
 (function(){
   'use strict';
 
-  // ===== MAPAS DE BADGES =====
   const SUS_BADGE = {
     'sus-ubs':    { emoji:'🟢', label:'SUS-UBS',   cor:'#1a7a3d', titulo:'Disponível na CBAF/REMUME municipal' },
     'pfpb':       { emoji:'🔵', label:'Farm.Pop.', cor:'#1c5fa3', titulo:'Farmácia Popular do Brasil — gratuito com receita' },
@@ -7653,7 +7356,6 @@ if (typeof MEDICACOES !== 'undefined') {
 
   let catUBSAtiva = 'todas';
 
-  // ===== HELPERS =====
   const get = (id) => (typeof $ === 'function' ? $(id) : document.getElementById(id));
   const escUBS = (s) => (typeof esc === 'function' ? esc(s) : String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
 
@@ -7674,7 +7376,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return '<span class="badge-rx" title="'+escUBS(b.titulo)+'" style="display:inline-block;background:'+b.cor+'1a;color:'+b.cor+';border:1px solid '+b.cor+'66;padding:2px 8px;font-size:11px;font-weight:600;margin:2px 4px 2px 0;font-family:\'JetBrains Mono\',monospace;line-height:1.4;white-space:nowrap">'+b.emoji+' '+escUBS(b.label)+'</span>';
   }
 
-  // ===== RENDER MED UBS — schema próprio =====
   function renderMedUBSCard(m) {
     const expandida = (typeof estado !== 'undefined' && estado.expandidas) ? estado.expandidas.has(m.id) : false;
     const corClasse = '#5a4f8a'; // cor padrão para meds UBS
@@ -7686,7 +7387,7 @@ if (typeof MEDICACOES !== 'undefined') {
     html += '<h3 class="med-name">'+escUBS(m.nome)+'</h3>';
     if (m.classe) html += '<span class="med-classe">'+escUBS(m.classe)+'</span>';
     html += '</div>';
-    // Linha de badges SUS + Receita (sempre visível, tampanca destaque)
+
     html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">';
     if (m.sus)     html += badgeSUS(m.sus);
     if (m.receita) html += badgeReceita(m.receita);
@@ -7699,7 +7400,6 @@ if (typeof MEDICACOES !== 'undefined') {
     if (expandida) {
       html += '<div class="med-content"><div class="med-content-inner">';
 
-      // Indicações
       if (m.indicacoes && m.indicacoes.length) {
         html += '<div class="sec-title">Indicações pediátricas</div>';
         html += '<ul style="list-style:none;padding:0;margin:0 0 14px">';
@@ -7709,43 +7409,36 @@ if (typeof MEDICACOES !== 'undefined') {
         html += '</ul>';
       }
 
-      // Dose
       if (m.dose) {
         html += '<div class="sec-title">Dose pediátrica</div>';
         html += '<div style="padding:10px 12px;background:#1c1917;color:#fafaf9;font-family:\'JetBrains Mono\',monospace;font-size:13px;line-height:1.5;margin-bottom:14px;white-space:pre-wrap">'+escUBS(m.dose)+'</div>';
       }
 
-      // Contraindicação
       if (m.contraindicacao) {
         html += '<div class="sec-title">Contraindicações</div>';
         html += '<div style="padding:8px 12px;background:#fef2f2;border-left:3px solid #7c2128;font-size:13px;line-height:1.45;margin-bottom:14px;color:#7c2128">'+escUBS(m.contraindicacao)+'</div>';
       }
 
-      // Efeitos adversos
       if (m.efeitosAdversos) {
         html += '<div class="sec-title">Efeitos adversos</div>';
         html += '<div style="padding:8px 12px;background:#fefce8;border-left:3px solid #c4a800;font-size:13px;line-height:1.45;margin-bottom:14px">'+escUBS(m.efeitosAdversos)+'</div>';
       }
 
-      // Monitorização
       if (m.monitorizacao) {
         html += '<div class="sec-title">Monitorização</div>';
         html += '<div style="padding:8px 12px;background:#eff6ff;border-left:3px solid #1c5fa3;font-size:13px;line-height:1.45;margin-bottom:14px">'+escUBS(m.monitorizacao)+'</div>';
       }
 
-      // Interações
       if (m.interacoes) {
         html += '<div class="sec-title">Interações</div>';
         html += '<div style="padding:8px 12px;background:#fafaf9;border-left:3px solid #78716c;font-size:13px;line-height:1.45;margin-bottom:14px">'+escUBS(m.interacoes)+'</div>';
       }
 
-      // Observação
       if (m.observacao) {
         html += '<div class="sec-title">Observações práticas</div>';
         html += '<div style="padding:8px 12px;background:#f0fdf4;border-left:3px solid #1a7a3d;font-size:13px;line-height:1.45;margin-bottom:14px">'+escUBS(m.observacao)+'</div>';
       }
 
-      // Fonte
       if (m.fonte) {
         html += '<p class="fonte" style="font-size:11px;color:#78716c;font-family:\'JetBrains Mono\',monospace;margin-top:14px">Fonte: '+escUBS(m.fonte)+'</p>';
       }
@@ -7756,7 +7449,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return html;
   }
 
-  // Toggle específico para meds UBS — usa estado.expandidas como o original
   window.toggleMedUBS = function(id) {
     try {
       if (typeof estado === 'undefined') return;
@@ -7771,7 +7463,6 @@ if (typeof MEDICACOES !== 'undefined') {
     } catch(e) { console.warn('[UBS] toggleMedUBS erro:', e.message); }
   };
 
-  // ===== SOBRESCREVER renderMed PARA DETECTAR MEDS UBS =====
   const _renderMedOriginal = (typeof renderMed === 'function') ? renderMed : null;
 
   window.renderMed = function(m) {
@@ -7787,7 +7478,6 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   };
 
-  // ===== ABA UBS =====
   function renderUBS(filtroBusca) {
     const c = get('lista');
     if (!c) return;
@@ -7808,7 +7498,6 @@ if (typeof MEDICACOES !== 'undefined') {
       );
     }
 
-    // Cabeçalho
     let html = '<div style="background:#f5f5f4;border:1px solid #d6d3d1;padding:14px 16px;margin-bottom:16px">';
     html += '<div style="font-family:\'Fraunces\',Georgia,serif;font-size:18px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px">🏛️ Aba UBS — Atendimento longitudinal pediátrico</div>';
     html += '<div style="font-size:13px;color:#44403c;margin-bottom:10px;line-height:1.45">Doenças crônicas e psiquiatria pediátrica para APS. Cada fármaco tem badge visual de disponibilidade SUS e tipo de receita.</div>';
@@ -7818,7 +7507,6 @@ if (typeof MEDICACOES !== 'undefined') {
     });
     html += '</div></div>';
 
-    // Categorias
     html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">';
     CATEGORIAS_UBS.forEach(cat => {
       const ativo = cat.id === catUBSAtiva;
@@ -7829,7 +7517,6 @@ if (typeof MEDICACOES !== 'undefined') {
     });
     html += '</div>';
 
-    // Contagem
     const cont = get('contagem');
     if (cont) cont.textContent = filtradas.length + ' doenç' + (filtradas.length===1?'a':'as');
 
@@ -7933,12 +7620,12 @@ if (typeof MEDICACOES !== 'undefined') {
   window.irParaMedUBS = function(medId) {
     if (typeof setModo === 'function') setModo('medicacoes');
     setTimeout(() => {
-      // Expandir a medicação
+
       if (typeof estado !== 'undefined' && estado.expandidas) {
         estado.expandidas.add(medId);
       }
       if (typeof renderLista === 'function') renderLista();
-      // Scroll
+
       setTimeout(() => {
         const el = document.getElementById('med-'+medId);
         if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
@@ -7946,28 +7633,23 @@ if (typeof MEDICACOES !== 'undefined') {
     }, 100);
   };
 
-  // ===== SOBRESCREVER setModo COMPLETAMENTE =====
   window.setModo = function(modo) {
     if (typeof estado !== 'undefined') {
       estado.modo = modo;
       if (estado.expandidas) estado.expandidas.clear();
     }
 
-    // Atualizar botões da barra
     document.querySelectorAll('.modo-btn').forEach(b => {
       b.classList.toggle('ativo', b.dataset.modo === modo);
     });
 
-    // Esconder/mostrar filtros
     const filtros = document.querySelector('.filtros');
     if (filtros) filtros.style.display = modo === 'medicacoes' ? 'flex' : 'none';
 
-    // Limpar busca
     if (typeof estado !== 'undefined') estado.busca = '';
     const buscaEl = get('busca');
     if (buscaEl) buscaEl.value = '';
 
-    // Roteamento por modo
     if (modo === 'ubs') {
       catUBSAtiva = 'todas';
       renderUBS();
@@ -7982,15 +7664,12 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   };
 
-  // ===== REBIND ROBUSTO DA BUSCA — substitui todos rebinds anteriores =====
-  // Cria handler único que conhece os 5 modos (medicacoes, ampolas, protocolos, doencas, ubs)
   function hookBusca() {
     try {
       const busca = get('busca');
       if (!busca || !busca.parentNode) return;
       if (busca.dataset.v6Rebound === '1') return;
 
-      // Clone do elemento para limpar listeners antigos de integradores anteriores
       const novo = busca.cloneNode(true);
       novo.dataset.v6Rebound = '1';
       busca.parentNode.replaceChild(novo, busca);
@@ -8016,21 +7695,18 @@ if (typeof MEDICACOES !== 'undefined') {
     } catch(err) { console.warn('[UBS] hookBusca erro:', err.message); }
   }
 
-  // ===== GARANTIR BOTÃO UBS NA BARRA SEMPRE =====
   function garantirBotaoUBS() {
     const bar = get('modos-bar') || document.getElementById('modos-bar');
     if (!bar) return;
     if (bar.querySelector('[data-modo="ubs"]')) return; // já tem
 
-    // Adicionar borda direita ao último botão atual
     const botoes = bar.querySelectorAll('.modo-btn');
     if (botoes.length > 0) {
       const ultimo = botoes[botoes.length - 1];
-      // Garantir que tenha borda direita (visual)
+
       if (!ultimo.style.borderRight) ultimo.style.borderRight = '1px solid #d6d3d1';
     }
 
-    // Criar botão UBS
     const btnUBS = document.createElement('button');
     btnUBS.className = 'modo-btn';
     btnUBS.dataset.modo = 'ubs';
@@ -8039,13 +7715,10 @@ if (typeof MEDICACOES !== 'undefined') {
     btnUBS.textContent = '🏛️ UBS';
     bar.appendChild(btnUBS);
 
-    // Permitir scroll horizontal em telas pequenas
     bar.style.overflowX = 'auto';
     bar.style.flexWrap = 'nowrap';
   }
 
-  // Observa o DOM e re-adiciona o botão UBS sempre que algum integrador
-  // anterior recriar a barra (mais robusto que setTimeout)
   let observerSetup = false;
   function setupObserver() {
     if (observerSetup) return;
@@ -8054,13 +7727,12 @@ if (typeof MEDICACOES !== 'undefined') {
     const main = document.querySelector('main') || document.body;
 
     const observer = new MutationObserver((mutations) => {
-      // Re-adicionar botão UBS se a barra foi alterada
+
       garantirBotaoUBS();
     });
 
     observer.observe(main, { childList:true, subtree:true });
 
-    // Tentativa inicial e retentativas
     garantirBotaoUBS();
     setTimeout(garantirBotaoUBS, 100);
     setTimeout(garantirBotaoUBS, 500);
@@ -8068,26 +7740,21 @@ if (typeof MEDICACOES !== 'undefined') {
     setTimeout(garantirBotaoUBS, 2000);
   }
 
-  // ===== HOOK toggleMed PARA MEDS UBS =====
-  // O toggleMed original chama renderLista que chama nosso renderMed sobrescrito.
-  // Mas para garantir que o estado seja gerenciado corretamente, sobrescrevemos toggleMed
-  // SE o id pertence a uma med UBS, usamos toggleMedUBS; caso contrário, original.
   const _toggleMedOriginal = (typeof toggleMed === 'function') ? toggleMed : null;
   window.toggleMed = function(id) {
     const m = (typeof MEDICACOES !== 'undefined' ? MEDICACOES : []).find(x => x.id === id);
     if (m && isMedUBS(m)) {
-      // Med UBS — usar toggle próprio
+
       window.toggleMedUBS(id);
       return;
     }
     if (_toggleMedOriginal) _toggleMedOriginal(id);
   };
 
-  // ===== INIT =====
   function init() {
     setupObserver();
     hookBusca();
-    // Verificação periódica de hookBusca (caso busca seja recriada)
+
     setTimeout(hookBusca, 500);
     setTimeout(hookBusca, 1500);
   }
@@ -8098,7 +7765,6 @@ if (typeof MEDICACOES !== 'undefined') {
     setTimeout(init, 50);
   }
 
-  // ===== EXPOR GLOBAIS =====
   window.renderUBS = renderUBS;
   window.badgeSUS = badgeSUS;
   window.badgeReceita = badgeReceita;
@@ -8110,18 +7776,9 @@ if (typeof MEDICACOES !== 'undefined') {
   console.log('[UBS v6.0] carregado · '+(typeof DOENCAS!=='undefined'?DOENCAS.filter(d=>d.id&&d.id.startsWith('u-')).length:'?')+' doenças UBS · '+(typeof MEDICACOES!=='undefined'?MEDICACOES.filter(m=>m.sus).length:'?')+' meds com tag SUS');
 })();
 
-
-// ===== MÓDULO UBS v6.0: dose-fracionamento.js =====
-// ============================================================================
-// FRACIONAMENTO DE DOSES v6.2 — converte dose calculada em mL, comprimidos
-// ou jatos por apresentação disponível, com seletor de intervalo e copiar
-// SUPORTE: mg, mcg, g, gotas, jatos/puffs/inalações, cápsulas inalatórias
-// ============================================================================
-
 (function(){
   'use strict';
 
-  // ===== UNIDADES — conversão para mcg interno =====
   function toMcg(valor, unidade) {
     var u = String(unidade||'').toLowerCase().trim();
     if (u === 'mcg' || u === 'µg' || u === 'ug') return valor;
@@ -8131,7 +7788,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return valor;
   }
 
-  // Detecta combinação farmacológica fixa (amoxi+clav, sulfa+trim, etc).
   function ehCombinacaoFixa(med) {
     if (!med || !med.nome) return false;
     var n = String(med.nome);
@@ -8143,7 +7799,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return false;
   }
 
-
   function extrairUnidadeMassa(unidadeStr) {
     var u = String(unidadeStr||'').toLowerCase();
     if (/mcg|µg/.test(u)) return 'mcg';
@@ -8151,7 +7806,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return 'mg';
   }
 
-  // ===== PARSER DE APRESENTAÇÕES =====
   function parseApresentacoes(s, opts) {
     if (!s) return [];
     var out = [];
@@ -8172,45 +7826,38 @@ if (typeof MEDICACOES !== 'undefined') {
     return out;
   }
 
-  // Para combinações fixas (ex: amoxi+clav 50/12,5 mg/mL),
-  // pré-processa transformando "X/Y" do componente em apenas "X",
-  // produzindo strings canônicas que o parser normal entende.
   function preProcessarCombo(p) {
-    // Estratégia: cada regex usa "★" como separador temporário entre apresentações
-    // expandidas (ex: "Susp X mg/mL ★ Susp A mg/mL"). No final, "★" vira "|".
 
-    // 1. Líquido com "ou": "Susp X/Y ou A/B mg/mL" → "Susp X mg/mL ★ Susp A mg/mL"
     p = p.replace(
       /(susp|sol(?:ução|uçao)?|xarope|gotas?|nebuliza)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s+ou\s+(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(mg|mcg)\s*\/\s*ml/gi,
       '$1 $2 $4/mL ★ $1 $3 $4/mL'
     );
-    // 2. Líquido com "ou" + diluição: "Susp X/Y ou A/B mg/Z mL" → "Susp X mg/Z mL ★ Susp A mg/Z mL"
+
     p = p.replace(
       /(susp|sol(?:ução|uçao)?|xarope|gotas?|nebuliza)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s+ou\s+(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(mg|mcg)\s*\/\s*(\d+)\s*ml/gi,
       '$1 $2 $4/$5 mL ★ $1 $3 $4/$5 mL'
     );
-    // 3. Líquido simples sem "ou": "Susp X/Y mg/mL" → "Susp X mg/mL"
+
     p = p.replace(
       /(susp|sol(?:ução|uçao)?|xarope|gotas?|nebuliza)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(mg|mcg)\s*\/\s*ml/gi,
       '$1 $2 $3/mL'
     );
-    // 4. Líquido simples com diluição: "Susp X/Y mg/Z mL" → "Susp X mg/Z mL"
+
     p = p.replace(
       /(susp|sol(?:ução|uçao)?|xarope|gotas?|nebuliza)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(mg|mcg)\s*\/\s*(\d+)\s*ml/gi,
       '$1 $2 $3/$4 mL'
     );
-    // 5. Sólido com "ou": "Comp X/Y [mg] ou A/B [mg]" → "Comp X mg ★ Comp A mg"
+
     p = p.replace(
       /(comp(?:rimido)?s?|cáp(?:sula)?s?|caps?|drágeas?)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?\s*(?:mg\s+)?ou\s+(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?(?:\s*mg)?/gi,
       '$1 $2 mg ★ $1 $3 mg'
     );
-    // 6. Sólido simples: "Comp X/Y" (sem 3º número, sem "ou") → "Comp X mg"
+
     p = p.replace(
       /(comp(?:rimido)?s?|cáp(?:sula)?s?|caps?|drágeas?)\s*(\d+(?:[.,]\d+)?)\s*\/\s*\d+(?:[.,]\d+)?(?!\s*\/\s*\d)(?:\s*mg\b)?/gi,
       '$1 $2 mg'
     );
 
-    // Trocar marcador por separador real
     p = p.replace(/★/g, '|');
     return p;
   }
@@ -8219,7 +7866,6 @@ if (typeof MEDICACOES !== 'undefined') {
     opts = opts || {};
     var m;
 
-    // === 1. SPRAY/AEROSSOL com /jato/puff/dose explícito ===
     m = p.match(/(spray|aerossol|aerosol)[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)\s*\/\s*(jato|puff|aplicação|aplicacao|dose|borrifo)/i);
     if (m) {
       var concs = m[2].split(/\s*\/\s*/);
@@ -8243,7 +7889,6 @@ if (typeof MEDICACOES !== 'undefined') {
       return;
     }
 
-    // === 2. SPRAY sem /jato (ex: "Spray 100/200 mcg" ou "Spray dosimetrado 50/250 mcg") ===
     m = p.match(/(spray|aerossol|aerosol)[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)(?!\s*\/\s*ml)/i);
     if (m) {
       var concs2 = m[2].split(/\s*\/\s*/);
@@ -8266,7 +7911,6 @@ if (typeof MEDICACOES !== 'undefined') {
       return;
     }
 
-    // === 3. CÁPSULA INALATÓRIA / TURBOHALER / DISKUS ===
     m = p.match(/(cáp(?:sula)?|cap)\s+inal(?:atória|atoria)?[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)/i)
         || p.match(/(diskus|turb(?:o|u)haler|aerolizer|handihaler|breezhaler|respimat)[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)/i);
     if (m) {
@@ -8288,7 +7932,6 @@ if (typeof MEDICACOES !== 'undefined') {
       return;
     }
 
-    // === 4. LÍQUIDO com X mg/Y mL (denominador >1 mL) ===
     m = p.match(/(susp|sol(?:ução|uçao)?|sus|xarope|gotas?|colírio|amp(?:ola)?|frasco)[^.,;|]*?(\d+(?:[.,]\d+)?)\s*(mcg|µg|ug|mg|g)\s*\/\s*(\d+(?:[.,]\d+)?)\s*ml/i);
     if (m) {
       var v = parseFloat(m[2].replace(',','.'));
@@ -8306,19 +7949,17 @@ if (typeof MEDICACOES !== 'undefined') {
       return;
     }
 
-    // === 5. LÍQUIDO com MÚLTIPLAS concentrações (X/Y mg/mL ou X mg/mL ou Y mg/mL) ===
-    // Ex: "Susp nebul 0,25/0,5 mg/mL"  ou  "Susp 50 mg/mL ou 80 mg/mL"
     m = p.match(/(susp|sol(?:ução|uçao)?|sus|xarope|gotas?|colírio|amp(?:ola)?|frasco)[^.,;|]*?(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)*)\s*(mcg|µg|ug|mg|g)\s*\/\s*ml/i);
     if (m) {
       var tipoTxt = m[1];
       var concs5 = m[2].split(/\s*\/\s*/);
       var um5 = m[3].toLowerCase().replace(/[µu]g/,'mcg');
-      // Procurar concentração alternativa com "ou"
+
       var resto = p.substring(m.index + m[0].length);
       var ouRe = /(?:ou)\s*(\d+(?:[.,]\d+)?)\s*(mcg|µg|ug|mg|g)?\s*\/?\s*ml/i;
       var ouM = resto.match(ouRe);
       if (concs5.length > 1) {
-        // Múltiplas com barra (ex: 0,25/0,5 mg/mL)
+
         concs5.forEach(function(c){
           var v = parseFloat(c.replace(',','.'));
           if (isFinite(v) && v > 0) {
@@ -8359,7 +8000,6 @@ if (typeof MEDICACOES !== 'undefined') {
       return;
     }
 
-    // === 6. SÓLIDO com múltiplas concentrações ===
     m = p.match(/(comp(?:rimido)?s?(?:\s+orodispersível|\s+mastigável)?|cáp(?:sula)?s?|caps?|drágeas?|pastilhas?)\s*(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+(?:[.,]\d+)?)+)\s*(mcg|µg|ug|mg|g)/i);
     if (m) {
       var tipoTxt7 = m[1];
@@ -8382,7 +8022,6 @@ if (typeof MEDICACOES !== 'undefined') {
       return;
     }
 
-    // === 7. SÓLIDO com 1 concentração ===
     m = p.match(/(comp(?:rimido)?s?(?:\s+orodispersível|\s+mastigável)?|cáp(?:sula)?s?|caps?|drágeas?|pastilhas?)\s*(\d+(?:[.,]\d+)?)\s*(mcg|µg|ug|mg|g)/i);
     if (m) {
       var tipoTxt8 = m[1];
@@ -8403,7 +8042,6 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   }
 
-  // ===== PARSER DE INTERVALOS =====
   function parseIntervalos(s) {
     if (!s) return [];
     var opcoes = [];
@@ -8437,7 +8075,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return [];
   }
 
-  // ===== ARREDONDAMENTOS =====
   function arredondarVolume(ml) {
     if (!isFinite(ml) || ml <= 0) return 0;
     if (ml < 0.5) return Math.round(ml * 10) / 10;
@@ -8495,7 +8132,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return n.toFixed(c).replace(/\.?0+$/,'').replace('.', ',');
   }
 
-  // ===== RENDER =====
   function renderFracionamento(medId, indIdx, ind, peso, apresentacoes, intvIdx) {
     if (!peso || !ind) return '';
     try {
@@ -8661,27 +8297,22 @@ if (typeof MEDICACOES !== 'undefined') {
     } catch(e) {}
   };
 
-  // ===== DOSE FIXA (não-calculada por peso) =====
-  // Detecta medicações que NÃO devem fazer cálculo por kg:
-  // tópicos, otológicos, oftálmicos, nasais, retais, supositórios, etc.
   function ehDoseFixa(ind) {
     if (!ind) return false;
-    // Se o nome da indicação tem ⛔ (contraindicada/descontinuada), não renderizar
+
     if (/⛔|contraindicada|descontinuada/i.test(ind.nome || '')) return 'pular';
-    // Dose explicitamente zero ou null
+
     if (ind.dose === 0 || ind.dose == null) return true;
-    // Via não-sistêmica
+
     var via = String(ind.via || '').toUpperCase();
     if (/(OTOLÓG|OTOLOG|OFTÁLM|OFTALM|TÓPIC|TOPIC|CUTÂN|CUTAN|RETAL|VAGIN|TRANSDER|INTRA[-\s]NASAL|NASAL)/.test(via)) {
-      // Exceção: INAL puro (broncodilatador) → tem cálculo de jatos
+
       if (/^INAL$/.test(via.trim())) return false;
       return true;
     }
     return false;
   }
 
-  // Extrai partes do "intervalo" quando contém quantidade descrita
-  // Ex: "3-4 gotas 12/12 h × 7 dias" → { quantidade:"3-4 gotas", intervalo:"12/12 h", duracao:"7 dias" }
   function parseDescritivo(intervaloStr) {
     if (!intervaloStr) return null;
     var s = String(intervaloStr).trim();
@@ -8689,14 +8320,12 @@ if (typeof MEDICACOES !== 'undefined') {
     var intervaloTxt = '';
     var duracao = '';
 
-    // Extrair duração no final ("× 7 dias", "× 5-7 dias")
     var durM = s.match(/\s*[×x]\s*([\d\-–\s]+(?:dias?|sem(?:anas?)?|hor(?:as?)?))\s*$/i);
     if (durM) {
       duracao = durM[1].trim();
       s = s.substring(0, durM.index).trim();
     }
 
-    // Detectar intervalo de horas ou "Nx/dia" / "N-M ×/dia" — agora com range
     var intvM = s.match(/(\d+\s*[-–]\s*\d+\s*[×x]\s*\/?\s*(?:ao\s+)?dia|\d+\s*[×x]\s*\/?\s*(?:ao\s+)?dia|\d+\s*\/\s*\d+\s*h|\d+\s*[-–]\s*\d+\s*\/\s*\d+\s*h|dose\s+única)/i);
     if (intvM) {
       intervaloTxt = intvM[0].trim();
@@ -8710,7 +8339,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return { quantidade: quantidade, intervalo: intervaloTxt, duracao: duracao, full: String(intervaloStr) };
   }
 
-  // Verbo de ação conforme via
   function acaoPorVia(via) {
     var v = String(via||'').toUpperCase();
     if (/OTOLÓG|OTOLOG/.test(v)) return 'Pingar';
@@ -8723,7 +8351,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return 'Aplicar';
   }
 
-  // Local anatômico conforme via
   function localPorVia(via) {
     var v = String(via||'').toUpperCase();
     if (/OTOLÓG|OTOLOG/.test(v)) return ' no ouvido afetado';
@@ -8736,7 +8363,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return '';
   }
 
-  // Renderiza bloco de prescrição direta (sem cálculo por peso)
   function renderDoseFixa(medId, indIdx, ind, m) {
     try {
       var parsed = parseDescritivo(ind.intervalo);
@@ -8768,7 +8394,6 @@ if (typeof MEDICACOES !== 'undefined') {
       var intv = parsed && parsed.intervalo ? parsed.intervalo : '';
       var dur = parsed && parsed.duracao ? parsed.duracao : '';
 
-      // Posologia para copiar
       var posologia = '';
       if (ehTextoNarrativo) {
         posologia = textoOriginal;
@@ -8824,7 +8449,6 @@ if (typeof MEDICACOES !== 'undefined') {
               var ind = m.indicacoes[idx];
               if (!ind) return;
 
-              // Caminho 1: dose fixa (tópicos, otológicos, etc) — NÃO precisa de peso
               var fixa = ehDoseFixa(ind);
               if (fixa === 'pular') return;
               if (fixa === true) {
@@ -8833,7 +8457,6 @@ if (typeof MEDICACOES !== 'undefined') {
                 return;
               }
 
-              // Caminho 2: cálculo normal por peso — precisa de peso
               if (!estado.peso) return;
               if (ind.dose == null) return;
               if (apresentacoes.length === 0) return;
@@ -8898,22 +8521,11 @@ if (typeof MEDICACOES !== 'undefined') {
   console.log('[FRAC v6.2] Fracionamento carregado · suporta líquidos, sólidos, sprays e cáps inalatórias');
 })();
 
-
-// ===== MÓDULO UBS v6.0: integrador-v64-fix.js =====
-// ============================================================================
-// INTEGRADOR v6.4 — FIX FINAL
-//   1. Busca via delegação de evento (à prova de cloneNode)
-//   2. Redesign da barra de modos: pills com scroll horizontal, sticky
-//   3. Mobile: emoji + label compacta, scroll suave com indicador
-// CARREGA POR ÚLTIMO — sobrescreve tudo anterior
-// ============================================================================
-
 (function(){
   'use strict';
 
-  // ===== 1. CSS REDESIGN DA BARRA DE MODOS =====
   const cssNovo = `
-/* === BARRA DE MODOS REDESENHADA v6.4 === */
+
 #modos-bar {
   display: flex !important;
   flex-wrap: nowrap !important;
@@ -8966,14 +8578,12 @@ if (typeof MEDICACOES !== 'undefined') {
   font-weight: 600 !important;
 }
 
-/* Cor por modo no estado ativo (linha embaixo) */
 #modos-bar .modo-btn[data-modo="medicacoes"].ativo { border-bottom-color: #1c1917 !important; }
 #modos-bar .modo-btn[data-modo="ampolas"].ativo    { border-bottom-color: #7c2128 !important; color: #7c2128 !important; }
 #modos-bar .modo-btn[data-modo="protocolos"].ativo { border-bottom-color: #c25c1a !important; color: #c25c1a !important; }
 #modos-bar .modo-btn[data-modo="doencas"].ativo    { border-bottom-color: #1c5fa3 !important; color: #1c5fa3 !important; }
 #modos-bar .modo-btn[data-modo="ubs"].ativo        { border-bottom-color: #5a4f8a !important; color: #5a4f8a !important; background: white !important; }
 
-/* Hint visual de scroll em mobile (gradient nas bordas) */
 .modos-wrap {
   position: relative;
 }
@@ -8992,7 +8602,6 @@ if (typeof MEDICACOES !== 'undefined') {
 }
 .modos-wrap.scrollable::after { opacity: 1; }
 
-/* Mobile */
 @media (max-width: 640px) {
   #modos-bar .modo-btn {
     padding: 10px 14px !important;
@@ -9007,7 +8616,6 @@ if (typeof MEDICACOES !== 'undefined') {
   }
 }
 
-/* Sticky em mobile pra barra ficar visível ao scrollar */
 @media (max-width: 768px) {
   #modos-bar, .modos-wrap {
     position: sticky;
@@ -9026,7 +8634,6 @@ if (typeof MEDICACOES !== 'undefined') {
     document.head.appendChild(s);
   }
 
-  // ===== 2. ENVOLVER BARRA EM WRAPPER PARA O INDICADOR DE SCROLL =====
   function envolverBarra() {
     const bar = document.getElementById('modos-bar');
     if (!bar) return;
@@ -9036,7 +8643,6 @@ if (typeof MEDICACOES !== 'undefined') {
     bar.parentNode.insertBefore(wrap, bar);
     wrap.appendChild(bar);
 
-    // Detecta se há scroll e ajusta o indicador
     const checarScroll = () => {
       try {
         const tem = bar.scrollWidth > bar.clientWidth;
@@ -9050,20 +8656,14 @@ if (typeof MEDICACOES !== 'undefined') {
     setTimeout(checarScroll, 500);
   }
 
-  // ===== 3. LIMPAR ESTILOS INLINE DOS BOTÕES =====
-  // Os integradores anteriores adicionam style="..." inline nos botões.
-  // Vamos remover periodicamente para que o CSS novo prevaleça.
   function limparEstiloInline() {
     document.querySelectorAll('#modos-bar .modo-btn').forEach(b => {
-      // Remove só os estilos que conflitam, mantendo color custom se houver
+
       const stylesParaRemover = ['flex','padding','background','border','font-family','font-size','font-weight','letter-spacing','min-width'];
       stylesParaRemover.forEach(prop => b.style.removeProperty(prop));
     });
   }
 
-  // ===== 4. BUSCA VIA DELEGAÇÃO DE EVENTO =====
-  // Listener no document com useCapture=true, captura o evento ANTES dos handlers
-  // tradicionais. Funciona mesmo se o input for substituído por cloneNode.
   let _delegationInstalado = false;
   function instalarDelegacaoBusca() {
     if (_delegationInstalado) return;
@@ -9093,26 +8693,23 @@ if (typeof MEDICACOES !== 'undefined') {
       }
     }, true); // useCapture: captura ANTES dos handlers normais
 
-    // Também keyup como fallback (alguns dispositivos não disparam input certo)
     document.addEventListener('keyup', function(e){
       try {
         if (!e.target || e.target.id !== 'busca') return;
-        // Só dispara se valor mudou (evita re-render em setas/shift)
+
         if (e.target.dataset._lastVal === e.target.value) return;
         e.target.dataset._lastVal = e.target.value;
-        // Trigger no próprio input
+
         const event = new Event('input', { bubbles: true });
         e.target.dispatchEvent(event);
       } catch(err) {}
     }, true);
   }
 
-  // ===== INIT =====
   function init() {
     aplicarCSS();
     instalarDelegacaoBusca();
 
-    // Tentativas múltiplas (DOM pode não estar pronto na ordem)
     const tentar = () => {
       envolverBarra();
       limparEstiloInline();
@@ -9122,7 +8719,6 @@ if (typeof MEDICACOES !== 'undefined') {
     setTimeout(tentar, 500);
     setTimeout(tentar, 1500);
 
-    // Observer para reaplicar limpeza de estilos quando barra for recriada
     const main = document.querySelector('main') || document.body;
     if (main && typeof MutationObserver !== 'undefined') {
       const obs = new MutationObserver(() => {
@@ -9145,24 +8741,12 @@ if (typeof MEDICACOES !== 'undefined') {
   console.log('[FIX v6.4] Busca via delegação + barra de modos redesenhada');
 })();
 
-
-// ===== MÓDULO UBS v6.0: autocomplete-busca.js =====
-// ============================================================================
-// AUTOCOMPLETE BUSCA v6.5
-//   - Dropdown de sugestões abaixo do input quando digita
-//   - Click numa sugestão expande a medicação E faz scroll
-//   - Debounce de 200ms no filtro da lista (evita re-render a cada tecla)
-//   - Setas ↑↓ navegam, Enter seleciona, Esc fecha
-//   - Funciona em todos os modos
-// ============================================================================
-
 (function(){
   'use strict';
 
   const MAX_SUGESTOES = 10;
   const DEBOUNCE_MS = 200;
 
-  // ===== CSS =====
   const css = `
 .input-group.search { position: relative; }
 
@@ -9259,7 +8843,6 @@ if (typeof MEDICACOES !== 'undefined') {
     document.head.appendChild(s);
   }
 
-  // ===== HELPERS =====
   function escHtml(s) {
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
@@ -9277,7 +8860,6 @@ if (typeof MEDICACOES !== 'undefined') {
            escHtml(nome.substring(idx + q.length));
   }
 
-  // ===== BUSCAR SUGESTÕES =====
   function buscarSugestoes(q) {
     if (!q || q.length < 1) return [];
     const ql = q.toLowerCase().trim();
@@ -9286,7 +8868,7 @@ if (typeof MEDICACOES !== 'undefined') {
 
     const matches = todas.filter(m => {
       if (!m || !m.nome) return false;
-      // Match por nome, classe ou searchTerms (cobertura clínica)
+
       const haystack = [
         m.nome.toLowerCase(),
         (m.classe || '').toLowerCase(),
@@ -9295,12 +8877,11 @@ if (typeof MEDICACOES !== 'undefined') {
       return haystack.includes(ql);
     });
 
-    // Ordenar: nome começando com q vem primeiro, depois por nome
     matches.sort((a, b) => {
       const aStarts = a.nome.toLowerCase().startsWith(ql) ? 0 : 1;
       const bStarts = b.nome.toLowerCase().startsWith(ql) ? 0 : 1;
       if (aStarts !== bStarts) return aStarts - bStarts;
-      // Match por cobertura tem prioridade menor que match por nome
+
       const aNome = a.nome.toLowerCase().includes(ql) ? 0 : 1;
       const bNome = b.nome.toLowerCase().includes(ql) ? 0 : 1;
       if (aNome !== bNome) return aNome - bNome;
@@ -9310,7 +8891,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return matches.slice(0, MAX_SUGESTOES);
   }
 
-  // ===== CRIAR DROPDOWN =====
   function criarDropdown() {
     const busca = document.getElementById('busca');
     if (!busca) return null;
@@ -9327,7 +8907,6 @@ if (typeof MEDICACOES !== 'undefined') {
     return drop;
   }
 
-  // ===== RENDER DROPDOWN =====
   let _highlightedIdx = -1;
   let _sugsAtual = [];
 
@@ -9367,7 +8946,6 @@ if (typeof MEDICACOES !== 'undefined') {
     drop.innerHTML = html;
     drop.style.display = 'block';
 
-    // Hook clicks
     drop.querySelectorAll('.busca-sug-item').forEach(el => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
@@ -9393,7 +8971,6 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   }
 
-  // ===== SELECIONAR MED =====
   function selecionarMed(id) {
     if (!id) return;
     if (typeof MEDICACOES === 'undefined') return;
@@ -9403,32 +8980,26 @@ if (typeof MEDICACOES !== 'undefined') {
     const ehUBS = isMedUBS(m);
     const ehAmpola = id.startsWith('a-');
 
-    // Detectar modo apropriado
     let modoAlvo = 'medicacoes';
     if (ehUBS) modoAlvo = 'ubs';
     else if (ehAmpola) modoAlvo = 'ampolas';
 
-    // Trocar de modo se necessário
     if (typeof estado !== 'undefined' && estado.modo !== modoAlvo) {
       if (typeof setModo === 'function') setModo(modoAlvo);
     }
 
-    // Limpar busca
     const busca = document.getElementById('busca');
     if (busca) busca.value = '';
     if (typeof estado !== 'undefined') estado.busca = '';
 
-    // Esconder dropdown
     const drop = document.getElementById('busca-suggestions');
     if (drop) drop.style.display = 'none';
 
-    // Adicionar à expandidas e re-renderizar
     if (typeof estado !== 'undefined') {
       if (!estado.expandidas) estado.expandidas = new Set();
       estado.expandidas.add(id);
     }
 
-    // Re-render do modo atual (após troca de modo, se houve)
     setTimeout(() => {
       try {
         if (modoAlvo === 'ubs' && typeof renderUBS === 'function') renderUBS();
@@ -9436,12 +9007,11 @@ if (typeof MEDICACOES !== 'undefined') {
         else if (typeof renderLista === 'function') renderLista();
       } catch(e) { console.warn('[AC] render erro:', e.message); }
 
-      // Scroll até o card
       setTimeout(() => {
         const el = document.getElementById('med-' + id);
         if (el) {
           el.scrollIntoView({behavior:'smooth', block:'start'});
-          // Pequeno highlight visual
+
           el.style.transition = 'background-color .6s';
           el.style.backgroundColor = '#fef3c7';
           setTimeout(() => { el.style.backgroundColor = ''; }, 1200);
@@ -9450,7 +9020,6 @@ if (typeof MEDICACOES !== 'undefined') {
     }, 60);
   }
 
-  // ===== DEBOUNCE FILTRO LISTA =====
   let _debounceT = null;
   function filtrarComDebounce() {
     if (_debounceT) clearTimeout(_debounceT);
@@ -9466,15 +9035,14 @@ if (typeof MEDICACOES !== 'undefined') {
     }, DEBOUNCE_MS);
   }
 
-  // ===== HANDLERS =====
   document.addEventListener('input', function(e){
     if (!e.target || e.target.id !== 'busca') return;
     const v = e.target.value || '';
-    // Atualiza estado
+
     if (typeof estado !== 'undefined') estado.busca = v;
-    // Mostra dropdown imediatamente
+
     renderDropdown(v);
-    // Filtra lista com debounce
+
     filtrarComDebounce();
   }, true);
 
@@ -9502,7 +9070,6 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   }, true);
 
-  // Click fora fecha
   document.addEventListener('click', function(e){
     if (!e.target) return;
     if (e.target.id === 'busca') return;
@@ -9511,14 +9078,12 @@ if (typeof MEDICACOES !== 'undefined') {
     if (drop) drop.style.display = 'none';
   });
 
-  // Focus no input mostra dropdown se já tem texto
   document.addEventListener('focus', function(e){
     if (!e.target || e.target.id !== 'busca') return;
     const v = e.target.value || '';
     if (v.length > 0) renderDropdown(v);
   }, true);
 
-  // ===== INIT =====
   function init() {
     aplicarCSS();
     criarDropdown();
@@ -9535,22 +9100,9 @@ if (typeof MEDICACOES !== 'undefined') {
   console.log('[AC v6.5] Autocomplete + debounce carregado');
 })();
 
-
-// ===== MÓDULO UBS v6.0: atb-extras.js =====
-// ============================================================================
-// ATB-EXTRAS v6.8 — Cobertura clínica + Antibióticos adicionais
-//   - Mapa de cobertura ('vias-aereas', 'pele', 'itu', etc) por ATB
-//   - 9 ATBs novos: penicilina V, benzatina, cefadroxila, eritromicina,
-//     gentamicina, cefotaxima, bacitracina-neomicina, tinidazol, ácido fusídico
-//   - Renderização visual de tags coloridas no card
-//   - Busca por cobertura ("pele", "otite", "ITU")
-// ============================================================================
-
 (function(){
   'use strict';
 
-  // ===== TAGS DE COBERTURA — definição visual =====
-  // chave: tag interna · valor: { rótulo visível, cor, ícone, sinônimos }
   const TAGS_COBERTURA = {
     'vias-aereas':        { label: 'Vias aéreas',           cor: '#1c5fa3', bg: '#dbeafe', icone: '🫁', sin: ['otite','sinusite','pneumonia','pac','faringite','via','aerea','aérea','respiratoria','respiratória'] },
     'vias-aereas-strep':  { label: 'Faringite GABHS',       cor: '#1c5fa3', bg: '#dbeafe', icone: '🫁', sin: ['faringite','estreptococo','gabhs','garganta'] },
@@ -9581,7 +9133,6 @@ if (typeof MEDICACOES !== 'undefined') {
     'pele-leve':          { label: 'Pele (leve, tópico)',   cor: '#c2410c', bg: '#fed7aa', icone: '🩹', sin: ['pele leve','ferida','escoriacao','escoriação'] }
   };
 
-  // ===== COBERTURA por ID de ATB existente =====
   const COBERTURA_ATB = {
     'amoxicilina':       ['vias-aereas', 'vias-aereas-strep', 'dental'],
     'amox-clav':         ['vias-aereas', 'pele', 'dental', 'mordedura', 'itu'],
@@ -9602,7 +9153,6 @@ if (typeof MEDICACOES !== 'undefined') {
     'sulfadiazina-prata':['pele-leve']
   };
 
-  // ===== ATBs NOVOS =====
   const ATB_NOVOS = [
     {
       id: 'penicilina-v',
@@ -9805,9 +9355,6 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   ];
 
-  // ===== INTEGRAÇÃO =====
-
-  // 1. Aplicar cobertura aos ATBs existentes
   function aplicarCobertura() {
     if (typeof MEDICACOES === 'undefined' || !Array.isArray(MEDICACOES)) return;
     MEDICACOES.forEach(function(m){
@@ -9818,7 +9365,6 @@ if (typeof MEDICACOES !== 'undefined') {
     });
   }
 
-  // 2. Adicionar ATBs novos
   function adicionarATBsNovos() {
     if (typeof MEDICACOES === 'undefined' || !Array.isArray(MEDICACOES)) return;
     ATB_NOVOS.forEach(function(novo){
@@ -9827,7 +9373,6 @@ if (typeof MEDICACOES !== 'undefined') {
     });
   }
 
-  // 3. CSS para tags de cobertura
   function aplicarCSS() {
     if (document.getElementById('atb-cobertura-css')) return;
     var css = '';
@@ -9835,7 +9380,7 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '.atb-cobertura-tag { display:inline-flex; align-items:center; gap:5px; padding:4px 9px; font-size:11px; font-weight:600; font-family:\'JetBrains Mono\', monospace; letter-spacing:.02em; border:1px solid; line-height:1.3; border-radius:0; }\n';
     css += '.atb-cobertura-titulo { font-family:\'JetBrains Mono\', monospace; font-size:10px; font-weight:600; color:#78716c; text-transform:uppercase; letter-spacing:.12em; margin-bottom:6px; }\n';
     css += '@media (max-width:640px) { .atb-cobertura-tag { font-size:10px; padding:3px 7px; } }\n';
-    // Cores por tag
+
     Object.keys(TAGS_COBERTURA).forEach(function(k){
       var t = TAGS_COBERTURA[k];
       css += '.atb-cobertura-tag[data-cob="'+k+'"] { color:'+t.cor+'; background:'+t.bg+'; border-color:'+t.cor+'33; }\n';
@@ -9846,7 +9391,6 @@ if (typeof MEDICACOES !== 'undefined') {
     document.head.appendChild(s);
   }
 
-  // 4. Render visual: injetar bloco de cobertura no card da med
   function injetarCobertura() {
     try {
       if (typeof MEDICACOES === 'undefined') return;
@@ -9857,7 +9401,7 @@ if (typeof MEDICACOES !== 'undefined') {
           if (!id) return;
           var m = MEDICACOES.find(function(x){ return x.id === id; });
           if (!m || !m.cobertura || !m.cobertura.length) return;
-          // Evita duplicação
+
           if (elMed.querySelector('.atb-cobertura')) return;
 
           var tags = m.cobertura.map(function(c){
@@ -9872,12 +9416,11 @@ if (typeof MEDICACOES !== 'undefined') {
                   + '<div class="atb-cobertura">'+tags+'</div>'
                   + '</div>';
 
-          // Inserir antes da seção INDICAÇÕES & DOSES
           var marcador = elMed.querySelector('.indicacoes-titulo') || elMed.querySelector('[class*="indica"]');
           if (marcador) {
             marcador.parentElement.insertBefore(htmlToEl(html), marcador);
           } else {
-            // Fallback: depois dos alertas
+
             var alertas = elMed.querySelectorAll('.alerta');
             if (alertas.length) {
               alertas[alertas.length-1].insertAdjacentHTML('afterend', html);
@@ -9896,11 +9439,9 @@ if (typeof MEDICACOES !== 'undefined') {
     return div.firstElementChild;
   }
 
-  // 5. Hook na busca: permitir buscar por sinônimo de cobertura
-  // Estende a função buscarSugestoes do autocomplete se existir
   function estenderBusca() {
     if (typeof window.MEDICACOES === 'undefined') return;
-    // Adicionar campo 'searchTerms' computado para meds com cobertura
+
     MEDICACOES.forEach(function(m){
       if (!m || !m.cobertura || !m.cobertura.length) return;
       if (m._searchTerms) return; // já feito
@@ -9917,7 +9458,6 @@ if (typeof MEDICACOES !== 'undefined') {
     });
   }
 
-  // ===== INIT =====
   function init() {
     try {
       aplicarCSS();
@@ -9925,7 +9465,6 @@ if (typeof MEDICACOES !== 'undefined') {
       adicionarATBsNovos();
       estenderBusca();
 
-      // Observer pra reinjetar quando DOM muda
       var main = document.querySelector('main') || document.body;
       if (main && typeof MutationObserver !== 'undefined') {
         var obs = new MutationObserver(function(){
@@ -9944,34 +9483,21 @@ if (typeof MEDICACOES !== 'undefined') {
   } else {
     setTimeout(init, 200);
   }
-  // Retentativa para garantir que MEDICACOES já carregou
+
   setTimeout(init, 800);
   setTimeout(init, 2000);
 
-  // Expor para outras integrações
   window.TAGS_COBERTURA = TAGS_COBERTURA;
   window.COBERTURA_ATB = COBERTURA_ATB;
 
   console.log('[ATB v6.8] Cobertura clínica + '+ATB_NOVOS.length+' ATBs novos carregados');
 })();
 
-
-// ===== MÓDULO UBS v6.0: meds-novos-v7.js =====
-// ============================================================================
-// MEDICAÇÕES NOVAS v7.0
-//   - Antifúngicos: fluconazol, nistatina, cetoconazol (sistêmico + tópico)
-//   - Antivirais: aciclovir, oseltamivir
-//   - Anti-helmínticos: albendazol, mebendazol, ivermectina
-//   - TRO/OMS Plano A/B/C
-//   - Dose alta de amoxicilina (80-90 mg/kg/dia) — opção em OMA
-//   - Score Centor pediátrico (faringite)
-// ============================================================================
-
 (function(){
   'use strict';
 
   const MEDS_NOVAS = [
-    // ===== ANTIFÚNGICOS =====
+
     {
       id: 'fluconazol',
       nome: 'Fluconazol',
@@ -10039,7 +9565,6 @@ if (typeof MEDICACOES !== 'undefined') {
       cobertura:['pele-leve']
     },
 
-    // ===== ANTIVIRAIS =====
     {
       id: 'aciclovir-vo',
       nome: 'Aciclovir (oral)',
@@ -10087,7 +9612,6 @@ if (typeof MEDICACOES !== 'undefined') {
       cobertura:['vias-aereas']
     },
 
-    // ===== ANTI-HELMÍNTICOS =====
     {
       id: 'albendazol',
       nome: 'Albendazol',
@@ -10155,7 +9679,6 @@ if (typeof MEDICACOES !== 'undefined') {
       cobertura:['pele-leve']
     },
 
-    // ===== AMOXICILINA DOSE ALTA (OMA com pneumococo resistente) =====
     {
       id: 'amoxi-dose-alta',
       nome: 'Amoxicilina (dose alta)',
@@ -10181,7 +9704,6 @@ if (typeof MEDICACOES !== 'undefined') {
       cobertura:['vias-aereas','vias-aereas-strep','dental']
     },
 
-    // ===== TRO/OMS - PLANOS DE HIDRATAÇÃO =====
     {
       id: 'tro-plano-a',
       nome: 'TRO Plano A (sem desidratação)',
@@ -10252,7 +9774,6 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   ];
 
-  // ===== INTEGRAÇÃO =====
   function adicionarMeds() {
     if (typeof MEDICACOES === 'undefined' || !Array.isArray(MEDICACOES)) return;
     MEDS_NOVAS.forEach(function(m){
@@ -10261,7 +9782,6 @@ if (typeof MEDICACOES !== 'undefined') {
     });
   }
 
-  // Tentar várias vezes — MEDICACOES pode ainda não estar disponível
   function init() {
     adicionarMeds();
     if (typeof window.estenderBusca === 'function') {
@@ -10281,22 +9801,11 @@ if (typeof MEDICACOES !== 'undefined') {
   console.log('[MEDS v7.0] '+MEDS_NOVAS.length+' medicações novas carregadas');
 })();
 
-
-// ===== MÓDULO UBS v6.0: melhorias-ux-v7.js =====
-// ============================================================================
-// MELHORIAS UX v7.0
-//   - Persistência localStorage (peso, idade, modo escuro)
-//   - Toast de feedback (copiado, salvo, etc)
-//   - Atalho "/" pra focar busca
-//   - Modo escuro com toggle no header
-// ============================================================================
-
 (function(){
   'use strict';
 
   const LS_PREFIX = 'penochao_';
 
-  // ===== HELPERS =====
   function lsGet(k, def) {
     try { var v = localStorage.getItem(LS_PREFIX + k); return v === null ? def : v; }
     catch(e) { return def; }
@@ -10310,7 +9819,6 @@ if (typeof MEDICACOES !== 'undefined') {
     catch(e) {}
   }
 
-  // ===== 1. PERSISTÊNCIA peso/idade =====
   function setupPersistencia() {
     var idade = document.getElementById('idade');
     var peso = document.getElementById('peso');
@@ -10342,10 +9850,8 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   }
 
-  // ===== 2. TOAST =====
-  // Sobrescreve copiarPosologiaFrac pra mostrar toast em vez de só mudar botão
   function setupToast() {
-    // Criar container do toast
+
     if (!document.getElementById('toast-container')) {
       var c = document.createElement('div');
       c.id = 'toast-container';
@@ -10362,7 +9868,7 @@ if (typeof MEDICACOES !== 'undefined') {
       t.className = 'toast toast-' + tipo;
       t.innerHTML = (tipo === 'sucesso' ? '✓ ' : (tipo === 'aviso' ? '⚠ ' : '')) + msg;
       c.appendChild(t);
-      // Animação de entrada
+
       setTimeout(function(){ t.classList.add('toast-visivel'); }, 10);
       setTimeout(function(){
         t.classList.remove('toast-visivel');
@@ -10371,7 +9877,6 @@ if (typeof MEDICACOES !== 'undefined') {
     } catch(e) {}
   };
 
-  // Patch copiarPosologiaFrac (cria wrapper que chama o original + toast)
   function patchCopiar() {
     if (window._copiarOrigPatched) return;
     var orig = window.copiarPosologiaFrac;
@@ -10383,22 +9888,21 @@ if (typeof MEDICACOES !== 'undefined') {
     window.copiarPosologiaFrac = function(btn, texto) {
       orig(btn, texto);
       window.mostrarToast('Posologia copiada');
-      // Adicionar à cesta de receita
+
       if (typeof window.addReceita === 'function') {
         try { window.addReceita(texto, btn); } catch(e){}
       }
     };
   }
 
-  // ===== 3. ATALHO "/" =====
   function setupAtalho() {
     if (window._atalhoHooked) return;
     window._atalhoHooked = true;
     document.addEventListener('keydown', function(e){
-      // Ignorar se já está num input
+
       var alvo = e.target;
       if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.isContentEditable)) {
-        // Esc fecha qualquer modal
+
         if (e.key === 'Escape') {
           var drop = document.getElementById('busca-suggestions');
           if (drop) drop.style.display = 'none';
@@ -10414,14 +9918,12 @@ if (typeof MEDICACOES !== 'undefined') {
     });
   }
 
-  // ===== 4. MODO ESCURO =====
   function setupDarkMode() {
     var atual = lsGet('darkmode') === '1';
     if (atual) document.body.classList.add('dark');
 
     if (document.getElementById('btn-darkmode')) return;
 
-    // Botão toggle no header
     var header = document.querySelector('.hdr-inner') || document.querySelector('header');
     if (!header) { setTimeout(setupDarkMode, 200); return; }
 
@@ -10439,11 +9941,10 @@ if (typeof MEDICACOES !== 'undefined') {
     header.appendChild(btn);
   }
 
-  // ===== 5. PERSISTIR MODO ATIVO =====
   function setupModoAtivo() {
     var modoSalvo = lsGet('modo');
     if (modoSalvo && typeof setModo === 'function' && typeof estado !== 'undefined') {
-      // só aplicar se for um modo válido e diferente do atual
+
       if (['medicacoes','ampolas','protocolos','doencas','ubs'].indexOf(modoSalvo) >= 0
           && modoSalvo !== estado.modo) {
         setTimeout(function(){
@@ -10451,7 +9952,7 @@ if (typeof MEDICACOES !== 'undefined') {
         }, 500);
       }
     }
-    // Hook nos botões de modo
+
     document.querySelectorAll('#modos-bar .modo-btn').forEach(function(b){
       if (b.dataset.persistHooked) return;
       b.dataset.persistHooked = '1';
@@ -10462,12 +9963,10 @@ if (typeof MEDICACOES !== 'undefined') {
     });
   }
 
-  // ===== CSS =====
   function aplicarCSS() {
     if (document.getElementById('ux-v7-css')) return;
     var css = '';
 
-    // Toast
     css += '#toast-container { position:fixed; top:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }\n';
     css += '.toast { background:#1c1917; color:#fafaf9; padding:12px 18px; font-family:\'Fraunces\', Georgia, serif; font-size:14px; font-weight:500; box-shadow:0 6px 20px rgba(0,0,0,.25); opacity:0; transform:translateY(-10px); transition:all .25s ease; pointer-events:auto; min-width:200px; max-width:340px; border-left:3px solid #1a7a3d; }\n';
     css += '.toast-visivel { opacity:1; transform:translateY(0); }\n';
@@ -10475,12 +9974,10 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '.toast-erro { border-left-color:#7c2128; }\n';
     css += '@media (max-width:640px) { #toast-container { top:auto; bottom:80px; right:12px; left:12px; } .toast { min-width:0; } }\n';
 
-    // Dark mode toggle button
     css += '#btn-darkmode { position:absolute; top:14px; right:18px; background:transparent; border:1px solid #57534e; color:#fafaf9; width:34px; height:34px; cursor:pointer; font-size:16px; font-family:inherit; transition:all .15s; line-height:1; padding:0; display:flex; align-items:center; justify-content:center; z-index:10; }\n';
     css += '#btn-darkmode:hover { background:#fafaf9; color:#1c1917; }\n';
     css += '@media (max-width:640px) { #btn-darkmode { top:10px; right:10px; width:32px; height:32px; font-size:14px; } }\n';
 
-    // ===== MODO ESCURO — overrides =====
     css += 'body.dark { background:#0c0a09; color:#e7e5e4; }\n';
     css += 'body.dark .hdr, body.dark header.hdr { background:#1c1917; }\n';
     css += 'body.dark .inputs { background:#1c1917; border-bottom-color:#292524; }\n';
@@ -10537,7 +10034,6 @@ if (typeof MEDICACOES !== 'undefined') {
     document.head.appendChild(s);
   }
 
-  // ===== INIT =====
   function init() {
     try {
       aplicarCSS();
@@ -10555,7 +10051,7 @@ if (typeof MEDICACOES !== 'undefined') {
   } else {
     setTimeout(init, 50);
   }
-  // Reaplicar — DOM pode mudar
+
   setTimeout(init, 500);
   setTimeout(init, 1500);
   setTimeout(setupModoAtivo, 1800);
@@ -10563,16 +10059,6 @@ if (typeof MEDICACOES !== 'undefined') {
 
   console.log('[UX v7.0] Persistência + toast + atalho / + modo escuro');
 })();
-
-
-// ===== MÓDULO UBS v6.0: receita-builder-v7.js =====
-// ============================================================================
-// RECEITA BUILDER v7.0
-//   - Cesta de posologias: cada "Copiar" durante a consulta adiciona à cesta
-//   - Botão flutuante (FAB) mostra contador
-//   - Painel modal: revisar/editar, copiar tudo, exportar WhatsApp
-//   - Histórico de prescrições (localStorage, últimos 30 dias)
-// ============================================================================
 
 (function(){
   'use strict';
@@ -10583,7 +10069,6 @@ if (typeof MEDICACOES !== 'undefined') {
   const MAX_HIST = 50;
   const HIST_DIAS = 30;
 
-  // ===== ESTADO =====
   let cesta = []; // [{texto, med, ts}]
 
   function carregarCesta() {
@@ -10601,7 +10086,7 @@ if (typeof MEDICACOES !== 'undefined') {
       var raw = localStorage.getItem(LS_PREFIX + HIST_KEY);
       if (!raw) return [];
       var hist = JSON.parse(raw) || [];
-      // Limpar mais antigos que HIST_DIAS
+
       var corte = Date.now() - HIST_DIAS * 86400000;
       return hist.filter(function(h){ return h.ts > corte; });
     } catch(e) { return []; }
@@ -10614,13 +10099,11 @@ if (typeof MEDICACOES !== 'undefined') {
     } catch(e) {}
   }
 
-  // ===== API pública: adicionar à cesta =====
-  // Chamada pelo wrapper do copiarPosologiaFrac em melhorias-ux-v7.js
   window.addReceita = function(texto, btn) {
     if (!texto) return;
     var medNome = '';
     try {
-      // Tentar pegar o nome da medicação a partir do botão
+
       if (btn) {
         var medEl = btn.closest('.med');
         if (medEl) {
@@ -10634,7 +10117,6 @@ if (typeof MEDICACOES !== 'undefined') {
     atualizarFab();
   };
 
-  // ===== FAB (botão flutuante) =====
   function criarFAB() {
     if (document.getElementById('receita-fab')) return;
     var fab = document.createElement('button');
@@ -10656,7 +10138,6 @@ if (typeof MEDICACOES !== 'undefined') {
     else fab.classList.remove('com-itens');
   }
 
-  // ===== PAINEL MODAL =====
   function abrirPainel(abaInicial) {
     var existente = document.getElementById('receita-modal');
     if (existente) existente.remove();
@@ -10667,13 +10148,11 @@ if (typeof MEDICACOES !== 'undefined') {
     modal.innerHTML = renderPainel();
     document.body.appendChild(modal);
 
-    // Eventos
     modal.querySelector('.rb-close').onclick = fecharPainel;
     modal.addEventListener('click', function(e){
       if (e.target === modal) fecharPainel();
     });
 
-    // Tabs
     modal.querySelectorAll('.rb-tab').forEach(function(t){
       t.onclick = function(){
         modal.querySelectorAll('.rb-tab').forEach(function(x){x.classList.remove('ativa')});
@@ -10686,14 +10165,12 @@ if (typeof MEDICACOES !== 'undefined') {
 
     hookAcoes(modal);
 
-    // Abrir aba específica se solicitada
     if (abaInicial) {
       var tab = modal.querySelector('.rb-tab[data-tab="'+abaInicial+'"]');
       if (tab) tab.click();
     }
   }
 
-  // API pública pra abrir direto numa aba
   window.abrirReceitaBuilder = abrirPainel;
   window.abrirCrescimento = function() { abrirPainel('cresc'); };
   window.abrirCentor = function() { abrirPainel('centor'); };
@@ -10719,7 +10196,6 @@ if (typeof MEDICACOES !== 'undefined') {
     html += '<button class="rb-tab" data-tab="centor" type="button">Centor</button>';
     html += '</div>';
 
-    // PANE: Cesta
     html += '<div class="rb-pane ativa" data-pane="cesta">';
     if (cesta.length === 0) {
       html += '<div class="rb-vazio">';
@@ -10747,7 +10223,6 @@ if (typeof MEDICACOES !== 'undefined') {
     }
     html += '</div>';
 
-    // PANE: Histórico
     html += '<div class="rb-pane" data-pane="historico">';
     if (hist.length === 0) {
       html += '<div class="rb-vazio">';
@@ -10776,12 +10251,10 @@ if (typeof MEDICACOES !== 'undefined') {
     }
     html += '</div>';
 
-    // PANE: Crescimento
     html += '<div class="rb-pane" data-pane="cresc">';
     html += renderCrescimento();
     html += '</div>';
 
-    // PANE: Centor
     html += '<div class="rb-pane" data-pane="centor">';
     html += renderCentor();
     html += '</div>';
@@ -10791,7 +10264,7 @@ if (typeof MEDICACOES !== 'undefined') {
   }
 
   function hookAcoes(modal) {
-    // Botões de ação da cesta
+
     modal.querySelectorAll('[data-acao]').forEach(function(b){
       b.onclick = function() {
         var a = b.dataset.acao;
@@ -10802,7 +10275,7 @@ if (typeof MEDICACOES !== 'undefined') {
         else if (a === 'limpar-hist') limparHistorico();
       };
     });
-    // Remover item da cesta
+
     modal.querySelectorAll('.rb-item-del').forEach(function(b){
       b.onclick = function(){
         var idx = parseInt(b.parentElement.dataset.idx, 10);
@@ -10814,7 +10287,7 @@ if (typeof MEDICACOES !== 'undefined') {
         }
       };
     });
-    // Editar item da cesta (contenteditable)
+
     modal.querySelectorAll('.rb-item-texto').forEach(function(div){
       div.onblur = function(){
         var idx = parseInt(div.parentElement.dataset.idx, 10);
@@ -10824,7 +10297,7 @@ if (typeof MEDICACOES !== 'undefined') {
         }
       };
     });
-    // Ações de histórico
+
     modal.querySelectorAll('[data-hist-acao]').forEach(function(b){
       b.onclick = function(){
         var idx = parseInt(b.dataset.histIdx, 10);
@@ -10850,15 +10323,13 @@ if (typeof MEDICACOES !== 'undefined') {
       };
     });
 
-    // Crescimento — calcular
     var btnC = modal.querySelector('#cresc-calcular');
     if (btnC) btnC.onclick = calcularCrescimento;
-    // Centor — calcular
+
     var btnCent = modal.querySelector('#centor-calcular');
     if (btnCent) btnCent.onclick = calcularCentor;
   }
 
-  // ===== AÇÕES =====
   function copiarTudo() {
     var texto = montarTextoCesta();
     copiarTexto(texto);
@@ -10911,12 +10382,9 @@ if (typeof MEDICACOES !== 'undefined') {
     return linhas.join(comCabecalho ? '\n' : '\n\n');
   }
 
-  // ===== CURVA DE CRESCIMENTO =====
-  // Tabelas OMS simplificadas (peso/idade meninos e meninas, 0-60 meses)
-  // Valores aproximados em kg para percentis P3, P15, P50, P85, P97
   const TABELA_CRESC = {
     M: { // Meninos (kg)
-      // [meses, p3, p15, p50, p85, p97]
+
       0:  [2.5, 2.9, 3.3, 3.9, 4.4],
       1:  [3.4, 3.9, 4.5, 5.1, 5.8],
       2:  [4.4, 4.9, 5.6, 6.3, 7.1],
@@ -10980,7 +10448,7 @@ if (typeof MEDICACOES !== 'undefined') {
     }
     var tab = TABELA_CRESC[sexo];
     if (!tab) return;
-    // Achar duas idades mais próximas e interpolar
+
     var idades = Object.keys(tab).map(Number).sort(function(a,b){return a-b});
     var i1 = idades[0], i2 = idades[idades.length-1];
     for (var i = 0; i < idades.length - 1; i++) {
@@ -10997,7 +10465,6 @@ if (typeof MEDICACOES !== 'undefined') {
     var p85 = v1[3] + (v2[3]-v1[3])*t;
     var p97 = v1[4] + (v2[4]-v1[4])*t;
 
-    // Classificar
     var classif = '', alerta = '';
     if (peso < p3) { classif = 'Abaixo do P3'; alerta = 'aviso'; }
     else if (peso < p15) classif = 'Entre P3 e P15 (atenção)';
@@ -11020,7 +10487,6 @@ if (typeof MEDICACOES !== 'undefined') {
     div.innerHTML = html;
   }
 
-  // ===== SCORE CENTOR PEDIÁTRICO (McIsaac modificado) =====
   function renderCentor() {
     var html = '<div class="rb-calc">';
     html += '<p class="rb-calc-desc">Score McIsaac modificado para faringite — decide quem testa/trata por Streptococcus pyogenes (GABHS).</p>';
@@ -11071,7 +10537,6 @@ if (typeof MEDICACOES !== 'undefined') {
     div.innerHTML = html;
   }
 
-  // ===== UTILS =====
   function escapeHtml(s) {
     if (s == null) return '';
     return String(s).replace(/[&<>"']/g, function(c){
@@ -11099,12 +10564,10 @@ if (typeof MEDICACOES !== 'undefined') {
     if (typeof window.mostrarToast === 'function') window.mostrarToast(msg);
   }
 
-  // ===== CSS =====
   function aplicarCSS() {
     if (document.getElementById('receita-builder-css')) return;
     var css = '';
 
-    // FAB
     css += '#receita-fab { position:fixed; bottom:24px; right:24px; width:60px; height:60px; background:#1c1917; color:white; border:none; border-radius:50%; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; box-shadow:0 6px 20px rgba(0,0,0,.25); z-index:1000; transition:all .2s; font-family:inherit; }\n';
     css += '#receita-fab:hover { transform:scale(1.08); background:#292524; }\n';
     css += '#receita-fab.com-itens { background:#1a7a3d; }\n';
@@ -11113,7 +10576,6 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '#receita-fab .fab-contador { font-size:10px; font-weight:700; font-family:\'JetBrains Mono\', monospace; line-height:1; margin-top:2px; }\n';
     css += '@media (max-width:640px) { #receita-fab { bottom:16px; right:16px; width:52px; height:52px; } #receita-fab .fab-icone { font-size:20px; } }\n';
 
-    // Modal
     css += '.rb-modal { position:fixed; inset:0; background:rgba(28,25,23,.65); z-index:9999; display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; padding:30px 16px; backdrop-filter:blur(2px); }\n';
     css += '.rb-painel { background:#fafaf9; max-width:680px; width:100%; max-height:calc(100vh - 60px); display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(0,0,0,.3); overflow:hidden; }\n';
     css += '.rb-cab { display:flex; justify-content:space-between; align-items:center; padding:18px 24px; border-bottom:1px solid #e7e5e4; background:#1c1917; color:white; }\n';
@@ -11131,7 +10593,6 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '.rb-vazio b { color:#1c1917; }\n';
     css += '.rb-vazio p { margin:8px 0; line-height:1.5; }\n';
 
-    // Itens da cesta
     css += '.rb-itens { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }\n';
     css += '.rb-item { background:white; border:1px solid #e7e5e4; padding:12px 36px 12px 14px; position:relative; }\n';
     css += '.rb-item-med { font-family:\'JetBrains Mono\', monospace; font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:#78716c; margin-bottom:4px; }\n';
@@ -11140,7 +10601,6 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '.rb-item-del { position:absolute; top:8px; right:8px; background:transparent; border:none; color:#78716c; font-size:20px; cursor:pointer; line-height:1; padding:2px 6px; }\n';
     css += '.rb-item-del:hover { color:#7c2128; background:#fee2e2; }\n';
 
-    // Ações
     css += '.rb-acoes { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }\n';
     css += '.rb-btn { background:white; color:#1c1917; border:1px solid #1c1917; padding:9px 14px; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .15s; }\n';
     css += '.rb-btn:hover { background:#1c1917; color:white; }\n';
@@ -11153,14 +10613,12 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '.rb-btn-mini.rb-btn-danger { color:#7c2128; border-color:#7c2128; }\n';
     css += '.rb-btn-mini.rb-btn-danger:hover { background:#7c2128; color:white; }\n';
 
-    // Histórico
     css += '.rb-hist-lista { display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow-y:auto; }\n';
     css += '.rb-hist-item { background:white; border:1px solid #e7e5e4; padding:12px 14px; }\n';
     css += '.rb-hist-data { font-family:\'JetBrains Mono\', monospace; font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:#78716c; margin-bottom:6px; }\n';
     css += '.rb-hist-corpo { font-family:\'Fraunces\', Georgia, serif; font-size:13px; color:#1c1917; line-height:1.4; max-height:200px; overflow-y:auto; margin-bottom:8px; }\n';
     css += '.rb-hist-acoes { display:flex; gap:6px; flex-wrap:wrap; }\n';
 
-    // Calculadoras
     css += '.rb-calc { padding:8px 0; }\n';
     css += '.rb-calc-desc { color:#57534e; font-size:13px; margin:0 0 14px; line-height:1.5; }\n';
     css += '.rb-calc-nota { color:#78716c; font-size:11px; margin-top:14px; line-height:1.4; font-style:italic; }\n';
@@ -11172,7 +10630,6 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '.rb-form-checks { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }\n';
     css += '.rb-form-checks label { display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; color:#1c1917; }\n';
 
-    // Resultado
     css += '.rb-resultado { margin-top:14px; padding:14px 16px; background:white; border-left:3px solid #1a7a3d; }\n';
     css += '.rb-resultado h3 { margin:0 0 10px; font-family:\'Fraunces\', Georgia, serif; font-size:17px; }\n';
     css += '.rb-resultado p { margin:6px 0; font-size:13px; }\n';
@@ -11187,7 +10644,6 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '.rb-cresc-mediana { background:#dcfce7 !important; }\n';
     css += '.rb-cresc-paciente { margin-top:10px; font-size:14px; padding:8px 12px; background:#fef9c3; border-left:3px solid #c2410c; }\n';
 
-    // Dark mode
     css += 'body.dark .rb-modal { background:rgba(0,0,0,.8); }\n';
     css += 'body.dark .rb-painel { background:#0c0a09; color:#e7e5e4; }\n';
     css += 'body.dark .rb-cab { background:#000; }\n';
@@ -11216,7 +10672,6 @@ if (typeof MEDICACOES !== 'undefined') {
     document.head.appendChild(s);
   }
 
-  // ===== INIT =====
   function init() {
     aplicarCSS();
     carregarCesta();
@@ -11234,19 +10689,11 @@ if (typeof MEDICACOES !== 'undefined') {
   console.log('[RECEITA v7.0] Cesta + histórico + WhatsApp + crescimento + Centor');
 })();
 
-
-// ===== MÓDULO UBS v6.0: acessos-rapidos-v7.js =====
-// ============================================================================
-// ACESSOS RÁPIDOS v7.0 (revisão)
-//   Barra sticky logo abaixo dos inputs (idade/peso/busca).
-//   Sempre visível ao rolar — labels descritivos visíveis em qualquer tela.
-// ============================================================================
-
 (function(){
   'use strict';
 
   function criarBarra() {
-    // Remove instância antiga do header se ainda existir
+
     var antigo = document.getElementById('acessos-rapidos');
     if (antigo) antigo.remove();
 
@@ -11289,7 +10736,6 @@ if (typeof MEDICACOES !== 'undefined') {
       +   '</button>'
       + '</div>';
 
-    // Inserir LOGO DEPOIS da .inputs (irmão, não filho)
     inputs.parentNode.insertBefore(bar, inputs.nextSibling);
 
     bar.querySelectorAll('.ac-btn').forEach(function(b){
@@ -11307,14 +10753,11 @@ if (typeof MEDICACOES !== 'undefined') {
     if (document.getElementById('acessos-bar-css')) return;
     var css = '';
 
-    // Esconde a versão antiga (que ficava no header)
     css += '#acessos-rapidos { display:none !important; }\n';
 
-    // Barra sticky logo abaixo dos inputs
     css += '#acessos-bar { position:sticky; top:74px; z-index:49; background:#f5f5f4; border-bottom:1px solid #e7e5e4; box-shadow:0 2px 4px rgba(0,0,0,.04); }\n';
     css += '.acessos-inner { max-width:1200px; margin:0 auto; padding:8px 16px; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }\n';
 
-    // Botão
     css += '.ac-btn { display:flex; align-items:center; gap:10px; padding:10px 14px; background:white; border:1px solid #d6d3d1; cursor:pointer; transition:all .15s; text-align:left; font-family:inherit; }\n';
     css += '.ac-btn:hover { border-color:#1c1917; background:#fafaf9; transform:translateY(-1px); box-shadow:0 2px 6px rgba(0,0,0,.06); }\n';
     css += '.ac-btn:active { transform:translateY(0); }\n';
@@ -11323,11 +10766,9 @@ if (typeof MEDICACOES !== 'undefined') {
     css += '.ac-label b { font-family:\'Fraunces\', Georgia, serif; font-size:14px; color:#1c1917; line-height:1.1; font-weight:600; }\n';
     css += '.ac-label small { font-family:\'JetBrains Mono\', monospace; font-size:10px; color:#78716c; line-height:1.2; letter-spacing:.01em; }\n';
 
-    // Responsive
     css += '@media (max-width:900px) { .acessos-inner { grid-template-columns:repeat(2,1fr); } }\n';
     css += '@media (max-width:520px) { .acessos-inner { padding:6px 12px; gap:6px; } .ac-btn { padding:8px 10px; gap:8px; } .ac-label b { font-size:13px; } .ac-label small { font-size:9px; } .ac-ico { font-size:18px; } }\n';
 
-    // Dark mode
     css += 'body.dark #acessos-bar { background:#0c0a09; border-bottom-color:#292524; }\n';
     css += 'body.dark .ac-btn { background:#1c1917; border-color:#44403c; }\n';
     css += 'body.dark .ac-btn:hover { background:#292524; border-color:#a8a29e; }\n';
@@ -11356,31 +10797,20 @@ if (typeof MEDICACOES !== 'undefined') {
   console.log('[ACESSOS v7.0r] Barra sticky com 4 acessos rápidos descritivos');
 })();
 
-
-// ===== MÓDULO UBS v6.0: cleanup-v7.js =====
-// ============================================================================
-// CLEANUP v7.0
-//   - Esconde FAB redondo da receita (substituído pela barra sticky)
-//   - Move botão "Instalar app" do canto flutuante pro rodapé
-// ============================================================================
-
 (function(){
   'use strict';
 
   function aplicarCSS() {
     if (document.getElementById('cleanup-v7-css')) return;
     var css = '';
-    // Esconde o FAB redondo da receita
+
     css += '#receita-fab { display:none !important; }\n';
 
-    // Botão instalar fica acoplado ao footer (não mais flutuante)
     css += '#btn-instalar { position:static !important; bottom:auto !important; right:auto !important; box-shadow:none !important; display:inline-flex; align-items:center; gap:6px; padding:8px 16px !important; font-size:13px !important; margin:0 8px 0 0; }\n';
 
-    // Wrapper visual no footer
     css += '.install-wrap { display:flex; justify-content:center; align-items:center; padding:14px 16px; background:#fafaf9; border-top:1px solid #e7e5e4; }\n';
     css += '.install-wrap-msg { font-family:\'JetBrains Mono\', monospace; font-size:11px; color:#78716c; letter-spacing:.04em; }\n';
 
-    // Dark mode
     css += 'body.dark .install-wrap { background:#0c0a09; border-top-color:#292524; }\n';
     css += 'body.dark .install-wrap-msg { color:#a8a29e; }\n';
 
@@ -11390,17 +10820,14 @@ if (typeof MEDICACOES !== 'undefined') {
     document.head.appendChild(s);
   }
 
-  // Quando o #btn-instalar for criado pelo evento beforeinstallprompt, movê-lo
   function moverBotaoInstalar() {
     var btn = document.getElementById('btn-instalar');
     if (!btn) return;
     if (btn.parentElement && btn.parentElement.classList.contains('install-wrap')) return; // já movido
 
-    // Procurar footer existente
     var footer = document.querySelector('footer');
     if (!footer) return;
 
-    // Criar wrapper acima do footer (logo antes)
     var wrap = document.createElement('div');
     wrap.className = 'install-wrap';
     var msg = document.createElement('span');
@@ -11412,7 +10839,6 @@ if (typeof MEDICACOES !== 'undefined') {
     footer.parentNode.insertBefore(wrap, footer);
   }
 
-  // Observa o body pra detectar o instante em que o botão é criado
   function setupObserver() {
     if (!document.body || typeof MutationObserver === 'undefined') return;
     var obs = new MutationObserver(function(muts){
@@ -11433,7 +10859,7 @@ if (typeof MEDICACOES !== 'undefined') {
   function init() {
     aplicarCSS();
     setupObserver();
-    // Caso o botão já exista (instalado antes deste script rodar)
+
     moverBotaoInstalar();
   }
 
@@ -11451,16 +10877,10 @@ if (typeof MEDICACOES !== 'undefined') {
 </script>
 <!-- INJECT-V8-START -->
 <script>
-// ============================================================================
-// MEDS PATCH v8.0
-//   - Atualiza Amoxicilina e Amoxi+Clav: adiciona variante 8/8 h para casos agudos
-//   - 13 novas medicações para preencher gaps de APS/PA pediátrica
-// ============================================================================
 
 (function(){
   'use strict';
 
-  // ===== NOVAS INDICAÇÕES PARA AMOXICILINA (8/8h) =====
   const NOVAS_INDIC_AMOXI = [
     {
       nome: 'OMA / Sinusite / PAC AGUDA — intervalo curto 8/8 h',
@@ -11485,10 +10905,8 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   ];
 
-  // ===== 13 MEDICAÇÕES NOVAS =====
   const MEDS_PATCH_V8 = [
 
-    // ━━━━━ EMERGÊNCIA / PRÉ-HOSPITALAR ━━━━━
     {
       id: 'diazepam-retal',
       nome: 'Diazepam (retal)',
@@ -11612,7 +11030,6 @@ if (typeof MEDICACOES !== 'undefined') {
       cobertura:['pele-leve']
     },
 
-    // ━━━━━ APS / GASTROINTESTINAL ━━━━━
     {
       id: 'bisacodil',
       nome: 'Bisacodil',
@@ -11680,7 +11097,6 @@ if (typeof MEDICACOES !== 'undefined') {
       cobertura:['gi']
     },
 
-    // ━━━━━ APS / ANTIPARASITÁRIO + ANTIFÚNGICO ━━━━━
     {
       id: 'pamoato-pirantel',
       nome: 'Pamoato de Pirantel',
@@ -11728,7 +11144,6 @@ if (typeof MEDICACOES !== 'undefined') {
       cobertura:['pele-leve']
     },
 
-    // ━━━━━ APS / VITAMINAS ━━━━━
     {
       id: 'acido-folico',
       nome: 'Ácido Fólico',
@@ -11803,14 +11218,12 @@ if (typeof MEDICACOES !== 'undefined') {
     }
   ];
 
-  // ===== APLICAR PATCH =====
   function aplicar() {
     if (typeof MEDICACOES === 'undefined' || !Array.isArray(MEDICACOES)) {
       setTimeout(aplicar, 300);
       return;
     }
 
-    // 1. Adicionar 8/8h às indicações da Amoxicilina existente
     var amoxi = MEDICACOES.find(function(m){ return m.id === 'amoxicilina'; });
     if (amoxi && amoxi.indicacoes) {
       var temAguda = amoxi.indicacoes.find(function(i){ return /8\/8/.test(i.intervalo || ''); });
@@ -11819,7 +11232,6 @@ if (typeof MEDICACOES !== 'undefined') {
       }
     }
 
-    // 2. Adicionar 8/8h ao Amoxi+Clav existente
     var amoxClav = MEDICACOES.find(function(m){
       return m.id === 'amox-clav' || m.id === 'amoxi-clavulanato' || m.id === 'amox-clavulanato'
           || /clavulanato/i.test(m.nome || '');
@@ -11831,19 +11243,16 @@ if (typeof MEDICACOES !== 'undefined') {
       }
     }
 
-    // 3. Adicionar novas medicações
     MEDS_PATCH_V8.forEach(function(m){
       if (MEDICACOES.find(function(x){ return x.id === m.id; })) return;
       MEDICACOES.push(m);
     });
 
-    // 4. Re-estender busca para incluir novos termos
     if (typeof window.estenderBusca === 'function') {
       try { window.estenderBusca(); } catch(e){}
     }
   }
 
-  // Aplicar em momentos diferentes (MEDICACOES carrega em vários scripts)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', aplicar);
   } else {
@@ -11858,5 +11267,187 @@ if (typeof MEDICACOES !== 'undefined') {
 
 </script>
 <!-- INJECT-V8-END -->
+<!-- INJECT-V81-START -->
+<script>
+// ============================================================================
+// PATCH v8.1 — Sincronia visual com Vovôminic Doutô
+//   - Botão "🔗 Adulto/PA" na barra de acessos rápidos
+//   - Footer reformulado (educacional + fontes + atribuições)
+//   - Observador unificado (substitui os 5 MutationObservers individuais)
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const URL_VOVOMINIC = 'https://felipertoledo.github.io/plantao/';
+
+  // ===== 1. BOTÃO "ADULTO/PA" NA BARRA DE ACESSOS =====
+  function adicionarBotaoVovominic() {
+    if (document.getElementById('ac-btn-vovominic')) return;
+    var bar = document.querySelector('#acessos-bar .acessos-inner');
+    if (!bar) { setTimeout(adicionarBotaoVovominic, 300); return; }
+
+    // Botão "Adulto/PA" leva pro Vovôminic Doutô
+    var btn = document.createElement('a');
+    btn.id = 'ac-btn-vovominic';
+    btn.className = 'ac-btn ac-btn-link';
+    btn.href = URL_VOVOMINIC;
+    btn.target = '_blank';
+    btn.rel = 'noopener';
+    btn.title = 'Abrir Vovôminic Doutô — guia clínico para adulto/idoso (PA + UBS)';
+    btn.innerHTML = ''
+      + '<span class="ac-ico">🔗</span>'
+      + '<span class="ac-label">'
+      +   '<b>Adulto / PA</b>'
+      +   '<small>Vovôminic Doutô · adulto + idoso</small>'
+      + '</span>';
+    bar.appendChild(btn);
+
+    // Ajustar grid pra 5 colunas no desktop
+    var s = document.getElementById('acessos-bar-css-v81');
+    if (!s) {
+      s = document.createElement('style');
+      s.id = 'acessos-bar-css-v81';
+      s.textContent = ''
+        + '#acessos-bar .acessos-inner { grid-template-columns: repeat(5, 1fr) !important; }\n'
+        + '@media (max-width:900px) { #acessos-bar .acessos-inner { grid-template-columns: repeat(3, 1fr) !important; } }\n'
+        + '@media (max-width:520px) { #acessos-bar .acessos-inner { grid-template-columns: repeat(2, 1fr) !important; } }\n'
+        + '.ac-btn-link { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px; padding: 10px 14px; }\n'
+        + '#ac-btn-vovominic { background: #fef2f2; border-color: #fecaca; }\n'
+        + '#ac-btn-vovominic:hover { background: #fee2e2; border-color: #B91C1C; }\n'
+        + '#ac-btn-vovominic .ac-label b { color: #B91C1C; }\n'
+        + 'body.dark #ac-btn-vovominic { background: #3f1f1f; border-color: #7c2128; }\n'
+        + 'body.dark #ac-btn-vovominic:hover { background: #5c2828; border-color: #B91C1C; }\n'
+        + 'body.dark #ac-btn-vovominic .ac-label b { color: #fca5a5; }\n';
+      document.head.appendChild(s);
+    }
+  }
+
+  // ===== 2. FOOTER REFORMULADO =====
+  function reformarFooter() {
+    var footer = document.querySelector('footer');
+    if (!footer) { setTimeout(reformarFooter, 300); return; }
+    if (footer.dataset.v81) return;
+
+    // Preservar texto existente do footer (assinatura, etc) — mas reformatar
+    var assinaturaOriginal = footer.innerHTML;
+
+    footer.dataset.v81 = '1';
+    footer.innerHTML = ''
+      + '<div class="footer-v81">'
+
+      // Bloco 1: assinatura/identidade (preservar)
+      + '<div class="footer-section footer-id">'
+      +   '<div class="footer-titulo">Pediatria com o Pé no Chão · 2026</div>'
+      +   '<div class="footer-sub">Felipe Ribeiro Toledo (<i>vovôminic</i>) · Médico</div>'
+      +   '<div class="footer-sub footer-small">USF 5 José Pascoal Rosolim · Estiva Gerbi/SP · Bairro Ludi</div>'
+      +   '<div class="footer-sub footer-small footer-italic">deveria estar estudando pra fazer psiquiatria, mas está criando calculadora de pediatria só porque queria uma legal pra usar</div>'
+      + '</div>'
+
+      // Bloco 2: aviso educacional
+      + '<div class="footer-section footer-aviso">'
+      +   '<div class="footer-section-titulo">Material educacional</div>'
+      +   '<p>Sem fins lucrativos · uso clínico de apoio. <b>NÃO substitui</b> o julgamento clínico do médico assistente.</p>'
+      +   '<p class="footer-small">Doses individualizar conforme idade, peso, função renal/hepática, comorbidades e gestação. <b>Recalcular sempre.</b></p>'
+      + '</div>'
+
+      // Bloco 3: fontes principais
+      + '<div class="footer-section footer-fontes">'
+      +   '<div class="footer-section-titulo">Fontes principais</div>'
+      +   '<div class="footer-fontes-lista">'
+      +     '<span>SBP</span> · <span>AAP</span> · <span>MS-PCDT</span> · '
+      +     '<span>PNI 2026</span> · <span>AHA PALS 2025</span> · <span>GINA pediátrico</span> · '
+      +     '<span>SBIm</span> · <span>IDSA pediátrico</span> · <span>NICE</span> · '
+      +     '<span>OMS</span> · <span>Nelson Pediatrics</span> · <span>CDC</span> · <span>NASPGHAN</span> · '
+      +     '<span>CAB-MS</span>'
+      +   '</div>'
+      + '</div>'
+
+      // Bloco 4: links da família
+      + '<div class="footer-section footer-familia">'
+      +   '<div class="footer-section-titulo">Outros guias</div>'
+      +   '<a href="' + URL_VOVOMINIC + '" target="_blank" rel="noopener" class="footer-link">'
+      +     '<b>Vovôminic Doutô</b> → adulto + idoso PA/UBS'
+      +   '</a>'
+      + '</div>'
+
+      + '</div>';
+  }
+
+  // ===== 3. CSS DO FOOTER =====
+  function aplicarCSSFooter() {
+    if (document.getElementById('footer-v81-css')) return;
+    var css = ''
+      + 'footer { background: #1c1917; color: #e7e5e4; padding: 32px 0 24px; margin-top: 60px; border-top: 4px solid #1a7a3d; }\n'
+      + '.footer-v81 { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 36px; }\n'
+      + '.footer-section { display: flex; flex-direction: column; gap: 6px; }\n'
+      + '.footer-section-titulo { font-family: \'JetBrains Mono\', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: #a8a29e; margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid #44403c; }\n'
+      + '.footer-titulo { font-family: \'Fraunces\', Georgia, serif; font-size: 18px; font-weight: 600; color: #fafaf9; line-height: 1.3; }\n'
+      + '.footer-sub { font-size: 13px; color: #d6d3d1; line-height: 1.5; }\n'
+      + '.footer-small { font-size: 11px; color: #a8a29e; line-height: 1.4; }\n'
+      + '.footer-italic { font-style: italic; max-width: 340px; }\n'
+      + '.footer-aviso p { margin: 6px 0; font-size: 12px; line-height: 1.5; color: #d6d3d1; }\n'
+      + '.footer-aviso b { color: #fafaf9; }\n'
+      + '.footer-fontes-lista { font-family: \'JetBrains Mono\', monospace; font-size: 11px; line-height: 1.8; color: #a8a29e; }\n'
+      + '.footer-fontes-lista span { color: #e7e5e4; }\n'
+      + '.footer-link { display: inline-block; color: #86efac; text-decoration: none; font-size: 13px; padding: 6px 0; transition: color .15s; }\n'
+      + '.footer-link:hover { color: #fafaf9; text-decoration: underline; }\n'
+      + '.footer-link b { color: #fafaf9; }\n'
+      + '@media (max-width: 720px) { .footer-v81 { grid-template-columns: 1fr; gap: 18px; } footer { padding: 24px 0 18px; } }\n';
+
+    var s = document.createElement('style');
+    s.id = 'footer-v81-css';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  // ===== 4. OBSERVADOR UNIFICADO =====
+  // Coordena os hooks de UBS/frac/ATB/UX evitando observers concorrentes
+  function setupObservadorUnificado() {
+    if (window._observerUnificado) return;
+    window._observerUnificado = true;
+
+    var main = document.querySelector('main') || document.body;
+    if (!main) { setTimeout(setupObservadorUnificado, 300); return; }
+
+    var debounce;
+    var obs = new MutationObserver(function(){
+      if (debounce) clearTimeout(debounce);
+      debounce = setTimeout(function(){
+        // Chamar todos os hooks de re-renderização registrados
+        if (typeof window.injetarCobertura === 'function') {
+          try { window.injetarCobertura(); } catch(e) {}
+        }
+        if (typeof window.enriquecerComFracionamento === 'function') {
+          try { window.enriquecerComFracionamento(); } catch(e) {}
+        }
+        // Acessos rápidos / footer (idempotentes)
+        adicionarBotaoVovominic();
+      }, 100);
+    });
+    obs.observe(main, { childList: true, subtree: true });
+  }
+
+  // ===== INIT =====
+  function init() {
+    aplicarCSSFooter();
+    adicionarBotaoVovominic();
+    reformarFooter();
+    setupObservadorUnificado();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 50);
+  }
+  setTimeout(init, 800);
+  setTimeout(init, 2000);
+
+  console.log('[PATCH v8.1] Sincronia com Vovôminic + footer reformulado + observer unificado');
+})();
+
+</script>
+<!-- INJECT-V81-END -->
 </body>
 </html>

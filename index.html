@@ -268,7 +268,7 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
         <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
         <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.9.0 · fluxogramas pediátricos (5 piloto)</p>
+      <p class="hdr-version">v.9.1 · fluxogramas: onda 1 (5) + onda 2 emergências (5)</p>
     </div>
     <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
@@ -12184,5 +12184,325 @@ if (typeof MEDICACOES !== 'undefined') {
 
 </script>
 <!-- INJECT-V9-END -->
+<!-- INJECT-V91-START -->
+<script>
+// ============================================================================
+// FLUXOGRAMAS PEDIÁTRICOS v9.1 — ONDA 2: Emergências completas (5)
+//   - Sepse pediátrica (Phoenix Sepsis Score)
+//   - Status epilepticus
+//   - Choque pediátrico (hipovolêmico/distributivo/cardiogênico)
+//   - PCR pediátrica (PALS 2025)
+//   - Trauma craniano leve (PECARN)
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const FLUXOGRAMAS_ONDA2 = [
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 6. SEPSE PEDIÁTRICA (PHOENIX SEPSIS SCORE)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-sepse',
+      nome: 'Sepse pediátrica',
+      categoria: 'emergencia',
+      resumo: 'Reconhecimento por Phoenix Sepsis Score → ATB em 1h + ressuscitação volêmica + vasoativo se choque',
+      publico: 'PA · UTI · ILAS pediátrico',
+      fontes: 'Phoenix Sepsis Score 2024 · SSC Pediatric · ILAS · SBP',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com suspeita de infecção + sinais de comprometimento sistêmico:\n• Febre/hipotermia · taquicardia/bradicardia (lactente) · taquipneia\n• Alteração nível consciência · perfusão alterada · oligúria\n• Lactato elevado · plaquetopenia · disfunção de órgão' },
+
+        { tipo: 'decisao', texto: 'PHOENIX SEPSIS SCORE (≥2 pontos = SEPSE)\n\nRESPIRATÓRIO (PaO2/FiO2 ou SpO2/FiO2 com sat ≤97):\n• PF ≥400 = 0 · 300-399 = 1 · 200-299 = 2 · 100-199 = 3 · <100 = 4\n\nCARDIOVASCULAR (cada item = 1 pt; máx 6):\n• Lactato ≥5 · Lactato ≥11 · uso vasoativo · ≥2 vasoativos\n• PAM idade-específica abaixo do limite\n\nCOAGULAÇÃO (cada = 1; máx 2):\n• Plaq <100k · INR >1,3 · D-dímero >2 · Fibrinogênio <100\n\nNEUROLÓGICO:\n• Glasgow ≤10 = 1 · ≤5 ou pupila não-reativa = 2',
+          ramos: ['SCORE <2 — não é sepse', 'SCORE ≥2 — SEPSE', 'CARDIOV ≥1 — CHOQUE SÉPTICO'] },
+
+        // SCORE <2
+        { tipo: 'acao', cor: 'manejo', condicao: 'SCORE <2 — não é sepse',
+          texto: 'Infecção SEM disfunção orgânica\nTratar a infecção conforme foco\nReavaliar a cada 1-2 h\nNão atrasar ATB se foco bacteriano claro' },
+
+        // SCORE ≥2 — SEPSE
+        { tipo: 'acao', cor: 'urgente', condicao: 'SCORE ≥2 — SEPSE',
+          texto: '🚨 BUNDLE DE 1 HORA (golden hour):\n\n① ANTIBIÓTICO de amplo espectro nas primeiras 60 min após reconhecimento (cada hora de atraso ↑ mortalidade)\n   Empírico: CEFTRIAXONA 100 mg/kg + AMPICILINA se <3m (Listeria)\n   PA grave / hospitalar: meropenem ± vancomicina\n② COLETAR antes do ATB se possível: hemocultura, gaso, lactato, hemograma, função renal/hepática, PCR, coagulograma' },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'SCORE ≥2 — SEPSE',
+          texto: '③ RESSUSCITAÇÃO VOLÊMICA:\nSF 0,9% ou Ringer Lactato — bolus 10-20 mL/kg em 5-10 min\nREAVALIAR perfusão a cada bolus\nObjetivo: melhora perfusão (TEC <2s, lactato ↓, débito urinário ↑)\nLimite: 40-60 mL/kg total — após isto, suspeitar choque cardiogênico ou refratário' },
+
+        { tipo: 'observa', condicao: 'SCORE ≥2 — SEPSE',
+          texto: 'Monitorizar continuamente: SpO₂, PA, FC, ECG, diurese horária\nLactato a cada 2 h (objetivo: clearance >10% ou normalização)\nGlicemia capilar (corrigir hipoglicemia)\nReavaliar Phoenix Score a cada 1 h' },
+
+        // CHOQUE SÉPTICO
+        { tipo: 'acao', cor: 'urgente', condicao: 'CARDIOV ≥1 — CHOQUE SÉPTICO',
+          texto: '🚨🚨 CHOQUE SÉPTICO — protocolo acima + VASOATIVO precoce\n\nApós 40-60 mL/kg sem resposta OU choque refratário:\nADRENALINA contínua 0,05-0,3 mcg/kg/min (1ª linha pediátrica em choque frio)\nNORADRENALINA 0,05-0,3 mcg/kg/min se choque quente (vasodilatado)\nVia: acesso central preferível; periférico ou IO em emergência' },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'CARDIOV ≥1 — CHOQUE SÉPTICO',
+          texto: 'CONSIDERAR:\n• Hidrocortisona 1-2 mg/kg/dose IV 6/6h se choque refratário a vasoativo\n• Transfusão se Hb <7 g/dL em paciente instável\n• Correção iônica (cálcio, magnésio, potássio)\n• IOT precoce se SaO2 ↓ ou ↓ consciência' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'CARDIOV ≥1 — CHOQUE SÉPTICO',
+          texto: '🚑 UTI PEDIÁTRICA imediato\nComunicar regulação · garantir acesso e ATB antes do transporte' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Phoenix Sepsis Score substituiu a antiga "sepse pediátrica/SIRS" desde 2024. Foco: disfunção de órgão, não apenas resposta inflamatória.' },
+        { tipo: 'aviso', texto: 'ATB no primeiro hora salva vidas — cada hora de atraso aumenta mortalidade em ~7%. Não esperar resultados de exames.' },
+        { tipo: 'info', texto: 'Em criança, choque pode ser FRIO (vasoconstrito, extremidades frias, TEC alongado) — diferente do adulto séptico que costuma ser quente.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 7. STATUS EPILEPTICUS
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-status-epileptico',
+      nome: 'Status epilepticus pediátrico',
+      categoria: 'emergencia',
+      resumo: 'Crise >5 min ou recorrente sem recuperação → benzodiazepínico → fenitoína/fenobarbital → IOT + UTI',
+      publico: 'PA · UTI pediátrica · pré-hospitalar',
+      fontes: 'NLAE · NCS · AAP · SBP · ILAE',
+      passos: [
+        { tipo: 'inicio', texto: 'Crise convulsiva persistente:\n• Crise contínua >5 min, OU\n• 2+ crises sem recuperação de consciência entre elas' },
+
+        { tipo: 'acao', cor: 'urgente',
+          texto: '⚡ TEMPO 0-5 MIN — Estabilização\nABC: posicionar lateral · aspirar VA · O₂ suplementar\nGlicemia capilar (corrigir se <60 mg/dL: glicose 25% 2 mL/kg IV)\nAcesso venoso · monitor · oxímetro\nColeta de sangue: hemograma, eletrólitos, glicose, função renal/hepática, anticonvulsivante (se em uso)' },
+
+        { tipo: 'decisao', texto: 'TEMPO 5-20 MIN: 1ª LINHA — BENZODIAZEPÍNICO\nVia disponível?',
+          ramos: ['SEM acesso EV', 'COM acesso EV'] },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'SEM acesso EV',
+          texto: 'MIDAZOLAM 0,2 mg/kg INTRANASAL (máx 10 mg) — usar atomizer (MAD) se disponível\nOU MIDAZOLAM 0,5 mg/kg IM (máx 10 mg)\nOU MIDAZOLAM 0,3 mg/kg BUCAL\nOU DIAZEPAM RETAL 0,5 mg/kg (máx 10 mg)\n\nReavaliar em 5-10 min · 2ª dose se persiste' },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'COM acesso EV',
+          texto: 'MIDAZOLAM 0,1-0,2 mg/kg IV (máx 5-10 mg) — 1ª escolha\nOU DIAZEPAM 0,2-0,3 mg/kg IV (máx 10 mg) lento (1-2 mg/min)\nOU LORAZEPAM 0,1 mg/kg IV (máx 4 mg) — se disponível, mais duradouro\n\nReavaliar em 5 min · 2ª dose se persiste' },
+
+        { tipo: 'decisao', texto: 'CRISE PERSISTE APÓS 2 DOSES DE BENZODIAZEPÍNICO?\n(STATUS REFRATÁRIO — 20-40 min)',
+          ramos: ['SIM — persiste', 'NÃO — cessou'] },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'SIM — persiste',
+          texto: '⚡ 2ª LINHA — ANTICONVULSIVANTE IV:\n\nFENITOÍNA 20 mg/kg IV em 20 min (velocidade MÁX 1 mg/kg/min ou 50 mg/min)\n   Diluir em SF 0,9% (NUNCA em SG)\n   Monitor cardíaco contínuo · risco bradicardia/hipotensão\n\nOU FOSFENITOÍNA 20 mg PE/kg IV em 7-10 min (mesma eficácia, menos extravasamento)\n\nOU FENOBARBITAL 20 mg/kg IV em 20 min (lactente <6m: 1ª escolha)\n\nOU LEVETIRACETAM 60 mg/kg IV em 5-15 min (máx 4500 mg) — sem hipotensão' },
+
+        { tipo: 'decisao', condicao: 'SIM — persiste',
+          texto: 'CRISE PERSISTE APÓS 2ª LINHA? (40-60 min — SUPER-REFRATÁRIO)',
+          ramos: ['SIM — super-refratário', 'NÃO — cessou'] },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'SIM — super-refratário',
+          texto: '🚨 IOT + ANESTESIA + UTI imediato\n\nMidazolam infusão contínua 0,1-0,4 mg/kg/h\nOU Tiopental 2-5 mg/kg bolus + 1-5 mg/kg/h\nOU Propofol (cuidado <16 anos — síndrome propofol)\n\nEEG contínuo se disponível (alvo: supressão de surtos)' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'SIM — super-refratário',
+          texto: '🚑 UTI PEDIÁTRICA com suporte de neurologia\nInvestigar causa: meningite, AVC, intoxicação, hipoglicemia, distúrbio eletrolítico, lesão estrutural\nLíquor + Imagem (TC/RM) se possível e estável' },
+
+        // RAMO CESSOU
+        { tipo: 'observa', condicao: 'NÃO — cessou',
+          texto: 'Monitorar pós-crise:\n• Recuperação progressiva da consciência\n• Buscar e tratar causa subjacente\n• Manter via aérea\n• Iniciar anticonvulsivante de manutenção se primeira crise sintomática ou paciente em uso de anticonvulsivante (dose extra)' },
+
+        { tipo: 'fim', cor: 'referencia', condicao: 'NÃO — cessou',
+          texto: 'INTERNAR para observação 24h\nNeuropediatria · investigação etiológica (líquor, EEG, imagem conforme contexto)' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Tempo é CÉREBRO. Cada minuto de crise contínua aumenta dano neuronal. Não esperar "5 minutos completos" para tratar se a crise está estabelecida.' },
+        { tipo: 'aviso', texto: 'Fenitoína NUNCA em SG (precipita) — SEMPRE SF 0,9%. Velocidade máxima por risco de hipotensão e arritmia.' },
+        { tipo: 'info', texto: 'Causas frequentes em pediatria: convulsão febril complexa, infecção SNC, distúrbio eletrolítico, intoxicação, suspensão de anticonvulsivante.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 8. CHOQUE PEDIÁTRICO
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-choque',
+      nome: 'Choque pediátrico — manejo geral',
+      categoria: 'emergencia',
+      resumo: 'Identificar tipo (hipovolêmico/distributivo/cardiogênico/obstrutivo) → ressuscitação direcionada',
+      publico: 'PA · UTI · PALS 2025',
+      fontes: 'AHA PALS 2025 · ILCOR · SBP',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com sinais de choque (perfusão tecidual inadequada):\n• Taquicardia · taquipneia · TEC >3s\n• Pulsos centrais fortes mas periféricos fracos\n• Extremidades frias · marmoreio · palidez\n• Oligúria · alteração consciência\n• HIPOTENSÃO É TARDIA em criança — choque descompensado' },
+
+        { tipo: 'acao', cor: 'urgente',
+          texto: '🚨 PRIMEIROS 5 MIN — A/B/C\nABC: via aérea pérvia · O₂ alto fluxo · monitor + oxímetro\n2 ACESSOS VENOSOS calibrosos OU INTRAÓSSEO se acesso difícil em <90 seg\nGlicemia capilar (corrigir hipoglicemia: glicose 25% 2 mL/kg)\nColeta de sangue: gaso, lactato, hemograma, eletrólitos, função renal/hepática, hemocultura' },
+
+        { tipo: 'decisao', texto: 'IDENTIFICAR TIPO DE CHOQUE',
+          ramos: ['HIPOVOLÊMICO (mais comum)', 'DISTRIBUTIVO (séptico/anafilático)', 'CARDIOGÊNICO', 'OBSTRUTIVO'] },
+
+        // HIPOVOLÊMICO
+        { tipo: 'acao', cor: 'manejo', condicao: 'HIPOVOLÊMICO (mais comum)',
+          texto: 'Causa: diarreia, hemorragia, queimadura, cetoacidose\n\nBOLUS de cristaloide 20 mL/kg IV em 5-10 min (SF 0,9% ou RL)\nREAVALIAR (FC, PA, TEC, lactato, débito urinário) após cada bolus\nPode repetir até 60 mL/kg em 30-60 min\nApós 60 mL/kg sem resposta → reconsiderar tipo e iniciar vasoativo' },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'HIPOVOLÊMICO (mais comum)',
+          texto: 'Se HEMORRAGIA ativa:\n• Compressão · controle do foco · ácido tranexâmico 15 mg/kg (máx 1g) se trauma\n• Hemocomponentes: concentrado de hemácias 10-15 mL/kg quando disponível\n• Em trauma com choque hipovolêmico: cristaloide LIMITADO (10-20 mL/kg) — preferir hemoderivados precocemente' },
+
+        // DISTRIBUTIVO
+        { tipo: 'acao', cor: 'urgente', condicao: 'DISTRIBUTIVO (séptico/anafilático)',
+          texto: 'SÉPTICO: ver fluxograma Sepse — ATB 1h + 40-60 mL/kg + vasoativo\nANAFILÁTICO: ver fluxograma Anafilaxia — adrenalina IM IMEDIATA\nNEUROGÊNICO (lesão medular): cuidado com volume; preferir noradrenalina precoce' },
+
+        // CARDIOGÊNICO
+        { tipo: 'acao', cor: 'atencao', condicao: 'CARDIOGÊNICO',
+          texto: 'Suspeitar se: cardiopatia conhecida, miocardite, arritmia, sobrecarga após bolus inicial\n\nBOLUS LIMITADO: 5-10 mL/kg em 10-20 min (não 20 mL/kg)\nReavaliar SINAIS DE SOBRECARGA (estertores, hepatomegalia, B3)\n\nINOTRÓPICO precoce: dobutamina 5-10 mcg/kg/min OU adrenalina 0,05-0,1 mcg/kg/min\nReverter arritmias (taquicardia ventricular, BAV)' },
+
+        // OBSTRUTIVO
+        { tipo: 'acao', cor: 'urgente', condicao: 'OBSTRUTIVO',
+          texto: 'Causas: pneumotórax hipertensivo, tamponamento, TEP\n\nPneumotórax: PUNÇÃO de alívio 2º EIC linha hemiclavicular (>=8a) ou 4º-5º EIC anterior axilar (<8a)\nTamponamento: PERICARDIOCENTESE\nTEP: anticoagulação · trombolítico se grave (raro em pediatria)\n\nNão atrasar intervenção mecânica buscando confirmação por imagem' },
+
+        // COMUM A TODOS
+        { tipo: 'observa',
+          texto: 'METAS DE RESSUSCITAÇÃO:\n• TEC <3 segundos\n• FC dentro da faixa para idade\n• PA sistólica > P5 para idade\n• Diurese ≥1 mL/kg/h\n• Estado mental normal\n• Lactato em queda (>10%/h)' },
+
+        { tipo: 'fim', cor: 'internar',
+          texto: '🚑 UTI PEDIÁTRICA\nReavaliação contínua · escalar conforme não-resposta\nNão hesitar em escalar de cristaloide → vasoativo → inotrópico → suporte mecânico' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'CRIANÇA PEQUENA: hipotensão é evento tardio. A PA pode estar normal mesmo com choque já descompensado — confiar nos sinais de perfusão (TEC, pulso, mental status).' },
+        { tipo: 'aviso', texto: 'Acesso intra-ósseo > acesso venoso difícil. Se 2 tentativas EV em 90 seg falharam, IO no platô tibial proximal.' },
+        { tipo: 'info', texto: 'Lactato sérico é marcador de hipoperfusão útil — clearance >10%/h sugere resposta adequada.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 9. PCR PEDIÁTRICA (PALS 2025)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-pcr-pals',
+      nome: 'PCR pediátrica (PALS 2025)',
+      categoria: 'emergencia',
+      resumo: 'Identificar ritmo → RCP de alta qualidade → adrenalina precoce em não-chocável; desfibrilar em chocável',
+      publico: 'PA · UTI · PALS · BLS',
+      fontes: 'AHA PALS 2025 · ILCOR 2023-2025 · SBP',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança não responsiva, sem respiração eficaz ou apenas gasping\nPULSO central ausente em 10 segundos (carotídeo, braquial, femoral)' },
+
+        { tipo: 'acao', cor: 'urgente',
+          texto: '🚨 INICIAR RCP DE ALTA QUALIDADE — não atrasar\n\nCOMPRESSÕES:\n• Profundidade: ≥1/3 do diâmetro AP do tórax (~4 cm em lactente, ~5 cm em criança)\n• Frequência: 100-120/min\n• Permitir retorno completo do tórax\n• Minimizar interrupções (<10s)\n\nRELAÇÃO COMPRESSÃO:VENTILAÇÃO:\n• 1 socorrista: 30:2 · 2+ socorristas: 15:2\n• Com via aérea avançada: 100-120 compressões/min + 1 ventilação a cada 2-3 segundos (20-30/min)' },
+
+        { tipo: 'acao', cor: 'urgente',
+          texto: 'ENQUANTO RCP CONTINUA:\nMonitor/desfibrilador · ANALISAR RITMO assim que possível\nAcesso IO/IV (não atrasar adrenalina se difícil)\nVia aérea: bolsa-máscara é suficiente se RCP eficaz; IOT se necessária' },
+
+        { tipo: 'decisao', texto: 'RITMO IDENTIFICADO?',
+          ramos: ['NÃO-CHOCÁVEL (AESP, ASSISTOLIA)', 'CHOCÁVEL (FV, TV sem pulso)'] },
+
+        // NÃO-CHOCÁVEL
+        { tipo: 'acao', cor: 'urgente', condicao: 'NÃO-CHOCÁVEL (AESP, ASSISTOLIA)',
+          texto: 'CONTINUAR RCP\nADRENALINA 0,01 mg/kg IV/IO (0,1 mL/kg da solução 1:10.000) imediato\nRepetir a cada 3-5 min (a cada 2 ciclos de RCP)\nReavaliar ritmo a cada 2 min · pulso só se ritmo organizado' },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'NÃO-CHOCÁVEL (AESP, ASSISTOLIA)',
+          texto: 'Buscar CAUSAS REVERSÍVEIS — 5H + 5T:\n• Hipoxia · Hipovolemia · H⁺ (acidose) · Hipo/Hipercalemia · Hipotermia\n• Tensão pneumotórax · Tamponamento · Toxinas · Trombose pulmonar/coronária\n\nIntervir conforme causa identificada' },
+
+        // CHOCÁVEL
+        { tipo: 'acao', cor: 'urgente', condicao: 'CHOCÁVEL (FV, TV sem pulso)',
+          texto: 'DESFIBRILAÇÃO IMEDIATA:\n• 1ª dose: 2 J/kg\n• 2ª dose: 4 J/kg\n• Subsequentes: 4-10 J/kg (máx 10 J/kg ou dose adulto)\n\nApós cada choque: RCP imediato por 2 min ANTES de checar ritmo' },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'CHOCÁVEL (FV, TV sem pulso)',
+          texto: 'APÓS 2º CHOQUE: ADRENALINA 0,01 mg/kg IV/IO (a cada 3-5 min)\nAPÓS 3º CHOQUE: AMIODARONA 5 mg/kg IV/IO bolus (máx 300 mg)\n  OU LIDOCAÍNA 1 mg/kg IV/IO\n  Pode repetir amiodarona 5 mg/kg até 3 doses (15 mg/kg)\n\nReavaliar ritmo a cada 2 min após RCP' },
+
+        { tipo: 'decisao', texto: 'RETORNO DA CIRCULAÇÃO ESPONTÂNEA (RCE)?',
+          ramos: ['SIM — RCE obtida', 'NÃO — continua PCR'] },
+
+        // RCE
+        { tipo: 'acao', cor: 'manejo', condicao: 'SIM — RCE obtida',
+          texto: 'CUIDADOS PÓS-PARADA:\n• Manter SpO₂ 94-99% (evitar hiperóxia)\n• Manter PaCO₂ 35-45 mmHg (normocapnia)\n• PAS > P5 idade (vasoativos se necessário)\n• Glicemia 80-150 mg/dL\n• Controle de temperatura: evitar hipertermia (≤37,5°C); considerar hipotermia 32-34°C se coma\n• ECG 12 derivações · ecocardiograma\n• Investigar causa' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'SIM — RCE obtida',
+          texto: '🚑 UTI PEDIÁTRICA\nNeuroproteção · suporte hemodinâmico · investigação etiológica' },
+
+        // Persiste
+        { tipo: 'observa', condicao: 'NÃO — continua PCR',
+          texto: 'Continuar ciclos de RCP + adrenalina a cada 3-5 min\nReavaliar causas reversíveis · ajustar conduta\nAvaliar ECMO se disponível (E-CPR) — referência\n\nDecisão de TERMINAR REANIMAÇÃO:\n• Após 30 min sem RCE em assistolia persistente, sem causa reversível\n• Em conjunto com equipe e família' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'RCP DE ALTA QUALIDADE é a intervenção mais importante — profundidade adequada, retorno completo, mínimas interrupções.' },
+        { tipo: 'aviso', texto: 'Adrenalina precoce em PCR não-chocável: dar assim que acesso disponível. Não esperar 1 ciclo completo.' },
+        { tipo: 'info', texto: 'Pediatria: causa mais comum é HIPOXIA (afogamento, asfixia, IRA), não cardíaca. Daí a importância da via aérea e oxigenação.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 10. TRAUMA CRANIANO LEVE (PECARN)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-tce-pecarn',
+      nome: 'Trauma craniano leve — PECARN',
+      categoria: 'emergencia',
+      resumo: 'Estratificação de risco por idade (<2a / ≥2a) → decisão de TC vs observação',
+      publico: 'PA · PS · UBS · PECARN Score',
+      fontes: 'PECARN (Kuppermann 2009, atualização 2020) · AAP · NICE Head Injury',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com trauma craniano e Glasgow ≥14\n(se Glasgow ≤13 → TCE moderado/grave → TC + manejo agressivo, não usar PECARN)' },
+
+        { tipo: 'decisao', texto: 'IDADE DA CRIANÇA',
+          ramos: ['<2 ANOS', '≥2 ANOS'] },
+
+        // <2 ANOS
+        { tipo: 'decisao', condicao: '<2 ANOS',
+          texto: 'AVALIAR CRITÉRIOS DE ALTO RISCO (<2 anos):\n\n① GCS <15 OU sinais de alteração de consciência (agitação, sonolência, perguntas repetidas)\n② SINAIS PALPÁVEIS de fratura craniana\n\nSE QUALQUER PRESENTE → ALTO RISCO',
+          ramos: ['ALTO RISCO — algum presente', 'AVALIAR RISCO INTERMEDIÁRIO'] },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'ALTO RISCO — algum presente',
+          texto: '🚨 TC CRÂNIO IMEDIATA\nMonitorização\nAvaliação por neurocirurgia se indicada\nObservação mínimo 6-12h após TC normal' },
+
+        { tipo: 'decisao', condicao: 'AVALIAR RISCO INTERMEDIÁRIO',
+          texto: 'CRITÉRIOS INTERMEDIÁRIOS (<2a):\n\n① Hematoma do couro cabeludo NÃO frontal (occipital, parietal ou temporal)\n② Perda de consciência ≥5 segundos\n③ Mecanismo grave (queda >0,9m, MVA com ejeção/morte do mesmo veículo, atropelamento, queda de altura, golpe com objeto de alto impacto)\n④ Comportamento anormal segundo o cuidador (não está "ele mesmo")',
+          ramos: ['ALGUM presente', 'NENHUM presente'] },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'ALGUM presente',
+          texto: 'DECISÃO COMPARTILHADA: TC vs OBSERVAÇÃO 4-6h\n\nFavorece TC se:\n• Idade <3 meses\n• Múltiplos critérios intermediários\n• Piora durante observação\n• Cuidador inseguro / não consegue retornar facilmente\n\nFavorece OBSERVAÇÃO se:\n• Critério intermediário isolado\n• Hematoma pequeno em criança bem\n• Mecanismo limítrofe' },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'NENHUM presente',
+          texto: 'ALTA SEGURA — risco de lesão cerebral significativa <0,02%\nNão fazer TC\nOrientações aos cuidadores: sinais de alerta (vômitos repetidos, sonolência excessiva, mudança de comportamento, convulsão) → retornar' },
+
+        // ≥2 ANOS
+        { tipo: 'decisao', condicao: '≥2 ANOS',
+          texto: 'AVALIAR CRITÉRIOS DE ALTO RISCO (≥2 anos):\n\n① GCS <15 OU sinais de alteração de consciência\n② SINAIS DE FRATURA DE BASE DE CRÂNIO (hemotímpano, equimose periorbitária, equimose retroauricular, fístula liquórica)\n\nSE QUALQUER PRESENTE → ALTO RISCO',
+          ramos: ['ALTO RISCO — algum presente', 'AVALIAR INTERMEDIÁRIO'] },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'ALTO RISCO — algum presente',
+          texto: '🚨 TC CRÂNIO IMEDIATA\nMonitorização · neurocirurgia se indicado' },
+
+        { tipo: 'decisao', condicao: 'AVALIAR INTERMEDIÁRIO',
+          texto: 'CRITÉRIOS INTERMEDIÁRIOS (≥2a):\n\n① Perda de consciência (qualquer duração)\n② Vômito (qualquer episódio)\n③ Cefaleia importante\n④ Mecanismo grave (queda >1,5m, MVA com ejeção/morte do mesmo veículo, atropelamento, golpe com objeto de alto impacto)',
+          ramos: ['ALGUM presente', 'NENHUM presente'] },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'ALGUM presente',
+          texto: 'DECISÃO COMPARTILHADA: TC vs OBSERVAÇÃO 4-6h\n\nFavorece TC se:\n• Múltiplos critérios intermediários\n• Piora durante observação\n• Vômitos repetidos (≥2)\n• Cefaleia progressiva\n\nFavorece OBSERVAÇÃO se:\n• Critério intermediário isolado\n• Criança ativa, sem queixas após período de observação' },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'NENHUM presente',
+          texto: 'ALTA SEGURA — risco de lesão cerebral significativa <0,05%\nNão fazer TC\nOrientações aos cuidadores: sinais de alerta → retornar\nReavaliar em 24h se sintomas persistirem' },
+
+        // Comum a todos
+        { tipo: 'observa',
+          texto: 'PERÍODO DE OBSERVAÇÃO (4-6h):\n• Reavaliação a cada 1-2h: GCS, comportamento, queixas\n• Se piora qualquer item → TC\n• Se persiste estável → alta com orientações\n\nOrientações de alta SEMPRE incluem:\n• Sinais de alerta detalhados\n• Telefone de contato em caso de dúvida\n• Reavaliação programada (24-48h)' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'PECARN é negativo para excluir lesão grave (alta sensibilidade). Não é para diagnosticar — é para evitar TC desnecessária e radiação em criança.' },
+        { tipo: 'aviso', texto: 'Suspeitar de MAUS-TRATOS se: lesão incompatível com história, hematoma de couro cabeludo em <6 meses sem mecanismo claro, fratura múltipla, atraso na procura, história mutável. Notificar Conselho Tutelar.' },
+        { tipo: 'info', texto: 'TC tem dose de radiação ~2 anos de radiação ambiente. Em <2a, risco oncológico vitalício existe — usar criteriosamente.' }
+      ]
+    }
+  ];
+
+  // ===== INTEGRAÇÃO: adicionar ao catálogo principal =====
+  function integrar() {
+    if (!window.FLUXOGRAMAS || !Array.isArray(window.FLUXOGRAMAS)) {
+      setTimeout(integrar, 200);
+      return;
+    }
+    FLUXOGRAMAS_ONDA2.forEach(function(flx){
+      if (window.FLUXOGRAMAS.find(function(f){ return f.id === flx.id; })) return;
+      window.FLUXOGRAMAS.push(flx);
+    });
+    console.log('[FLX v9.1] Onda 2 adicionada: '+FLUXOGRAMAS_ONDA2.length+' emergências (total: '+window.FLUXOGRAMAS.length+')');
+
+    // Se a view já estava montada, re-renderizar
+    if (document.getElementById('view-fluxogramas') && typeof window.renderFluxogramas === 'function') {
+      try { window.renderFluxogramas(); } catch(e){}
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', integrar);
+  } else {
+    setTimeout(integrar, 100);
+  }
+  setTimeout(integrar, 700);
+  setTimeout(integrar, 2000);
+})();
+
+</script>
+<!-- INJECT-V91-END -->
 </body>
 </html>

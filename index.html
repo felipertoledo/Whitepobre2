@@ -268,7 +268,7 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
         <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
         <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.8.1 · sincronia com Vovôminic + footer</p>
+      <p class="hdr-version">v.9.0 · fluxogramas pediátricos (5 piloto)</p>
     </div>
     <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
@@ -11449,5 +11449,740 @@ if (typeof MEDICACOES !== 'undefined') {
 
 </script>
 <!-- INJECT-V81-END -->
+<!-- INJECT-V9-START -->
+<script>
+// ============================================================================
+// FLUXOGRAMAS PEDIÁTRICOS v9.0 (piloto — 5 fluxogramas)
+//   - Anafilaxia, Crise asmática, Crupe, Convulsão febril, OMA
+//   - Schema visual unificado: inicio → decisao → acao → observa → fim
+//   - Renderização CSS pura (sem SVG)
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  // ===== CATEGORIAS =====
+  const CATEGORIAS_FLX = {
+    'emergencia':    { label: 'Emergência',       cor: '#7c2128', bg: '#fee2e2', icone: '🚨' },
+    'respiratorio':  { label: 'Respiratório',     cor: '#1c5fa3', bg: '#dbeafe', icone: '🫁' },
+    'gi':            { label: 'Gastrointestinal', cor: '#15803d', bg: '#dcfce7', icone: '🍽️' },
+    'infeccioso':    { label: 'Infeccioso',       cor: '#581c87', bg: '#f3e8ff', icone: '🦠' },
+    'neuro':         { label: 'Neurológico',      cor: '#5a4f8a', bg: '#ede9fe', icone: '🧠' },
+    'neonatal':      { label: 'Neonatal',         cor: '#0e7490', bg: '#cffafe', icone: '👶' },
+    'vulnerabilidade':{ label: 'Vulnerabilidade', cor: '#c2410c', bg: '#fed7aa', icone: '⚠️' }
+  };
+
+  // ===== TIPO DE NÓ =====
+  // 'inicio'    — apresentação clínica (oval cinza)
+  // 'decisao'   — pergunta com ramos (losango amarelo)
+  // 'acao'      — intervenção (retângulo colorido por urgência)
+  //   - cor: 'urgente' | 'atencao' | 'manejo' | 'info' | 'neutro'
+  // 'observa'   — monitoramento/reavaliação (cinza-azulado)
+  // 'fim'       — desfecho (oval verde=alta | azul=referência | vermelho=internação)
+
+  const FLUXOGRAMAS = [
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 1. ANAFILAXIA PEDIÁTRICA
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-anafilaxia',
+      nome: 'Anafilaxia pediátrica',
+      categoria: 'emergencia',
+      resumo: 'Adrenalina IM imediata — anti-histamínico/corticoide são adjuvantes',
+      publico: 'PA · UBS · educação para cuidadores',
+      fontes: 'WAO 2020 · AAP · SBP · ILAS',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com início agudo (minutos a horas) de:\n• Sintomas mucocutâneos (urticária, prurido, edema)\n• OU exposição conhecida a alérgeno' },
+
+        { tipo: 'decisao', texto: 'CUMPRE ALGUM CRITÉRIO DE ANAFILAXIA?\n\n① Sintomas mucocutâneos + comprometimento respiratório, cardiovascular ou GI persistente\n② Hipotensão após exposição a alérgeno conhecido\n③ Comprometimento agudo de via aérea\n④ ≥2 sistemas envolvidos após exposição a alérgeno provável',
+          ramos: ['SIM', 'NÃO/DUVIDOSO'] },
+
+        // Ramo SIM
+        { tipo: 'acao', cor: 'urgente', condicao: 'SIM',
+          texto: '⚡ ADRENALINA IM 0,01 mg/kg (máx 0,3 mg <30 kg; 0,5 mg ≥30 kg)\nFace ântero-lateral da coxa · Solução 1:1000 (1 mg/mL)\nREPETIR a cada 5-15 min se sintomas persistirem' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'SIM',
+          texto: 'Posicionar: decúbito + MMII elevados (se respiração permite)\nGestante: decúbito lateral esquerdo\nO₂ 100% por máscara · Acesso venoso 2 vias\nSF 0,9% 20 mL/kg em bolus se hipotensão (repetir até 60 mL/kg)' },
+
+        { tipo: 'acao', cor: 'info', condicao: 'SIM',
+          texto: 'Adjuvantes (NUNCA substituem adrenalina):\n• Anti-H1: difenidramina 1 mg/kg IV/IM (máx 50 mg) ou prometazina\n• Corticoide: hidrocortisona 5 mg/kg IV (máx 200 mg) — reduz fase tardia\n• Broncodilatador: salbutamol NEB se broncoespasmo' },
+
+        { tipo: 'observa', condicao: 'SIM',
+          texto: 'Observar mínimo 6-8 h em ambiente monitorizado\n(refratários ou hipotensão: 24h)\nReação bifásica em ~5%, geralmente nas primeiras 12h' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'SIM',
+          texto: 'INTERNAR / REFERENCIAR todos os casos\nAlta com: receita de adrenalina autoinjetora (se disponível) + orientação aos pais + ALERGIA REGISTRADA EM PRONTUÁRIO' },
+
+        // Ramo NÃO/DUVIDOSO
+        { tipo: 'acao', cor: 'atencao', condicao: 'NÃO/DUVIDOSO',
+          texto: 'Considerar quadros que mimetizam:\n• Urticária isolada → anti-H1 + observação\n• Asma exacerbada → broncodilatador\n• Síncope vasovagal → posicionamento\n• Crise de pânico\n• Reação vasovagal' },
+
+        { tipo: 'observa', condicao: 'NÃO/DUVIDOSO',
+          texto: 'Observação clínica 2-4 h\nReavaliar critérios a cada 30 min\nNa DÚVIDA → tratar como anafilaxia (risco-benefício favorável)' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'NUNCA atrasar adrenalina por dúvida diagnóstica — risco-benefício amplamente favorável. Sem contraindicação absoluta em criança.' },
+        { tipo: 'info', texto: 'Adrenalina IM é mais segura e tem absorção mais previsível que SC ou IV (esta apenas em parada/refratários, com monitorização).' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 2. CRISE ASMÁTICA PEDIÁTRICA
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-asma',
+      nome: 'Crise asmática pediátrica',
+      categoria: 'respiratorio',
+      resumo: 'Avaliação por gravidade → broncodilatador + corticoide → reavaliação',
+      publico: 'PA · UBS · GINA pediátrico',
+      fontes: 'GINA 2025 (pediátrico) · SBP · NICE',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com tosse, sibilância, dispneia ou aperto torácico\n(≥6 anos: avaliar com PFE se disponível)' },
+
+        { tipo: 'decisao', texto: 'CLASSIFICAR GRAVIDADE INICIAL\n\nLEVE: Fala frases · FR < limite/idade · SatO₂ ≥95% AA · Sibilo expiratório · sem retração\nMODERADA: Fala frases curtas · FR ↑ · SatO₂ 92-94% · Sibilo audível · retração leve\nGRAVE: Fala palavras · FR ≥ limite alto · SatO₂ <92% · Sibilo ausente/diminuído · retração intensa · ↓ nível consciência → RISCO DE VIDA',
+          ramos: ['LEVE', 'MODERADA', 'GRAVE / RISCO DE VIDA'] },
+
+        // LEVE
+        { tipo: 'acao', cor: 'manejo', condicao: 'LEVE',
+          texto: 'SALBUTAMOL spray (MDI) com espaçador:\n• <6 anos: 2-4 jatos (200-400 mcg) a cada 20 min × 3 ciclos\n• ≥6 anos: 4-8 jatos a cada 20 min × 3 ciclos\nOU nebulização: 0,15 mg/kg/dose (mín 2,5 mg) em SF 3-5 mL' },
+
+        { tipo: 'observa', condicao: 'LEVE',
+          texto: 'Reavaliar após 1 h\nSe BOM → alta com B2 SOS + corticoide oral (3-5d) se episódio significativo\nSe persiste → tratar como MODERADA' },
+
+        // MODERADA
+        { tipo: 'acao', cor: 'atencao', condicao: 'MODERADA',
+          texto: 'O₂ se SatO₂ <94%\nSALBUTAMOL: doses como acima, mas REPETIR continuamente 20/20 min\nIPRATRÓPIO NEB: 250 mcg <20 kg / 500 mcg ≥20 kg — ASSOCIAR ao salbutamol a cada 20 min × 3 ciclos' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'MODERADA',
+          texto: 'CORTICOIDE SISTÊMICO (precoce, nas primeiras 1h):\n• Prednisolona oral 1-2 mg/kg/dia (máx 40 mg) × 3-5 dias\n• OU Dexametasona 0,3-0,6 mg/kg dose única (máx 16 mg)\n• Hidrocortisona 5 mg/kg IV se vômito/grave' },
+
+        { tipo: 'observa', condicao: 'MODERADA',
+          texto: 'Reavaliar após 1h e 4h\nSe boa resposta → alta com PRED/B2 e plano de manejo\nSe parcial/sem resposta → tratar como GRAVE' },
+
+        // GRAVE
+        { tipo: 'acao', cor: 'urgente', condicao: 'GRAVE / RISCO DE VIDA',
+          texto: '🚨 O₂ alto fluxo · MONITOR contínuo\nSALBUTAMOL + IPRATRÓPIO NEB contínuos por 1h\nCORTICOIDE IV (hidrocortisona 5 mg/kg) imediato\nSULFATO DE MAGNÉSIO IV: 25-75 mg/kg em 20 min (máx 2 g)\nADRENALINA IM 0,01 mg/kg se refratário / iminência de parada' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'GRAVE / RISCO DE VIDA',
+          texto: '🚑 REFERENCIAR ao PS / UTI pediátrica\nConsiderar VNI · IOT precoce se ↓ consciência ou parada iminente\nNunca recusar referência por "estabilizado" — recidiva é frequente nas primeiras 4h' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Sibilo AUSENTE em crise grave = tórax silencioso = sinal pré-parada. Não tranquilizar.' },
+        { tipo: 'info', texto: 'Corticoide oral tem mesma eficácia que IV se criança aceita VO e não está vomitando. Não atrasar por dúvida sobre via.' },
+        { tipo: 'info', texto: 'Em <2 anos com sibilo: avaliar bronquiolite vs asma. Em <12 meses, raramente é asma.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 3. CRUPE (Laringotraqueíte aguda)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-crupe',
+      nome: 'Crupe (laringotraqueíte aguda)',
+      categoria: 'respiratorio',
+      resumo: 'Escore de Westley → dexametasona universal + adrenalina nebulizada se moderado/grave',
+      publico: 'PA · UBS · Escore Westley',
+      fontes: 'AAP · SBP · NICE · Westley 1978',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança 6m-6a com início agudo de:\n• Tosse "ladrante" (típica)\n• Estridor inspiratório\n• Rouquidão\n• ± Febre baixa, coriza precedente' },
+
+        { tipo: 'decisao', texto: 'ESCORE DE WESTLEY\n\nEstridor: ausente=0 · ao agitar=1 · em repouso=2\nRetração: ausente=0 · leve=1 · moderada=2 · intensa=3\nMV: normal=0 · diminuído=1 · muito diminuído=2\nCianose: ausente=0 · ao agitar=4 · em repouso=5\nNível consciência: normal=0 · alterado=5\n\nLEVE ≤2 · MODERADO 3-7 · GRAVE 8-11 · MUITO GRAVE >11',
+          ramos: ['LEVE ≤2', 'MODERADO 3-7', 'GRAVE / MUITO GRAVE ≥8'] },
+
+        // LEVE
+        { tipo: 'acao', cor: 'manejo', condicao: 'LEVE ≤2',
+          texto: 'DEXAMETASONA dose única:\n• VO 0,15-0,6 mg/kg (máx 16 mg) — geralmente 0,15 mg/kg basta no leve\n• Alternativa: prednisolona 1-2 mg/kg × 3 dias\n\nOrientar pais: ar úmido NÃO tem evidência forte mas alivia; voltar se piora' },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'LEVE ≤2',
+          texto: 'ALTA com orientações:\n• Sinais de alerta: estridor em repouso, retração intensa, palidez, sonolência, agitação intensa\n• Retornar imediatamente ou ir ao PS' },
+
+        // MODERADO
+        { tipo: 'acao', cor: 'atencao', condicao: 'MODERADO 3-7',
+          texto: 'DEXAMETASONA 0,6 mg/kg VO/IM (máx 16 mg) — dose única\n+ ADRENALINA NEBULIZADA 1:1000:\n• 0,5 mg/kg/dose (máx 5 mg) em SF até 3 mL\n• Nebulizar com O₂ 6-8 L/min · pode repetir a cada 30 min' },
+
+        { tipo: 'observa', condicao: 'MODERADO 3-7',
+          texto: 'OBSERVAR MÍNIMO 4 HORAS após adrenalina\n(efeito rebote em ~2h)\nReavaliar a cada 30 min com Westley\nSe melhora → considerar alta · Se piora → tratar como grave' },
+
+        // GRAVE
+        { tipo: 'acao', cor: 'urgente', condicao: 'GRAVE / MUITO GRAVE ≥8',
+          texto: '🚨 Monitorização contínua · O₂ alto fluxo · NÃO agitar a criança\nDEXAMETASONA IM 0,6 mg/kg imediato\nADRENALINA NEB repetidas a cada 20-30 min\nPedir suporte avançado / IOT por anestesista (NÃO tentar IOT sem expertise — pode laringoespasmar)' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'GRAVE / MUITO GRAVE ≥8',
+          texto: '🚑 INTERNAR · UTI pediátrica\nManter calmo, no colo do cuidador se possível\nDiferenciar de epiglotite (cessou com vacinação Hib) e aspiração de corpo estranho' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Dexametasona é UNIVERSAL — mesmo em crupe leve. Efeito 24-48h, evita retorno e progressão.' },
+        { tipo: 'info', texto: 'Adrenalina nebulizada tem efeito REBOTE em ~2h — observar mínimo 4h após dose.' },
+        { tipo: 'info', texto: 'NÃO usar antibiótico — etiologia viral (parainfluenza 1, 2, 3; VSR; influenza).' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 4. CONVULSÃO FEBRIL
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-convulsao-febril',
+      nome: 'Convulsão febril',
+      categoria: 'neuro',
+      resumo: 'Tipificar simples vs complexa → manejo da crise + busca do foco febril',
+      publico: 'PA · UBS · educação para pais',
+      fontes: 'AAP · SBP · NICE · Nelson Pediatrics',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança 6m-5a com crise convulsiva associada a febre\n(sem infecção SNC, sem antecedente de convulsão afebril)' },
+
+        { tipo: 'decisao', texto: 'CRISE AINDA ATIVA?',
+          ramos: ['SIM — crise > 5 min', 'NÃO — terminou'] },
+
+        // Crise ainda ativa
+        { tipo: 'acao', cor: 'urgente', condicao: 'SIM — crise > 5 min',
+          texto: '🚨 STATUS EPILEPTICUS INICIANDO\nPosicionar lateral · Aspirar VA · O₂\nMIDAZOLAM bucal/IN 0,3 mg/kg (máx 10 mg)\nOU DIAZEPAM RETAL 0,5 mg/kg (máx 10 mg)\nSe acesso EV: midazolam 0,1 mg/kg IV (máx 5 mg) OU diazepam 0,2 mg/kg IV (máx 10 mg)' },
+
+        { tipo: 'observa', condicao: 'SIM — crise > 5 min',
+          texto: 'Reavaliar em 5-10 min\nSe NÃO cessou: 2ª dose do benzodiazepínico\nSe persiste após 2 doses → STATUS REFRATÁRIO\n→ Fenitoína 20 mg/kg IV em 20 min OU fenobarbital 20 mg/kg IV\n→ REFERENCIAR ao PS imediato' },
+
+        // Crise já terminou
+        { tipo: 'decisao', condicao: 'NÃO — terminou',
+          texto: 'CLASSIFICAR A CRISE\n\nSIMPLES: generalizada · <15 min · sem recorrência em 24h · sem déficit neuro pós\nCOMPLEXA: focal · >15 min · ou recorrente em 24h · ou déficit neuro pós-ictal',
+          ramos: ['SIMPLES', 'COMPLEXA'] },
+
+        // SIMPLES
+        { tipo: 'acao', cor: 'manejo', condicao: 'SIMPLES',
+          texto: 'INVESTIGAR FOCO DA FEBRE:\n• Anamnese e exame físico completo\n• Buscar sinais meníngeos\n• Investigar conforme idade e foco (urocultura se <2a, otoscopia, RX se respiratório)\nNÃO indicar rotineiramente: TC, EEG, líquor (se exame neuro normal pós-crise)' },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'SIMPLES',
+          texto: 'ALTA com tratamento do foco febril\nOrientações aos pais:\n• 30-50% recorrem na vida\n• Posicionamento lateral, não introduzir nada na boca\n• Anotar duração\n• Procurar serviço se >5 min ou repetição\n• Antipirético NÃO previne recorrência — usar pelo conforto' },
+
+        // COMPLEXA
+        { tipo: 'acao', cor: 'atencao', condicao: 'COMPLEXA',
+          texto: 'INVESTIGAÇÃO AMPLIADA:\n• Considerar LÍQUOR (especialmente <12 meses, sinais meníngeos, déficit neuro persistente)\n• EEG (se recorrente, focal, déficit prolongado)\n• Imagem (se sinais focais persistentes)' },
+
+        { tipo: 'fim', cor: 'referencia', condicao: 'COMPLEXA',
+          texto: 'INTERNAR para investigação\nOU referenciar neuro-pediatria\nDiscussão sobre profilaxia (raramente indicada — apenas casos selecionados com neuropediatra)' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Convulsão > 5 min = pré-status. Tratar como emergência. Não esperar 30 min "tradicionais" — desfecho neurológico piora com tempo.' },
+        { tipo: 'info', texto: 'Antitérmico NÃO previne recorrência de convulsão febril — usar pelo conforto, não pela prevenção (evidência boa, repetir aos pais).' },
+        { tipo: 'info', texto: 'Diferenciar de calafrio intenso (movimentos rítmicos com tremor durante febre, consciência preservada).' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 5. OMA — Otite Média Aguda
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-oma',
+      nome: 'OMA — Otite Média Aguda',
+      categoria: 'infeccioso',
+      resumo: 'Confirmar diagnóstico → decisão de ATB pela idade e gravidade',
+      publico: 'PA · UBS · APS pediátrica',
+      fontes: 'AAP 2013 (rev. 2024) · SBP · IDSA',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com otalgia, irritabilidade, febre, otorreia recente\nou puxando a orelha (lactente)' },
+
+        { tipo: 'decisao', texto: 'DIAGNÓSTICO DE OMA REQUER (AAP):\n\n① OTORREIA recente sem otite externa, OU\n② Abaulamento moderado/severo da MT, OU\n③ Abaulamento leve + otalgia/eritema intenso',
+          ramos: ['SIM — OMA confirmada', 'NÃO — outro diagnóstico'] },
+
+        // NÃO - outro diagnóstico
+        { tipo: 'fim', cor: 'alta', condicao: 'NÃO — outro diagnóstico',
+          texto: 'Considerar:\n• Otite serosa (MT opaca/imóvel sem abaulamento) — NÃO usar ATB\n• Otite externa\n• Mastoidite (referência urgente)\n• Faringite com otalgia referida' },
+
+        // SIM - OMA confirmada
+        { tipo: 'decisao', condicao: 'SIM — OMA confirmada',
+          texto: 'AVALIAR GRAVIDADE E IDADE\n\nGRAVE: febre ≥39°C OU otalgia moderada/severa OU sintomas ≥48h OU otorreia\nBILATERAL: avaliar ambas as MTs',
+          ramos: ['<6 meses', '6-23 meses', '≥24 meses'] },
+
+        // <6 meses
+        { tipo: 'acao', cor: 'urgente', condicao: '<6 meses',
+          texto: '⚡ ANTIBIOTICOTERAPIA SEMPRE (idade <6m)\nAmoxicilina 80-90 mg/kg/dia VO 8/8h OU 12/12h × 10 dias\nSe falha em 48-72h ou OMA recente (<30 dias): AMOX+CLAV 90 mg/kg/dia (componente amoxi)' },
+
+        { tipo: 'fim', cor: 'referencia', condicao: '<6 meses',
+          texto: 'OBSERVAÇÃO HOSPITALAR considerada conforme estado geral\nMonitorar sinais de complicação (mastoidite, meningite)' },
+
+        // 6-23 meses
+        { tipo: 'decisao', condicao: '6-23 meses',
+          texto: 'OMA BILATERAL? OU GRAVE? OU OTORREIA?',
+          ramos: ['SIM — ATB já', 'NÃO — bilateral não-grave SEM otorreia'] },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'SIM — ATB já',
+          texto: 'AMOXICILINA 80-90 mg/kg/dia VO 8/8h ou 12/12h × 10 dias\nAnalgesia VO: paracetamol 10-15 mg/kg/dose ou ibuprofeno 5-10 mg/kg/dose' },
+
+        { tipo: 'acao', cor: 'info', condicao: 'NÃO — bilateral não-grave SEM otorreia',
+          texto: 'OBSERVAÇÃO 48-72h é OPÇÃO (decisão compartilhada com cuidadores):\n• Analgesia · reavaliar em 48-72h\n• Se piora ou não melhora → iniciar ATB\n• Vantagem: ~70% melhora espontaneamente\nNa prática: criança pequena, pais ansiosos, difícil reavaliar → preferir ATB' },
+
+        // ≥24 meses
+        { tipo: 'decisao', condicao: '≥24 meses',
+          texto: 'GRAVE (febre ≥39°C, otalgia importante, sintomas ≥48h)?',
+          ramos: ['SIM — grave', 'NÃO — leve/moderada'] },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'SIM — grave',
+          texto: 'AMOXICILINA 80-90 mg/kg/dia VO 8/8h × 5-10 dias (≥24m: 5-7 dias OK)\nAnalgesia VO\nReavaliação em 48-72h' },
+
+        { tipo: 'acao', cor: 'info', condicao: 'NÃO — leve/moderada',
+          texto: 'OBSERVAÇÃO 48-72h preferida:\n• Analgesia (paracetamol/ibuprofeno)\n• Reavaliação em 48-72h\n• Se piora ou não melhora → ATB' },
+
+        // Comum a todos que tomam ATB
+        { tipo: 'observa',
+          texto: 'CRITÉRIOS DE FALHA TERAPÊUTICA:\n• Sem melhora em 48-72h\n• Persistência ou piora dos sintomas\n→ Trocar para AMOX+CLAV 90 mg/kg/dia (comp. amoxi) OU ceftriaxona IM 50 mg/kg × 3 dias\n→ Considerar timpanocentese (especialista)' },
+
+        { tipo: 'fim', cor: 'alta',
+          texto: 'ALTA com:\n• Receita de ATB (se indicado) + analgesia\n• Orientação aos pais (sinais de alerta: mastoidite, paralisia facial, vômito)\n• Retorno em 2-4 semanas se sintomas residuais (otite serosa)' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'OMA BILATERAL em <2 anos é critério forte para ATB — mesmo se quadro leve.' },
+        { tipo: 'info', texto: 'Amoxicilina 80-90 mg/kg/dia EM 8/8h é o esquema preferido para pneumococo resistente. Em 12/12h se OMA leve sem fatores de risco.' },
+        { tipo: 'info', texto: 'Alergia à penicilina não-anafilática: cefdinir/cefuroxima. Anafilática: azitromicina (eficácia inferior) ou clindamicina + cefdinir.' }
+      ]
+    }
+  ];
+
+  // ===== EXPORTAR PARA O APP =====
+  window.FLUXOGRAMAS = FLUXOGRAMAS;
+  window.CATEGORIAS_FLX = CATEGORIAS_FLX;
+
+  console.log('[FLX v9.0] '+FLUXOGRAMAS.length+' fluxogramas pediátricos carregados');
+})();
+
+</script>
+<script>
+// ============================================================================
+// RENDER FLUXOGRAMAS v9.0
+//   - Renderiza fluxograma como cards verticais com setas conectoras
+//   - Adiciona nova aba "🧭 Fluxogramas" na barra de modos
+//   - Filtro por categoria + busca por nome
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+
+  // Renderiza um único nó/passo do fluxograma
+  function renderNo(passo, idx) {
+    var tipo = passo.tipo;
+    var cor = passo.cor || 'neutro';
+    var html = '<div class="flx-no flx-no-'+tipo+' flx-no-cor-'+cor+'">';
+
+    // Marcador lateral com índice / tipo
+    var tipoLabel = ({
+      'inicio': 'INÍCIO',
+      'decisao': 'DECISÃO',
+      'acao': 'AÇÃO',
+      'observa': 'OBSERVAR',
+      'fim': 'DESFECHO'
+    })[tipo] || tipo.toUpperCase();
+    html += '<div class="flx-no-tipo">'+tipoLabel+'</div>';
+
+    // Indicador de ramo condicional (vem após decisão)
+    if (passo.condicao) {
+      html += '<div class="flx-no-ramo">↳ se: <b>'+esc(passo.condicao)+'</b></div>';
+    }
+
+    // Texto do passo
+    var texto = String(passo.texto || '').replace(/\n/g, '<br>');
+    html += '<div class="flx-no-texto">'+texto+'</div>';
+
+    // Ramos de decisão (chips)
+    if (passo.ramos && passo.ramos.length) {
+      html += '<div class="flx-ramos">';
+      passo.ramos.forEach(function(r){
+        html += '<span class="flx-ramo-chip">'+esc(r)+' ↓</span>';
+      });
+      html += '</div>';
+    }
+
+    html += '</div>';
+
+    // Seta conectora pro próximo
+    html += '<div class="flx-seta">↓</div>';
+
+    return html;
+  }
+
+  // Renderiza fluxograma inteiro
+  function renderFluxograma(flx) {
+    var cat = (window.CATEGORIAS_FLX || {})[flx.categoria] || { label: flx.categoria, cor:'#1c1917', bg:'#f5f5f4', icone:'•' };
+    var passosHtml = flx.passos.map(renderNo).join('');
+    // Remover última seta
+    passosHtml = passosHtml.replace(/<div class="flx-seta">↓<\/div>$/, '');
+
+    var alertasHtml = '';
+    if (flx.alertas && flx.alertas.length) {
+      alertasHtml = '<div class="flx-alertas">';
+      flx.alertas.forEach(function(a){
+        var classe = a.tipo === 'aviso' ? 'flx-alerta-aviso' : 'flx-alerta-info';
+        var icone = a.tipo === 'aviso' ? '⚠' : 'ℹ';
+        alertasHtml += '<div class="flx-alerta '+classe+'">'+icone+' '+esc(a.texto)+'</div>';
+      });
+      alertasHtml += '</div>';
+    }
+
+    var html = '<div class="flx-card" id="flx-'+esc(flx.id)+'" data-cat="'+esc(flx.categoria)+'">';
+
+    // Header do fluxograma
+    html += '<div class="flx-header" style="border-left-color:'+cat.cor+'">';
+    html += '<div class="flx-titulo-wrap">';
+    html += '<span class="flx-cat-tag" style="background:'+cat.bg+';color:'+cat.cor+'">'+cat.icone+' '+esc(cat.label)+'</span>';
+    html += '<h3 class="flx-titulo">'+esc(flx.nome)+'</h3>';
+    html += '</div>';
+    if (flx.resumo) html += '<p class="flx-resumo">'+esc(flx.resumo)+'</p>';
+    if (flx.publico) html += '<p class="flx-publico">Contexto: '+esc(flx.publico)+'</p>';
+    html += '</div>';
+
+    if (alertasHtml) html += alertasHtml;
+
+    // Corpo: passos
+    html += '<div class="flx-corpo">';
+    html += passosHtml;
+    html += '</div>';
+
+    // Footer: fontes + ações
+    html += '<div class="flx-footer">';
+    if (flx.fontes) html += '<div class="flx-fontes">📚 '+esc(flx.fontes)+'</div>';
+    html += '<button class="flx-btn-copiar" type="button" data-flx-id="'+esc(flx.id)+'">📋 Copiar como texto</button>';
+    html += '</div>';
+
+    html += '</div>';
+    return html;
+  }
+
+  // Converte fluxograma para texto (pra colar no prontuário)
+  function fluxogramaParaTexto(flx) {
+    var linhas = [];
+    linhas.push('═══ ' + flx.nome.toUpperCase() + ' ═══');
+    if (flx.resumo) linhas.push(flx.resumo);
+    linhas.push('');
+    flx.passos.forEach(function(p, i){
+      var prefix = '';
+      if (p.tipo === 'inicio') prefix = '▶ INÍCIO: ';
+      else if (p.tipo === 'decisao') prefix = '◆ DECISÃO: ';
+      else if (p.tipo === 'acao') prefix = '■ AÇÃO: ';
+      else if (p.tipo === 'observa') prefix = '◯ OBSERVAR: ';
+      else if (p.tipo === 'fim') prefix = '● DESFECHO: ';
+      if (p.condicao) prefix = '[se ' + p.condicao + '] ' + prefix;
+      linhas.push(prefix + p.texto.replace(/\n/g, ' / '));
+      if (p.ramos && p.ramos.length) linhas.push('  → Ramos: ' + p.ramos.join(' | '));
+      linhas.push('');
+    });
+    if (flx.alertas && flx.alertas.length) {
+      linhas.push('--- AVISOS ---');
+      flx.alertas.forEach(function(a){ linhas.push('• ' + a.texto); });
+    }
+    if (flx.fontes) {
+      linhas.push('');
+      linhas.push('Fontes: ' + flx.fontes);
+    }
+    return linhas.join('\n');
+  }
+
+  // ===== RENDERIZAR LISTA COMPLETA NA VIEW =====
+  function renderListaFluxogramas(filtroCategoria, filtroBusca) {
+    var lista = window.FLUXOGRAMAS || [];
+    if (filtroCategoria && filtroCategoria !== 'todas') {
+      lista = lista.filter(function(f){ return f.categoria === filtroCategoria; });
+    }
+    if (filtroBusca) {
+      var q = filtroBusca.toLowerCase();
+      lista = lista.filter(function(f){
+        return (f.nome||'').toLowerCase().includes(q)
+            || (f.resumo||'').toLowerCase().includes(q)
+            || (f.passos||[]).some(function(p){ return (p.texto||'').toLowerCase().includes(q); });
+      });
+    }
+
+    if (lista.length === 0) {
+      return '<div class="flx-vazio">Nenhum fluxograma encontrado.<br><small>Tente outra categoria ou busca.</small></div>';
+    }
+    return lista.map(renderFluxograma).join('');
+  }
+
+  // ===== FILTROS POR CATEGORIA =====
+  function renderFiltros() {
+    var cats = window.CATEGORIAS_FLX || {};
+    var html = '<div class="flx-filtros">';
+    html += '<button class="flx-filtro ativo" data-cat="todas">Todas</button>';
+    var counts = {};
+    (window.FLUXOGRAMAS || []).forEach(function(f){
+      counts[f.categoria] = (counts[f.categoria]||0) + 1;
+    });
+    Object.keys(cats).forEach(function(k){
+      if (!counts[k]) return; // só categorias com conteúdo
+      var c = cats[k];
+      html += '<button class="flx-filtro" data-cat="'+esc(k)+'" style="--cat-cor:'+c.cor+';--cat-bg:'+c.bg+'">'
+            + c.icone + ' ' + c.label + ' <span class="flx-filtro-count">' + counts[k] + '</span>'
+            + '</button>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  // ===== VIEW NA TELA =====
+  var estadoFlx = { categoria: 'todas', busca: '' };
+
+  function montarView() {
+    var main = document.querySelector('main') || document.querySelector('.container') || document.body;
+    if (!main) return;
+
+    var view = document.getElementById('view-fluxogramas');
+    if (!view) {
+      view = document.createElement('div');
+      view.id = 'view-fluxogramas';
+      view.style.display = 'none';
+      main.appendChild(view);
+    }
+
+    view.innerHTML = ''
+      + '<div class="flx-cab"><h2>Fluxogramas pediátricos</h2>'
+      + '<p>Algoritmos clínicos para PA e UBS. Decisões organizadas em SIM/NÃO/categoria. Material educacional sem fins lucrativos.</p>'
+      + '</div>'
+      + renderFiltros()
+      + '<div id="flx-lista">'
+      + renderListaFluxogramas(estadoFlx.categoria, estadoFlx.busca)
+      + '</div>';
+
+    hookEventos(view);
+  }
+
+  function atualizarLista() {
+    var div = document.getElementById('flx-lista');
+    if (!div) return;
+    div.innerHTML = renderListaFluxogramas(estadoFlx.categoria, estadoFlx.busca);
+    hookCopiar(div);
+  }
+
+  function hookEventos(view) {
+    // Filtros de categoria
+    view.querySelectorAll('.flx-filtro').forEach(function(b){
+      b.onclick = function(){
+        view.querySelectorAll('.flx-filtro').forEach(function(x){ x.classList.remove('ativo'); });
+        b.classList.add('ativo');
+        estadoFlx.categoria = b.dataset.cat;
+        atualizarLista();
+      };
+    });
+    hookCopiar(view);
+  }
+
+  function hookCopiar(scope) {
+    scope.querySelectorAll('.flx-btn-copiar').forEach(function(b){
+      if (b.dataset.hooked) return;
+      b.dataset.hooked = '1';
+      b.onclick = function(){
+        var id = b.dataset.flxId;
+        var flx = (window.FLUXOGRAMAS || []).find(function(f){ return f.id === id; });
+        if (!flx) return;
+        var texto = fluxogramaParaTexto(flx);
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto);
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = texto; ta.style.cssText='position:fixed;top:-9999px';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+          }
+          if (typeof window.mostrarToast === 'function') window.mostrarToast('Fluxograma copiado');
+          b.textContent = '✓ Copiado';
+          setTimeout(function(){ b.textContent = '📋 Copiar como texto'; }, 1800);
+        } catch(e) {}
+      };
+    });
+  }
+
+  // ===== INTEGRAÇÃO COM A BARRA DE MODOS =====
+  function adicionarBotaoModo() {
+    var bar = document.getElementById('modos-bar');
+    if (!bar) { setTimeout(adicionarBotaoModo, 300); return; }
+    if (bar.querySelector('[data-modo="fluxogramas"]')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'modo-btn';
+    btn.dataset.modo = 'fluxogramas';
+    btn.type = 'button';
+    btn.innerHTML = '<span class="modo-btn-ic">🧭</span><span class="modo-btn-lbl">Fluxogramas</span>';
+    btn.onclick = function(){ ativarModoFlx(); };
+    bar.appendChild(btn);
+
+    // Hook nos outros botões pra escondê-la
+    bar.querySelectorAll('.modo-btn:not([data-modo="fluxogramas"])').forEach(function(b){
+      if (b.dataset.flxHooked) return;
+      b.dataset.flxHooked = '1';
+      var orig = b.onclick;
+      b.addEventListener('click', function(){
+        // Quando troca pra outro modo, esconder a view
+        var view = document.getElementById('view-fluxogramas');
+        if (view) view.style.display = 'none';
+        // Mostrar conteúdo principal
+        ['lista','protocolos-lista','doencas-lista','ampolas-lista','ubs-lista'].forEach(function(id){
+          var el = document.getElementById(id);
+          if (el) el.style.display = '';
+        });
+        btn.classList.remove('ativo');
+      }, true);
+    });
+  }
+
+  function ativarModoFlx() {
+    var bar = document.getElementById('modos-bar');
+    if (bar) {
+      bar.querySelectorAll('.modo-btn').forEach(function(b){ b.classList.remove('ativo'); });
+      var btn = bar.querySelector('[data-modo="fluxogramas"]');
+      if (btn) btn.classList.add('ativo');
+    }
+    // Esconder outros containers
+    ['lista','protocolos-lista','doencas-lista','ampolas-lista','ubs-lista'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    // Mostrar view de fluxogramas
+    montarView();
+    var view = document.getElementById('view-fluxogramas');
+    if (view) view.style.display = '';
+  }
+
+  // ===== CSS =====
+  function aplicarCSS() {
+    if (document.getElementById('flx-css-v9')) return;
+    var css = '';
+
+    // View principal
+    css += '#view-fluxogramas { max-width:900px; margin:0 auto; padding:20px 16px 40px; }\n';
+    css += '.flx-cab h2 { font-family:\'Fraunces\',Georgia,serif; font-size:24px; color:#1c1917; margin:0 0 8px; }\n';
+    css += '.flx-cab p { color:#57534e; font-size:13px; line-height:1.5; margin:0 0 16px; }\n';
+
+    // Filtros
+    css += '.flx-filtros { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid #e7e5e4; }\n';
+    css += '.flx-filtro { background:white; color:#57534e; border:1px solid #d6d3d1; padding:6px 12px; font-family:\'JetBrains Mono\',monospace; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; }\n';
+    css += '.flx-filtro:hover { background:#f5f5f4; border-color:#78716c; }\n';
+    css += '.flx-filtro.ativo { background:#1c1917; color:white; border-color:#1c1917; }\n';
+    css += '.flx-filtro-count { background:rgba(0,0,0,.15); padding:1px 6px; margin-left:4px; font-size:10px; }\n';
+    css += '.flx-filtro.ativo .flx-filtro-count { background:rgba(255,255,255,.2); }\n';
+
+    // Vazio
+    css += '.flx-vazio { padding:40px 20px; text-align:center; color:#78716c; font-size:14px; }\n';
+    css += '.flx-vazio small { color:#a8a29e; font-size:12px; display:block; margin-top:6px; }\n';
+
+    // Card do fluxograma
+    css += '.flx-card { background:white; border:1px solid #e7e5e4; margin-bottom:24px; overflow:hidden; }\n';
+    css += '.flx-header { padding:18px 22px 12px; border-left:5px solid #1c1917; background:#fafaf9; }\n';
+    css += '.flx-titulo-wrap { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:6px; }\n';
+    css += '.flx-cat-tag { font-family:\'JetBrains Mono\',monospace; font-size:10px; padding:3px 8px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; }\n';
+    css += '.flx-titulo { font-family:\'Fraunces\',Georgia,serif; font-size:20px; font-weight:600; color:#1c1917; margin:0; line-height:1.2; }\n';
+    css += '.flx-resumo { color:#44403c; font-size:14px; line-height:1.5; margin:8px 0 4px; }\n';
+    css += '.flx-publico { color:#78716c; font-size:11px; font-family:\'JetBrains Mono\',monospace; margin:0; }\n';
+
+    // Alertas
+    css += '.flx-alertas { padding:0 22px; }\n';
+    css += '.flx-alerta { padding:8px 12px; margin-top:8px; font-size:12px; line-height:1.4; border-left:3px solid; }\n';
+    css += '.flx-alerta-aviso { background:#fff7ed; border-color:#c2410c; color:#7c2128; }\n';
+    css += '.flx-alerta-info { background:#eff6ff; border-color:#1c5fa3; color:#1c5fa3; }\n';
+
+    // Corpo: passos
+    css += '.flx-corpo { padding:18px 22px; display:flex; flex-direction:column; align-items:center; }\n';
+    css += '.flx-no { width:100%; max-width:540px; padding:12px 16px; margin-bottom:0; position:relative; }\n';
+    css += '.flx-seta { font-size:18px; color:#a8a29e; line-height:1; margin:4px 0; font-weight:bold; }\n';
+    css += '.flx-no-tipo { font-family:\'JetBrains Mono\',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.12em; color:#78716c; margin-bottom:4px; font-weight:700; }\n';
+    css += '.flx-no-ramo { font-family:\'JetBrains Mono\',monospace; font-size:10px; color:#1c5fa3; margin-bottom:4px; }\n';
+    css += '.flx-no-ramo b { color:#1c1917; }\n';
+    css += '.flx-no-texto { font-size:13px; line-height:1.55; color:#1c1917; }\n';
+
+    // Tipos de nó (formas/cores)
+    css += '.flx-no-inicio { background:#f5f5f4; border:1px solid #78716c; border-radius:24px; text-align:center; }\n';
+    css += '.flx-no-decisao { background:#fef9c3; border:2px solid #ca8a04; transform:none; }\n';
+    css += '.flx-no-acao { background:white; border:1px solid #d6d3d1; border-left:4px solid #1c1917; }\n';
+    css += '.flx-no-observa { background:#e0f2fe; border:1px solid #0e7490; border-left:4px solid #0e7490; }\n';
+    css += '.flx-no-fim { background:#dcfce7; border:1px solid #15803d; border-radius:24px; text-align:center; }\n';
+
+    // Cores de ação por urgência
+    css += '.flx-no-acao.flx-no-cor-urgente { border-left-color:#7c2128; background:#fef2f2; }\n';
+    css += '.flx-no-acao.flx-no-cor-atencao { border-left-color:#c2410c; background:#fff7ed; }\n';
+    css += '.flx-no-acao.flx-no-cor-manejo { border-left-color:#15803d; background:#f0fdf4; }\n';
+    css += '.flx-no-acao.flx-no-cor-info { border-left-color:#1c5fa3; background:#eff6ff; }\n';
+
+    // Fim por desfecho
+    css += '.flx-no-fim.flx-no-cor-alta { background:#dcfce7; border-color:#15803d; }\n';
+    css += '.flx-no-fim.flx-no-cor-referencia { background:#dbeafe; border-color:#1c5fa3; }\n';
+    css += '.flx-no-fim.flx-no-cor-internar { background:#fee2e2; border-color:#7c2128; }\n';
+
+    // Ramos chips
+    css += '.flx-ramos { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }\n';
+    css += '.flx-ramo-chip { background:#1c1917; color:white; padding:4px 10px; font-family:\'JetBrains Mono\',monospace; font-size:11px; font-weight:600; }\n';
+
+    // Footer
+    css += '.flx-footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 22px; background:#fafaf9; border-top:1px solid #e7e5e4; }\n';
+    css += '.flx-fontes { font-family:\'JetBrains Mono\',monospace; font-size:11px; color:#78716c; }\n';
+    css += '.flx-btn-copiar { background:white; color:#1c1917; border:1px solid #1c1917; padding:6px 12px; font-size:12px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .15s; }\n';
+    css += '.flx-btn-copiar:hover { background:#1c1917; color:white; }\n';
+
+    // Dark mode
+    css += 'body.dark #view-fluxogramas { color:#e7e5e4; }\n';
+    css += 'body.dark .flx-cab h2 { color:#fafaf9; }\n';
+    css += 'body.dark .flx-cab p { color:#a8a29e; }\n';
+    css += 'body.dark .flx-filtros { border-bottom-color:#292524; }\n';
+    css += 'body.dark .flx-filtro { background:#1c1917; color:#a8a29e; border-color:#44403c; }\n';
+    css += 'body.dark .flx-filtro:hover { background:#292524; }\n';
+    css += 'body.dark .flx-filtro.ativo { background:#fafaf9; color:#1c1917; }\n';
+    css += 'body.dark .flx-card { background:#1c1917; border-color:#292524; }\n';
+    css += 'body.dark .flx-header { background:#0c0a09; }\n';
+    css += 'body.dark .flx-titulo { color:#fafaf9; }\n';
+    css += 'body.dark .flx-resumo { color:#d6d3d1; }\n';
+    css += 'body.dark .flx-publico { color:#a8a29e; }\n';
+    css += 'body.dark .flx-no-inicio { background:#292524; border-color:#a8a29e; color:#e7e5e4; }\n';
+    css += 'body.dark .flx-no-decisao { background:#3f2810; border-color:#ca8a04; color:#fef9c3; }\n';
+    css += 'body.dark .flx-no-acao { background:#1c1917; border-color:#44403c; color:#e7e5e4; }\n';
+    css += 'body.dark .flx-no-acao.flx-no-cor-urgente { background:#3f1f1f; border-left-color:#fca5a5; }\n';
+    css += 'body.dark .flx-no-acao.flx-no-cor-atencao { background:#3f2810; border-left-color:#fed7aa; }\n';
+    css += 'body.dark .flx-no-acao.flx-no-cor-manejo { background:#0c2a18; border-left-color:#86efac; }\n';
+    css += 'body.dark .flx-no-acao.flx-no-cor-info { background:#1e2f4a; border-left-color:#93c5fd; }\n';
+    css += 'body.dark .flx-no-observa { background:#0c2a3a; border-color:#67e8f9; color:#cffafe; }\n';
+    css += 'body.dark .flx-no-fim { background:#0c2a18; border-color:#86efac; color:#dcfce7; }\n';
+    css += 'body.dark .flx-no-fim.flx-no-cor-internar { background:#3f1f1f; border-color:#fca5a5; color:#fee2e2; }\n';
+    css += 'body.dark .flx-no-fim.flx-no-cor-referencia { background:#1e2f4a; border-color:#93c5fd; color:#dbeafe; }\n';
+    css += 'body.dark .flx-no-texto { color:#e7e5e4; }\n';
+    css += 'body.dark .flx-seta { color:#57534e; }\n';
+    css += 'body.dark .flx-footer { background:#0c0a09; border-top-color:#292524; }\n';
+    css += 'body.dark .flx-fontes { color:#a8a29e; }\n';
+    css += 'body.dark .flx-btn-copiar { background:#1c1917; color:#e7e5e4; border-color:#a8a29e; }\n';
+    css += 'body.dark .flx-btn-copiar:hover { background:#e7e5e4; color:#1c1917; }\n';
+    css += 'body.dark .flx-alerta-aviso { background:#3f2810; color:#fed7aa; }\n';
+    css += 'body.dark .flx-alerta-info { background:#1e2f4a; color:#bfdbfe; }\n';
+
+    // Mobile
+    css += '@media (max-width:640px) { .flx-cab h2 { font-size:20px; } .flx-titulo { font-size:17px; } .flx-no { padding:10px 12px; } .flx-no-texto { font-size:12px; } .flx-header { padding:14px 16px 10px; } .flx-corpo { padding:14px 14px; } .flx-footer { padding:10px 14px; } }\n';
+
+    var s = document.createElement('style');
+    s.id = 'flx-css-v9';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  // ===== INIT =====
+  function init() {
+    aplicarCSS();
+    adicionarBotaoModo();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 50);
+  }
+  setTimeout(init, 800);
+  setTimeout(init, 2000);
+
+  // Expor pra debug
+  window.renderFluxogramas = montarView;
+  window.ativarModoFluxogramas = ativarModoFlx;
+
+  console.log('[FLX-RENDER v9.0] Renderer + aba "Fluxogramas" pronta');
+})();
+
+</script>
+<!-- INJECT-V9-END -->
 </body>
 </html>

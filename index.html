@@ -14201,5 +14201,158 @@ body.dark .flx-btn-copiar:hover{color:#13110F!important}
 })();
 </script>
 <!-- DS-V10-END -->
+<!-- DS-NORM-START -->
+<script>
+// ============================================================================
+// DARK NORMALIZER v10 — corrige cores fixas (inline) no modo escuro
+//   Vários cards (UBS, doenças, ampolas, protocolos) usam style="..." com
+//   hex claros embutidos no JS. No tema escuro isso "estoura" (texto claro em
+//   caixa clara, ou caixa branca no meio do escuro). Este módulo reescreve
+//   essas cores inline para equivalentes escuros, por papel (fundo vs texto).
+//   Roda após cada render e ao alternar tema. Reversível (guarda original).
+// ============================================================================
+(function(){
+  'use strict';
+
+  // Mapa de FUNDOS claros -> fundo escuro equivalente
+  var BG = {
+    '#ffffff':'#1C1A17','#fff':'#1C1A17','white':'#1C1A17',
+    '#fafaf9':'#1C1A17','#f5f5f4':'#13110F','#f7f7f5':'#1C1A17',
+    '#fef2f2':'#2D1414','#fee2e2':'#3A1A1A','#fff7ed':'#2C2310','#fffbeb':'#2C2310',
+    '#fef9c3':'#332B0E','#f0fdf4':'#0E2018','#dcfce7':'#13301F','#ecfdf5':'#0E2018',
+    '#eff6ff':'#10182E','#dbeafe':'#16233F','#f3e8ff':'#241433','#ede9fe':'#1E1A33',
+    '#e0f2fe':'#0C2A3A','#cffafe':'#0C2A3A','#fed7aa':'#3A2A12','#fde68a':'#332B0E',
+    '#e7e5e4':'#252220','#d6d3d1':'#2A2722'
+  };
+
+  // Mapa de CORES DE TEXTO -> texto claro equivalente
+  var FG = {
+    '#1c1917':'#EDEAE3','#1a1815':'#EDEAE3','#0c0a09':'#EDEAE3','#000':'#EDEAE3','#000000':'#EDEAE3',
+    '#292524':'#C4BEB3','#44403c':'#C4BEB3','#57534e':'#A39C90','#78716c':'#928B7F',
+    '#a8a29e':'#7E776C',
+    // textos semânticos escuros -> claros
+    '#7f1d1d':'#FCA5A5','#7c2128':'#F4A8A8','#b91c1c':'#F87171','#991b1b':'#FCA5A5',
+    '#78350f':'#FCD34D','#7c5c00':'#F5D06B','#a16207':'#FCD34D','#92400e':'#FCD34D','#d97706':'#FBbf24',
+    '#155e30':'#86EFAC','#065f46':'#86EFAC','#064e3b':'#86EFAC','#15803d':'#86EFAC','#1a7a3d':'#5DCB85',
+    '#1e3a8a':'#93C5FD','#1e40af':'#93C5FD','#1c5fa3':'#7FB3F0','#1f5a78':'#7FB3F0','#1f5a8a':'#7FB3F0',
+    '#5a4f8a':'#B6ABE0','#6d5bb8':'#C3B8EC','#a05a2c':'#E0A878','#c25c1a':'#E89A5C','#c2410c':'#F0A878'
+  };
+
+  // Bordas claras -> borda escura
+  var BORDER = {
+    '#d6d3d1':'#2A2722','#e7e5e4':'#252220','#fafaf9':'#252220','#f5f5f4':'#252220',
+    '#fde68a':'#5A4A1A','#fed7aa':'#4A3818','#a7f3d0':'#1E4A38','#bfdbfe':'#24395F',
+    '#fecaca':'#5A2A2A'
+  };
+
+  function norm(hex){ return (hex||'').trim().toLowerCase(); }
+
+  // Reescreve uma declaração CSS inline (string) para o tema escuro
+  function remapStyle(styleText){
+    if(!styleText) return styleText;
+    var parts = styleText.split(';');
+    var changed = false;
+    for(var i=0;i<parts.length;i++){
+      var p = parts[i];
+      var ci = p.indexOf(':');
+      if(ci<0) continue;
+      var prop = p.slice(0,ci).trim().toLowerCase();
+      var val = p.slice(ci+1).trim();
+      var key = norm(val);
+      var nv = null;
+
+      if(prop==='background' || prop==='background-color'){
+        // pode ter sufixo (ex: "#abc 50%") — tratar só hex puro
+        if(BG[key]) nv = BG[key];
+        else {
+          // background com transparência tipo "#xxxxxx1a" mantemos
+        }
+      } else if(prop==='color'){
+        if(FG[key]) nv = FG[key];
+      } else if(prop==='border-color' || prop==='outline-color'){
+        if(BORDER[key]) nv = BORDER[key];
+      } else if(prop.indexOf('border')===0){
+        // border: 1px solid #xxx  /  border-left: 4px solid #xxx
+        var m = val.match(/#[0-9a-fA-F]{3,6}/);
+        if(m){
+          var bk = norm(m[0]);
+          var rep = BORDER[bk] || (FG[bk]?null:null);
+          // se for cor semântica de destaque (verde/vermelho/etc) manter viva,
+          // só trocamos neutros claros
+          if(BORDER[bk]){ nv = val.replace(m[0], BORDER[bk]); }
+        }
+      }
+
+      if(nv!==null){
+        parts[i] = prop+':'+nv;
+        changed = true;
+      }
+    }
+    return changed ? parts.join(';') : null;
+  }
+
+  function processarEl(el){
+    var st = el.getAttribute('style');
+    if(!st) return;
+    // guardar original uma vez
+    if(el.dataset.dsOrig === undefined){ el.dataset.dsOrig = st; }
+    var novo = remapStyle(el.dataset.dsOrig);
+    if(novo){ el.setAttribute('style', novo); }
+  }
+
+  function restaurarEl(el){
+    if(el.dataset.dsOrig !== undefined){
+      el.setAttribute('style', el.dataset.dsOrig);
+    }
+  }
+
+  var alvo = function(){ return document.querySelector('main') || document.body; };
+
+  function aplicar(){
+    var dark = document.body.classList.contains('dark');
+    var root = alvo();
+    if(!root) return;
+    var els = root.querySelectorAll('[style]');
+    for(var i=0;i<els.length;i++){
+      if(dark) processarEl(els[i]);
+      else restaurarEl(els[i]);
+    }
+  }
+
+  // expõe e agenda
+  window.dsDarkNormalize = aplicar;
+
+  // Roda após interações que re-renderizam (clique em modo, card, filtro, busca)
+  function agendar(){ clearTimeout(window._dsNormT); window._dsNormT = setTimeout(aplicar, 60); }
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.modo-btn, .med-header, .filtro, .cat-btn, .cat-ubs-btn, .frac-tab, #btn-darkmode, .ac-btn, .flx-filtro, .sv-header')){
+      agendar(); setTimeout(aplicar, 250); setTimeout(aplicar, 600);
+    }
+  }, true);
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.id==='busca'){ agendar(); }
+  }, true);
+
+  // Observer leve: quando o conteúdo de #lista muda, normaliza
+  function observar(){
+    var lista = document.getElementById('lista') || alvo();
+    if(!lista){ setTimeout(observar, 300); return; }
+    try{
+      var mo = new MutationObserver(function(){ agendar(); });
+      mo.observe(lista, {childList:true, subtree:true});
+    }catch(e){}
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', function(){ aplicar(); observar(); });
+  } else {
+    aplicar(); observar();
+  }
+  setTimeout(aplicar, 500); setTimeout(aplicar, 1200); setTimeout(aplicar, 2500);
+})();
+
+</script>
+<!-- DS-NORM-END -->
 </body>
 </html>

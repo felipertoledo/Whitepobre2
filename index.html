@@ -268,7 +268,7 @@ footer{border-top:2px solid var(--ink);background:var(--bg-paper);margin-top:32p
         <p class="hdr-eyebrow">Manual de Bolso · APS · Estiva Gerbi</p>
         <h1 class="hdr-title">Pediatria com o <em>Pé no Chão</em></h1>
       </div>
-      <p class="hdr-version">v.9.1 · fluxogramas: onda 1 (5) + onda 2 emergências (5)</p>
+      <p class="hdr-version">v.9.5 · 25 fluxogramas pediátricos (5 ondas)</p>
     </div>
     <p class="hdr-desc">Pediatria de Atenção Primária com referenciamento — medicações, ampolas, emergências, doenças longitudinais e posologia prescritível. Feito com pés na terra do território.</p>
   </div>
@@ -12504,5 +12504,1114 @@ if (typeof MEDICACOES !== 'undefined') {
 
 </script>
 <!-- INJECT-V91-END -->
+<!-- INJECT-V92-START -->
+<script>
+// ============================================================================
+// PATCH v9.2 — 7 correções clínicas em fluxogramas das ondas 1 e 2
+//   1. Anafilaxia: prometazina como 1ª linha BR + nota β-bloqueador
+//   2. Asma: FR numérico por idade + Sat 94% + nota MART
+//   3. Crupe: budesonida nebulizada como alternativa
+//   4. OMA: nota <2 meses + timpanocentese
+//   5. Sepse: ATB ≤1h choque, ≤3h sepse sem choque
+//   6. Choque: punção pneumotórax 4-5 EIC axilar anterior todas idades
+//   7. PCR: pós-RCE evita febre, hipotermia controlada NÃO de rotina
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  // Helper: substitui texto em passo de fluxograma por id
+  function ajustePasso(flxId, indicePasso, novoTexto) {
+    if (!window.FLUXOGRAMAS) return false;
+    var flx = window.FLUXOGRAMAS.find(function(f){ return f.id === flxId; });
+    if (!flx || !flx.passos || !flx.passos[indicePasso]) return false;
+    flx.passos[indicePasso].texto = novoTexto;
+    return true;
+  }
+
+  // Helper: insere passo novo após índice
+  function inserirPasso(flxId, apos, novoPasso) {
+    if (!window.FLUXOGRAMAS) return false;
+    var flx = window.FLUXOGRAMAS.find(function(f){ return f.id === flxId; });
+    if (!flx || !flx.passos) return false;
+    flx.passos.splice(apos + 1, 0, novoPasso);
+    return true;
+  }
+
+  // Helper: adiciona alerta novo
+  function adicionarAlerta(flxId, alerta) {
+    if (!window.FLUXOGRAMAS) return false;
+    var flx = window.FLUXOGRAMAS.find(function(f){ return f.id === flxId; });
+    if (!flx) return false;
+    if (!flx.alertas) flx.alertas = [];
+    // Não duplicar
+    if (flx.alertas.find(function(a){ return a.texto === alerta.texto; })) return false;
+    flx.alertas.push(alerta);
+    return true;
+  }
+
+  function aplicarCorrecoes() {
+    if (!window.FLUXOGRAMAS || !Array.isArray(window.FLUXOGRAMAS) || window.FLUXOGRAMAS.length < 10) {
+      setTimeout(aplicarCorrecoes, 300);
+      return;
+    }
+
+    // Evita aplicar duas vezes
+    if (window._patchV92Aplicado) return;
+    window._patchV92Aplicado = true;
+
+    var alteracoes = 0;
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 1. ANAFILAXIA — prometazina BR + β-bloqueador
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // Passo dos adjuvantes (atual: difenidramina/prometazina)
+    var flxAna = window.FLUXOGRAMAS.find(function(f){ return f.id === 'flx-anafilaxia'; });
+    if (flxAna) {
+      flxAna.passos.forEach(function(p){
+        if (p.tipo === 'acao' && /Adjuvantes/i.test(p.texto || '') && /Anti-H1/i.test(p.texto)) {
+          p.texto = 'Adjuvantes (NUNCA substituem adrenalina):\n• Anti-H1: PROMETAZINA 0,5 mg/kg IM/IV (máx 25 mg) — 1ª linha BR/UBS\n  · Alternativa: difenidramina 1 mg/kg IV/IM (máx 50 mg) se disponível\n• Corticoide: hidrocortisona 5 mg/kg IV (máx 200 mg) — reduz fase tardia\n• Broncodilatador: salbutamol NEB se broncoespasmo';
+          alteracoes++;
+        }
+      });
+      if (adicionarAlerta('flx-anafilaxia', {
+        tipo: 'aviso',
+        texto: 'Paciente em β-bloqueador tem resposta atenuada à adrenalina. Considerar GLUCAGON 20-30 mcg/kg IV (máx 1 mg) em bolus, repetir conforme necessário, ou infusão 5-15 mcg/min.'
+      })) alteracoes++;
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 2. ASMA — FR numérico + Sat 94% + nota MART
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    var flxAsma = window.FLUXOGRAMAS.find(function(f){ return f.id === 'flx-asma'; });
+    if (flxAsma) {
+      // Passo de classificação (decisão com gravidade)
+      var passoClass = flxAsma.passos.find(function(p){
+        return p.tipo === 'decisao' && /CLASSIFICAR GRAVIDADE/i.test(p.texto || '');
+      });
+      if (passoClass) {
+        passoClass.texto = 'CLASSIFICAR GRAVIDADE INICIAL\n\nFR (irpm) por idade — limite alto:\n<2m ≥60 · 2-12m ≥50 · 1-5a ≥40 · >5a ≥30\n\nLEVE: Fala frases · FR normal · SatO₂ ≥94% AA · Sibilo expiratório · sem retração\nMODERADA: Fala frases curtas · FR ↑ · SatO₂ 91-93% · Sibilo audível · retração leve\nGRAVE: Fala palavras · FR ≥ limite alto · SatO₂ <91% · Sibilo ausente/diminuído · retração intensa · ↓ nível consciência → RISCO DE VIDA';
+        alteracoes++;
+      }
+      // Ajustar O₂ se SatO₂ <94%
+      flxAsma.passos.forEach(function(p){
+        if (p.condicao === 'MODERADA' && /SALBUTAMOL/i.test(p.texto) && /O₂ se SatO₂/i.test(p.texto)) {
+          p.texto = p.texto.replace(/O₂ se SatO₂ <94%/, 'O₂ se SatO₂ <94% (alvo 94-98%)');
+          alteracoes++;
+        }
+      });
+      // Adicionar alerta MART
+      if (adicionarAlerta('flx-asma', {
+        tipo: 'info',
+        texto: 'GINA 2025 — adolescentes ≥12 anos: preferir estratégia MART (CI + formoterol como controlador E como resgate) em vez de salbutamol SOS isolado. Reduz exacerbações graves.'
+      })) alteracoes++;
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 3. CRUPE — budesonida nebulizada como alternativa
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    var flxCrupe = window.FLUXOGRAMAS.find(function(f){ return f.id === 'flx-crupe'; });
+    if (flxCrupe) {
+      // Modificar todos os passos com DEXAMETASONA pra adicionar budesonida como alternativa
+      flxCrupe.passos.forEach(function(p){
+        if (p.tipo === 'acao' && /DEXAMETASONA/i.test(p.texto || '') && !/budesonida/i.test(p.texto)) {
+          // Inserir linha após dexametasona
+          p.texto = p.texto.replace(
+            /(DEXAMETASONA[^\n]+)/,
+            '$1\n· Alternativa: BUDESONIDA nebulizada 2 mg dose única (se VO/IM não tolerada)'
+          );
+          alteracoes++;
+        }
+      });
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 4. OMA — nota <2 meses + timpanocentese
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    var flxOMA = window.FLUXOGRAMAS.find(function(f){ return f.id === 'flx-oma'; });
+    if (flxOMA) {
+      // Modificar passo "<6 meses" pra refinar <2 meses
+      flxOMA.passos.forEach(function(p){
+        if (p.condicao === '<6 meses' && /ANTIBIOTICOTERAPIA SEMPRE/i.test(p.texto || '')) {
+          p.texto = '⚡ ANTIBIOTICOTERAPIA SEMPRE (idade <6m)\n\n<2 MESES: preferir AMOX+CLAV 90 mg/kg/dia OU ceftriaxona IM 50 mg/kg/dia (cobertura ampliada para gram-negativos neonatais)\n\n2-6 MESES: amoxicilina 80-90 mg/kg/dia VO 8/8h ou 12/12h × 10 dias\nSe falha em 48-72h ou OMA recente (<30 dias): AMOX+CLAV 90 mg/kg/dia (componente amoxi)';
+          alteracoes++;
+        }
+        // Modificar passo de falha terapêutica pra mencionar timpanocentese
+        if (p.tipo === 'observa' && /FALHA TERAPÊUTICA/i.test(p.texto || '') && !/timpanocentese/i.test(p.texto)) {
+          p.texto = p.texto + '\n→ Considerar TIMPANOCENTESE (especialista) se falha após 2 ciclos de ATB de 2ª linha — coleta de cultura + alívio sintomático';
+          alteracoes++;
+        }
+      });
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 5. SEPSE — ATB ≤1h choque, ≤3h sepse sem choque
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    var flxSepse = window.FLUXOGRAMAS.find(function(f){ return f.id === 'flx-sepse'; });
+    if (flxSepse) {
+      flxSepse.passos.forEach(function(p){
+        if (p.condicao === 'SCORE ≥2 — SEPSE' && /BUNDLE DE 1 HORA/i.test(p.texto || '')) {
+          p.texto = '⚡ BUNDLE TERAPÊUTICO (Surviving Sepsis Pediatric 2020):\n\n① ANTIBIÓTICO de amplo espectro:\n   • ≤ 1 HORA se CHOQUE séptico\n   • ≤ 3 HORAS se sepse SEM choque\n   Empírico: CEFTRIAXONA 100 mg/kg + AMPICILINA se <3m (cobertura Listeria/Streptococcus B)\n   PA grave / hospitalar: meropenem ± vancomicina\n\n② COLETAR antes do ATB se possível: hemocultura, gaso, lactato, hemograma, função renal/hepática, PCR, coagulograma\n   NÃO atrasar ATB esperando coleta — diretiva expressa do SSC pediátrico';
+          alteracoes++;
+        }
+      });
+      // Atualizar alerta
+      var alertaAtbAntigo = (flxSepse.alertas || []).find(function(a){
+        return /1 hora|primeiro hora|primeira hora/i.test(a.texto);
+      });
+      if (alertaAtbAntigo) {
+        alertaAtbAntigo.texto = 'Tempo de ATB salva vidas: ≤1h em CHOQUE séptico, ≤3h em sepse sem choque. Em choque, cada hora de atraso aumenta mortalidade em ~7% (SSC Pediatric 2020).';
+        alteracoes++;
+      }
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 6. CHOQUE — punção pneumotórax atualizada (todas idades)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    var flxChoque = window.FLUXOGRAMAS.find(function(f){ return f.id === 'flx-choque'; });
+    if (flxChoque) {
+      flxChoque.passos.forEach(function(p){
+        if (p.condicao === 'OBSTRUTIVO' && /Pneumotórax/i.test(p.texto || '')) {
+          p.texto = 'Causas: pneumotórax hipertensivo, tamponamento, TEP\n\nPneumotórax hipertensivo: PUNÇÃO de alívio no 4º-5º EIC linha AXILAR ANTERIOR (todas as idades) — preferido em pediatria por menor risco vascular vs 2º EIC hemiclavicular\nTamponamento: PERICARDIOCENTESE\nTEP: anticoagulação · trombolítico se grave (raro em pediatria)\n\nNão atrasar intervenção mecânica buscando confirmação por imagem';
+          alteracoes++;
+        }
+      });
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 7. PCR — pós-RCE: evita febre, hipotermia NÃO de rotina
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    var flxPCR = window.FLUXOGRAMAS.find(function(f){ return f.id === 'flx-pcr-pals'; });
+    if (flxPCR) {
+      flxPCR.passos.forEach(function(p){
+        if (p.condicao === 'SIM — RCE obtida' && /CUIDADOS PÓS-PARADA/i.test(p.texto || '')) {
+          p.texto = 'CUIDADOS PÓS-PARADA:\n• Manter SpO₂ 94-99% (evitar hiperóxia)\n• Manter PaCO₂ 35-45 mmHg (normocapnia)\n• PAS > P5 idade (vasoativos se necessário)\n• Glicemia 80-150 mg/dL\n• CONTROLE DE TEMPERATURA: EVITAR FEBRE ATIVAMENTE (alvo ≤37,5°C nas primeiras 72h)\n  · Hipotermia controlada 32-34°C NÃO é mais recomendada de rotina (THAPCA 2015/2017 sem benefício vs normotermia)\n  · Considerar apenas em cenários selecionados com discussão multiprofissional\n• ECG 12 derivações · ecocardiograma\n• Investigar causa (5H + 5T)';
+          alteracoes++;
+        }
+      });
+      if (adicionarAlerta('flx-pcr-pals', {
+        tipo: 'info',
+        texto: 'AHA PALS 2020/2025: controle ativo de temperatura para EVITAR FEBRE é o consenso. Hipotermia controlada 32-34°C não demonstrou benefício em pediatria no estudo THAPCA — não é recomendação de rotina.'
+      })) alteracoes++;
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // Re-renderizar view se já estava aberta
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    if (document.getElementById('view-fluxogramas') && typeof window.renderFluxogramas === 'function') {
+      try { window.renderFluxogramas(); } catch(e){}
+    }
+
+    console.log('[PATCH v9.2] '+alteracoes+' correções clínicas aplicadas aos fluxogramas');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', aplicarCorrecoes);
+  } else {
+    setTimeout(aplicarCorrecoes, 100);
+  }
+  setTimeout(aplicarCorrecoes, 800);
+  setTimeout(aplicarCorrecoes, 2500);
+})();
+
+</script>
+<!-- INJECT-V92-END -->
+<!-- INJECT-V93-START -->
+<script>
+// ============================================================================
+// FLUXOGRAMAS PEDIÁTRICOS v9.3 — ONDA 3: Respiratório + Infeccioso
+//   - Bronquiolite (manejo conservador vs critérios de internação)
+//   - Pneumonia adquirida na comunidade (PAC pediátrica)
+//   - Febre <3 meses (Rochester/Boston/Step-by-step)
+//   - ITU pediátrica (investigação por idade)
+//   - Mordedura (animal/humana, profilaxia raiva, ATB)
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const FLUXOGRAMAS_ONDA3 = [
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 11. BRONQUIOLITE
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-bronquiolite',
+      nome: 'Bronquiolite aguda',
+      categoria: 'respiratorio',
+      resumo: 'Manejo SUPORTIVO. Não usar broncodilatador/corticoide/ATB de rotina. Critérios claros de internação.',
+      publico: 'PA · UBS · AAP/SBP',
+      fontes: 'AAP 2014 (rev. 2023) · SBP · NICE 2015 · ESPID 2024',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança <2 anos (especialmente <12 meses) com:\n• Início insidioso de coriza/tosse → progressão para sibilância/sibilo/crepitação\n• Esforço respiratório · taquipneia\n• Episódio FEBRIL geralmente em pico (não mantida muito alta)\n• Sazonalidade: outono/inverno (VSR principal, também rinovírus, metapneumovírus)' },
+
+        { tipo: 'decisao', texto: 'AVALIAR GRAVIDADE (clínica + saturação)\n\nLEVE: alimentação preservada · sat O₂ ≥94% AA · FR < limite/idade · sem retração ou retração leve\nMODERADA: alimentação reduzida (50-75%) · sat 90-93% · FR ↑ · retração moderada · sibilância difusa\nGRAVE: incapacidade alimentar · sat <90% AA · FR muito ↑ · retração intensa/gasping · apneia · cianose · letargia',
+          ramos: ['LEVE', 'MODERADA', 'GRAVE'] },
+
+        // LEVE
+        { tipo: 'acao', cor: 'manejo', condicao: 'LEVE',
+          texto: 'MANEJO AMBULATORIAL — apenas SUPORTIVO:\n• Higiene nasal frequente com soro fisiológico 0,9% (LAVAGEM NASAL é a intervenção mais útil)\n• Fracionar mamadas\n• Hidratação adequada\n• Antitérmico de demanda\n• Posicionamento elevado da cabeceira\n\nNÃO PRESCREVER (sem benefício comprovado):\n✗ Broncodilatador (salbutamol, ipratrópio) de rotina\n✗ Corticoide oral, inalado ou sistêmico\n✗ Adrenalina nebulizada\n✗ Solução salina hipertônica nebulizada de rotina\n✗ Antibiótico (etiologia viral)\n✗ Antitussígeno · mucolítico' },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'LEVE',
+          texto: 'ALTA com:\n• Orientações dos sinais de alerta: piora respiratória, recusa alimentar, sonolência, palidez, cianose, FR muito ↑\n• Retorno em 24-48h para reavaliação\n• Pais devem retornar IMEDIATAMENTE se piora\n• Doença autolimitada, mas pico em D3-D5; melhora gradual em 7-14 dias' },
+
+        // MODERADA
+        { tipo: 'acao', cor: 'atencao', condicao: 'MODERADA',
+          texto: 'OBSERVAÇÃO em PA/PS 2-6 horas:\n• Lavagem nasal de SF\n• O₂ se SatO₂ <92% (cateter nasal 0,5-2 L/min ou máscara — alvo 92-95%)\n• Hidratação (VO se tolera, SNG ou EV se não)\n• Reavaliar a cada 1-2 h\n\nTESTE TERAPÊUTICO de salbutamol pode ser tentado UMA VEZ (não rotina) em criança com sibilo proeminente e história familiar de asma. Se sem resposta clara em 30 min → suspender.' },
+
+        { tipo: 'decisao', condicao: 'MODERADA',
+          texto: 'APÓS OBSERVAÇÃO — REAVALIAR',
+          ramos: ['MELHOROU → alta', 'PIORA OU MANTÉM → internar'] },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'MELHOROU → alta',
+          texto: 'ALTA com orientação intensiva\nReavaliação em 24h obrigatória' },
+
+        // GRAVE / Internação
+        { tipo: 'acao', cor: 'urgente', condicao: 'GRAVE',
+          texto: '🚨 INTERNAR (critérios clássicos):\n• Sat O₂ <90% em AA persistente\n• Esforço respiratório grave / apneia / cianose\n• Incapacidade alimentar (<50% do habitual)\n• Desidratação\n• Idade <2-3 meses (limiar baixo)\n• Comorbidades (cardiopatia, displasia broncopulmonar, imunodeficiência, prematuridade <36s)\n• Contexto social desfavorável / dificuldade de retorno' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'GRAVE',
+          texto: 'SUPORTE HOSPITALAR:\n• O₂ por cateter/máscara · alvo SatO₂ 92-95%\n• Cateter nasal de alto fluxo (HFNC) se moderada-grave sem resposta a O₂ convencional\n• VNI (CPAP/BiPAP) se HFNC insuficiente\n• Hidratação EV ou SNG (cuidado com SIADH — restrição hídrica de 60-80% basal)\n• Aspiração nasofaríngea como necessária' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'PIORA OU MANTÉM → internar',
+          texto: '🚑 INTERNAÇÃO · UTI se apneia/IRA grave/exaustão\nIOT precoce se piora apesar de VNI ou redução do nível de consciência' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Bronquiolite é DIAGNÓSTICO CLÍNICO. Não pedir rotineiramente RX, hemograma, PCR ou painel viral em criança bem ou ambulatorial.' },
+        { tipo: 'aviso', texto: 'Solução salina hipertônica 3% nebulizada NÃO é recomendada de rotina (AAP). Útil apenas em casos selecionados de internação prolongada.' },
+        { tipo: 'info', texto: 'Lactentes <2 meses com bronquiolite têm risco aumentado de apneia — limiar baixo para internação e monitorização.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 12. PNEUMONIA ADQUIRIDA NA COMUNIDADE (PAC)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-pac',
+      nome: 'Pneumonia adquirida na comunidade (PAC pediátrica)',
+      categoria: 'respiratorio',
+      resumo: 'Diagnóstico clínico → decisão ambulatorial vs internação → ATB empírico por idade',
+      publico: 'PA · UBS · APS pediátrica',
+      fontes: 'IDSA/PIDS 2011 (atualização 2024) · BTS 2011 · SBP · WHO',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com sinais sugestivos de pneumonia:\n• Tosse · febre · taquipneia\n• Esforço respiratório (gemência, tiragem subcostal/intercostal, batimento de aletas nasais)\n• Estertor crepitante focal · diminuição do murmúrio\n• ± Queixa de dor abdominal (referida em PAC base)' },
+
+        { tipo: 'decisao', texto: 'TAQUIPNEIA POR IDADE (critério OMS clássico):\n<2m: ≥60 irpm · 2-12m: ≥50 irpm · 1-5a: ≥40 irpm · >5a: ≥20-30 irpm\n\nDIAGNÓSTICO: clínico (anamnese + exame). RX TÓRAX não obrigatório em ambulatório se quadro típico.\n\nRX está indicado: dúvida diagnóstica · falha terapêutica · doença grave · suspeita de complicação',
+          ramos: ['INTERNAR — critérios graves', 'AMBULATORIAL'] },
+
+        // CRITÉRIOS DE INTERNAÇÃO
+        { tipo: 'acao', cor: 'urgente', condicao: 'INTERNAR — critérios graves',
+          texto: '🚨 CRITÉRIOS DE INTERNAÇÃO:\n• Idade <6 meses (especialmente <3m)\n• Sat O₂ <92% AA persistente\n• Esforço respiratório intenso · gasping · apneia\n• Sinais de toxemia ou choque\n• Recusa alimentar com sinais de desidratação\n• Complicação radiológica (derrame, empiema, pneumonia necrotizante)\n• Imunodeprimido, cardiopatia, doença pulmonar crônica\n• Falha de tratamento ambulatorial após 48h\n• Vômitos persistentes (impede VO)\n• Contexto social desfavorável' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'INTERNAR — critérios graves',
+          texto: 'ATB IV — tratamento hospitalar:\n\n<2 MESES: AMPICILINA + GENTAMICINA (cobrir Listeria, gram-neg, GBS)\n\n≥2 MESES:\n• AMPICILINA 200 mg/kg/dia IV 6/6h × 7-10 dias (1ª escolha em vacinados — pneumococo)\n• OU CEFTRIAXONA 100 mg/kg/dia IV/IM se vacinação incompleta ou doença mais grave\n• Adicionar OXACILINA ou VANCOMICINA se suspeita de Staph (pneumonia necrotizante, derrame)\n• Adicionar CLINDAMICINA ou MACROLÍDEO se atípico ou complicação' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'INTERNAR — critérios graves',
+          texto: '🚑 INTERNAÇÃO\nO₂ se SatO₂ <92% · hidratação EV · monitorização\nReavaliação em 24h · se sem melhora considerar troca de ATB, USG pleural (derrame), TC (necrose)\nUTI se IRA grave / sepse' },
+
+        // AMBULATORIAL
+        { tipo: 'decisao', condicao: 'AMBULATORIAL',
+          texto: 'AVALIAR FAIXA ETÁRIA E ETIOLOGIA PROVÁVEL',
+          ramos: ['<5 ANOS — bacteriana típica (pneumococo)', '≥5 ANOS — considerar atípico'] },
+
+        { tipo: 'acao', cor: 'manejo', condicao: '<5 ANOS — bacteriana típica (pneumococo)',
+          texto: 'AMOXICILINA 80-90 mg/kg/dia VO 8/8h ou 12/12h × 7 dias\n(1ª linha; cobertura para S. pneumoniae, agente mais comum)\n\nAlternativa em alergia não-anafilática: cefuroxima 30 mg/kg/dia VO 12/12h\nAlternativa em alergia anafilática: macrolídeo (azitromicina/claritromicina) — eficácia inferior se pneumococo' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: '≥5 ANOS — considerar atípico',
+          texto: 'PRIMEIRA OPÇÃO se quadro típico: AMOXICILINA 80-90 mg/kg/dia VO 8/8h × 7 dias\n\nSE QUADRO SUGESTIVO DE ATÍPICO (tosse seca persistente, sem consolidação clara, febre não tão alta, "walking pneumonia"):\n• AZITROMICINA 10 mg/kg dia 1, depois 5 mg/kg/dia × 4 dias\n• OU CLARITROMICINA 15 mg/kg/dia VO 12/12h × 7-10 dias\n\nAssociar amoxi + macrolídeo se suspeita de quadro misto/complicado' },
+
+        { tipo: 'observa',
+          texto: 'CRITÉRIOS DE FALHA AMBULATORIAL (revisar em 48-72h):\n• Persistência ou piora de febre\n• Piora do desconforto respiratório\n• Aparecimento de complicação (dor pleurítica, derrame)\n• Não-resposta clínica\n→ Reavaliar diagnóstico · solicitar RX se ainda não feito\n→ Trocar ATB (considerar atípicos, MRSA, complicação)\n→ Considerar internação' },
+
+        { tipo: 'fim', cor: 'alta',
+          texto: 'ALTA com orientações:\n• Sinais de alerta (piora respiratória, recusa alimentar, vômitos, febre alta persistente >48h)\n• Retorno em 48-72h para reavaliação\n• Hidratação · antitérmico de demanda · repouso\n• Antitussígeno NÃO recomendado' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Bebês <2 meses com PAC merecem internação SEMPRE — risco de evolução grave e etiologia diversa (Listeria, gram-negativos, Strep B).' },
+        { tipo: 'info', texto: 'Amoxicilina 80-90 mg/kg/dia em 8/8h é o esquema preferido — concentração sérica acima da MIC do pneumococo por mais tempo.' },
+        { tipo: 'info', texto: 'RX de controle rotineiro NÃO indicado em PAC não complicada que responde clinicamente — fica reservado para complicação ou falha.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 13. FEBRE EM <3 MESES (Step-by-step)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-febre-3m',
+      nome: 'Febre sem foco em lactente <3 meses',
+      categoria: 'infeccioso',
+      resumo: 'Estratificação Step-by-step (PCT/PCR/leucócitos/EAS) → investigação ampliada + ATB se alto risco',
+      publico: 'PA · PS · investigação infecciosa neonatal',
+      fontes: 'Step-by-step (Gomez 2016) · PECARN · AAP 2021 · IDSA · SBP',
+      passos: [
+        { tipo: 'inicio', texto: 'Lactente <90 dias com:\n• Febre (Tax retal ≥38°C OU axilar ≥37,8°C) sem foco identificado ao exame\n• Estado tóxico/séptico OU\n• Febre sem foco há <24h\n\nMENOR DE 21 DIAS: SEMPRE alto risco — investigação ampliada obrigatória + ATB empírico' },
+
+        { tipo: 'decisao', texto: 'IDADE DO LACTENTE',
+          ramos: ['<21 dias (28 dias para alguns autores)', '21-89 dias'] },
+
+        // <21 DIAS
+        { tipo: 'acao', cor: 'urgente', condicao: '<21 dias (28 dias para alguns autores)',
+          texto: '🚨 INVESTIGAÇÃO COMPLETA + ATB EMPÍRICO + INTERNAÇÃO\n\nColetas:\n• Hemograma · PCR · procalcitonina (PCT) · gaso\n• Hemocultura (2 amostras se possível)\n• EAS + urocultura por cateterismo vesical (NUNCA saco coletor para cultura)\n• Líquor (citologia, química, cultura, gram, PCR para enterovírus/HSV)\n• Considerar PCR HSV (especialmente <21 dias)\n• Rx tórax se sintomas respiratórios\n\nATB empírico:\n• AMPICILINA 200 mg/kg/dia IV 6/6h + GENTAMICINA 4 mg/kg/dia IV 24/24h\n• Adicionar ACICLOVIR 60 mg/kg/dia IV 8/8h se suspeita HSV (lesões cutâneas, convulsão, lesão hepática, contato materno HSV)' },
+
+        { tipo: 'fim', cor: 'internar', condicao: '<21 dias (28 dias para alguns autores)',
+          texto: '🚑 INTERNAÇÃO mandatória\nUTI neonatal/pediátrica se instabilidade · isolamento de contato\nAjustar ATB conforme cultura em 48-72h' },
+
+        // 21-89 DIAS
+        { tipo: 'decisao', condicao: '21-89 dias',
+          texto: 'STEP-BY-STEP APPROACH (Gomez 2016):\n\nPASSO 1 — APARÊNCIA:\nMau estado geral, irritabilidade extrema, letargia, choro fraco/inconsolável → ALTO RISCO direto',
+          ramos: ['MAU ESTADO → alto risco', 'BOM ESTADO → passo 2'] },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'MAU ESTADO → alto risco',
+          texto: 'INVESTIGAÇÃO COMPLETA + ATB + INTERNAÇÃO\nVer protocolo do <21 dias acima\nAjustar ATB: CEFTRIAXONA 50-100 mg/kg/dia (já cobre maioria dos patógenos pós-21d)' },
+
+        { tipo: 'decisao', condicao: 'BOM ESTADO → passo 2',
+          texto: 'PASSO 2 — IDADE\n<21 dias = sempre alto risco\n≥21 dias com bom estado → passo 3',
+          ramos: ['EAS alterada (leucocitúria, nitrito)', 'EAS normal → passo 4'] },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'EAS alterada (leucocitúria, nitrito)',
+          texto: 'PROVÁVEL ITU (mais comum nessa faixa):\n• Coletar urocultura por cateterismo vesical\n• ATB empírico: CEFTRIAXONA 50 mg/kg/dia IV/IM\n• Hemocultura · considerar líquor (limiar baixo, especialmente <60d)\n• Internação preferível em <2 meses · ambulatorial possível em 2-3 meses se estado bom + acesso rápido' },
+
+        { tipo: 'decisao', condicao: 'EAS normal → passo 4',
+          texto: 'PASSO 4 — BIOMARCADORES SÉRICOS\n\nALTO RISCO (qualquer um):\n• Procalcitonina (PCT) ≥0,5 ng/mL\n• PCR ≥20 mg/L\n• Leucócitos <5.000 OU >15.000\n• Neutrófilos absolutos ≥10.000',
+          ramos: ['ALTO RISCO biomarcadores', 'BAIXO RISCO'] },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'ALTO RISCO biomarcadores',
+          texto: 'INVESTIGAÇÃO COMPLETA + ATB EMPÍRICO:\n• Hemocultura · EAS + urocultura · LÍQUOR\n• CEFTRIAXONA 50-100 mg/kg/dia IV\n• Internação\n• Aguardar culturas em 48-72h para decidir continuação' },
+
+        { tipo: 'fim', cor: 'referencia', condicao: 'BAIXO RISCO',
+          texto: 'BAIXO RISCO (Gomez et al.): risco de bacteriemia/IBI <1%\n\nOpção A — Tratamento ambulatorial:\n• Coletar hemocultura + EAS/urocultura\n• Reavaliação em 24h obrigatória\n• Pais com plano claro: retornar se piora\n• Aceitável em centros com retaguarda\n\nOpção B (mais conservadora): observação intra-hospitalar por 24-48h sem ATB' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Febre sem foco em <90 dias é uma das emergências infectológicas pediátricas. Limiar muito baixo para investigação ampliada — não confiar apenas no exame físico (sinais sutis em RN).' },
+        { tipo: 'info', texto: 'Step-by-step europeu (Gomez 2016) usa PCT como discriminador-chave. Onde não há PCT disponível: usar PCR + hemograma + EAS (sensibilidade um pouco menor mas aceitável).' },
+        { tipo: 'info', texto: 'NUNCA usar saco coletor para urocultura — alta taxa de contaminação. Cateterismo vesical ou punção suprapúbica são padrões-ouro.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 14. ITU PEDIÁTRICA
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-itu',
+      nome: 'ITU pediátrica — diagnóstico e investigação',
+      categoria: 'infeccioso',
+      resumo: 'Coleta correta da urocultura → tratamento por idade/gravidade → investigação de imagem por idade/recorrência',
+      publico: 'PA · UBS · APS',
+      fontes: 'AAP 2011 (rev. 2016) · NICE 2018 · SBP · ESPID 2024',
+      passos: [
+        { tipo: 'inicio', texto: 'Suspeita de ITU em criança:\n\n<2 ANOS: sintomas inespecíficos\n• Febre sem foco\n• Irritabilidade · vômitos · recusa alimentar · letargia · icterícia (RN)\n• Crescimento insuficiente · diarreia\n\n≥2 ANOS: sintomas típicos\n• Disúria · polaciúria · urgência\n• Dor suprapúbica ou lombar\n• Hematúria · alteração do cheiro\n• Febre · vômito (se pielonefrite)' },
+
+        { tipo: 'acao', cor: 'manejo',
+          texto: 'COLETA CORRETA DA URINA é fundamental:\n\nLactente / não-controle esfincteriano:\n• CATETERISMO VESICAL (1ª escolha) OU\n• Punção suprapúbica (urocultura mais específica)\n• Saco coletor APENAS para SCREENING (EAS negativo afasta · positivo precisa confirmar)\n• NUNCA cultura por saco coletor — taxa de contaminação 26-63%\n\nCriança continente:\n• JATO MÉDIO após higienização\n• Coleta supervisionada quando possível' },
+
+        { tipo: 'decisao', texto: 'EAS + UROCULTURA\n\nEAS sugestivo de ITU: leucocitúria (>10 leuc/campo) + nitrito positivo + bacteriúria\nUrocultura POSITIVA:\n• Cateterismo: ≥50.000 UFC/mL\n• Jato médio: ≥100.000 UFC/mL (germe único)\n• Punção suprapúbica: qualquer crescimento bacteriano',
+          ramos: ['CONFIRMADA', 'EAS positivo, aguarda urocultura'] },
+
+        { tipo: 'decisao', condicao: 'CONFIRMADA',
+          texto: 'AVALIAR GRAVIDADE E IDADE',
+          ramos: ['CISTITE / ITU baixa (sem febre, ≥2a)', 'PIELONEFRITE OU <2a / febril', 'COMPLICADA: <3m, sepse, vômitos, comorbidades'] },
+
+        // CISTITE
+        { tipo: 'acao', cor: 'manejo', condicao: 'CISTITE / ITU baixa (sem febre, ≥2a)',
+          texto: 'ATB ORAL — escolha empírica conforme padrão local:\n\n• CEFALEXINA 50 mg/kg/dia VO 6/6h ou 8/8h × 5-7 dias\n• OU CEFADROXILA 30 mg/kg/dia VO 12/12h × 5-7 dias\n• OU SMX-TMP 8-12 mg TMP/kg/dia VO 12/12h × 5-7 dias (cuidado com resistência local)\n• OU NITROFURANTOÍNA 5-7 mg/kg/dia VO 6/6h × 5-7 dias (apenas cistite, não pielonefrite)\n\nAjustar conforme antibiograma' },
+
+        // PIELONEFRITE
+        { tipo: 'acao', cor: 'atencao', condicao: 'PIELONEFRITE OU <2a / febril',
+          texto: 'ATB — 10-14 dias total\n\nAMBULATORIAL (se aceita VO, sem vômito, hidratada, condições sociais favoráveis):\n• CEFUROXIMA 30 mg/kg/dia VO 12/12h × 10 dias\n• OU CEFALEXINA 50 mg/kg/dia VO 6/6h × 10-14 dias\n• OU CEFTRIAXONA 50 mg/kg/dose IM 1×/dia × 1-3 dias depois VO\n\nHOSPITALAR (vômitos, lactente, toxemia, comorbidade):\n• CEFTRIAXONA 50-75 mg/kg/dia IV 24/24h\n• OU GENTAMICINA 5 mg/kg/dia IV 24/24h\n• OU AMPICILINA + GENTAMICINA em <3m' },
+
+        // COMPLICADA
+        { tipo: 'acao', cor: 'urgente', condicao: 'COMPLICADA: <3m, sepse, vômitos, comorbidades',
+          texto: '🚨 INTERNAR e ATB IV\n• <2 meses: AMPICILINA + GENTAMICINA (cobertura Listeria, gram-neg)\n• 2-36 meses: CEFTRIAXONA 75 mg/kg/dia IV\n• Considerar sepse — ver fluxograma\n• USG renal e vias urinárias precocemente' },
+
+        // INVESTIGAÇÃO POR IMAGEM
+        { tipo: 'observa',
+          texto: 'INVESTIGAÇÃO POR IMAGEM — quando solicitar:\n\nUSG RENAL E VIAS URINÁRIAS:\n• <2 anos: na 1ª ITU febril SEMPRE\n• ≥2 anos: na 1ª ITU febril atípica (germe não-E.coli, falha terapêutica, sepse, palpação massa abdominal/bexiga) ou na 2ª ITU febril\n\nCISTOGRAFIA MICCIONAL (UCM):\n• <2 anos com USG alterada\n• 2 ITUs febris (RVU recorrente)\n• ITU recorrente em qualquer idade\n\nDMSA (cintilografia):\n• Avaliação de cicatriz renal (≥3-6 meses após episódio agudo)\n• Suspeita de RVU de alto grau\n• Considerar em ITU recorrente' },
+
+        { tipo: 'fim', cor: 'alta',
+          texto: 'ALTA com:\n• Receita ATB e analgesia\n• Orientações: hidratação · higiene · não reter urina · constipação (fator de risco)\n• Reavaliação 48-72h (sintomas) e 7 dias (controle)\n• Urocultura de controle NÃO indicada de rotina se melhora clínica\n• Programação de USG/UCM/DMSA conforme indicação' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'COLETA INCORRETA = diagnóstico errado. Saco coletor com cultura tem 26-63% de contaminação. Sempre cateterismo ou jato médio supervisionado.' },
+        { tipo: 'aviso', texto: 'Em lactente febril sem foco, ITU é uma das principais hipóteses (~5-10% das febres). Investigação obrigatória.' },
+        { tipo: 'info', texto: 'Profilaxia antibiótica pós-ITU não tem indicação rotineira — apenas em casos selecionados (RVU alto grau, ITU recorrente refratária).' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 15. MORDEDURA (animal/humana)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-mordedura',
+      nome: 'Mordedura — animal e humana',
+      categoria: 'infeccioso',
+      resumo: 'Limpeza vigorosa + profilaxia antitetânica + profilaxia raiva conforme animal + ATB seletivo',
+      publico: 'PA · UBS · PCDT MS Raiva',
+      fontes: 'PCDT-MS Raiva 2024 · CDC · NICE · IDSA',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com mordedura/arranhadura:\n• Identificar agente (cão, gato, morcego, primata, humano, etc.)\n• Localização anatômica · profundidade · grau de contaminação\n• Tempo da lesão · condições do animal (vacinado, conhecido, em observação)' },
+
+        { tipo: 'acao', cor: 'manejo',
+          texto: '⚠️ TODOS OS CASOS — manejo local imediato:\n\n1. LAVAGEM ABUNDANTE com ÁGUA E SABÃO por 10-15 min\n   (reduz carga viral da raiva em ~90% se feita corretamente)\n2. Irrigação com SF 0,9%\n3. Desbridamento de tecido desvitalizado\n4. Antisséptico tópico (PVP-I, clorexidina)\n5. NÃO SUTURAR FERIDA PROFUNDA — risco de infecção (sutura primária apenas em face por estética, com avaliação cuidadosa)\n6. Curativo aberto · elevação · imobilização se MMs' },
+
+        { tipo: 'decisao', texto: 'PROFILAXIA ANTITETÂNICA — todos os casos\nAvaliar histórico vacinal:',
+          ramos: ['Vacina em dia (≥3 doses, última <5a)', 'Vacinação incompleta ou desconhecida', 'Última dose 5-10 anos atrás'] },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'Vacina em dia (≥3 doses, última <5a)',
+          texto: 'Sem necessidade de reforço — apenas em ferida muito contaminada se >5 anos da última' },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'Vacinação incompleta ou desconhecida',
+          texto: 'COMPLETAR ESQUEMA VACINAL (dT ou DTP/Penta conforme idade)\n+ IMUNOGLOBULINA ANTITETÂNICA 250 UI IM (em ferida contaminada / suja / profunda)' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'Última dose 5-10 anos atrás',
+          texto: 'REFORÇO de dT se ferida limpa\nREFORÇO + IGAT se ferida contaminada / suja / profunda' },
+
+        // PROFILAXIA RAIVA
+        { tipo: 'decisao',
+          texto: 'PROFILAXIA RAIVA — avaliar agente e exposição (PCDT-MS 2024)',
+          ramos: ['CÃO/GATO conhecido e saudável', 'CÃO/GATO desconhecido, errante OU suspeito', 'MORCEGO, primata, animais silvestres', 'Animais herbívoros sem suspeita'] },
+
+        { tipo: 'acao', cor: 'info', condicao: 'CÃO/GATO conhecido e saudável',
+          texto: 'ACIDENTE LEVE (arranhão, mordedura superficial em tronco/membros):\n• OBSERVAR animal por 10 DIAS\n• Vacinar apenas se animal MORRER ou apresentar sintomas\n\nACIDENTE GRAVE (mordedura em face, pescoço, mãos, pés, dedos · profunda · múltipla):\n• Iniciar VACINA antirrábica D0 + D3\n• Continuar D7 e D14/28 SE animal adoecer/morrer\n• Suspender se animal saudável em 10 dias' },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'CÃO/GATO desconhecido, errante OU suspeito',
+          texto: '⚡ INICIAR PROFILAXIA IMEDIATAMENTE\n\nACIDENTE LEVE:\n• Vacina antirrábica D0, D3, D7, D14, D28 (esquema completo)\n\nACIDENTE GRAVE:\n• Vacina + IMUNOGLOBULINA ANTIRRÁBICA HETERÓLOGA 40 UI/kg infiltrada na ferida (resto IM em grupo muscular distante)\n• OU IMUNOGLOBULINA HUMANA 20 UI/kg' },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'MORCEGO, primata, animais silvestres',
+          texto: '🚨 SEMPRE ACIDENTE GRAVE (até prova contrária)\n\nMorcego: QUALQUER CONTATO (mesmo sem mordedura visível, especialmente se encontrado em quarto com criança dormindo) = profilaxia completa\n\n• VACINA antirrábica esquema completo D0, D3, D7, D14, D28\n• IMUNOGLOBULINA ANTIRRÁBICA SEMPRE' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'Animais herbívoros sem suspeita',
+          texto: 'Não há indicação de profilaxia antirrábica em mordedura por:\n• Roedores (rato, camundongo, hamster, cobaia, esquilo)\n• Coelho\nApenas atenção a tétano + ATB conforme contaminação' },
+
+        // ATB PROFILÁTICO
+        { tipo: 'decisao',
+          texto: 'ATB PROFILÁTICO — quando indicar?',
+          ramos: ['ATB indicado', 'ATB não obrigatório'] },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'ATB indicado',
+          texto: 'INDICAÇÕES de ATB profilático/terapêutico:\n• Mordedura em MÃOS / PÉS / FACE / GENITÁLIA\n• Mordedura HUMANA ou de GATO (mais infectam)\n• Ferida PROFUNDA, com tecido desvitalizado\n• Imunossuprimido, asplênico\n• Sutura primária realizada\n• Sinais de infecção já presentes\n• Idade <2 anos com lesão moderada/grave\n\nESCOLHA ATB:\n• 1ª LINHA: AMOXICILINA + CLAVULANATO 50 mg/kg/dia VO 8/8h × 5-7 dias (profilático) ou 7-10 dias (tratamento)\n• ALERGIA: SMX-TMP + CLINDAMICINA · OU doxiciclina (≥8a) + clindamicina\n• Grave/IV: ampicilina-sulbactam OU piperacilina-tazobactam' },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'ATB não obrigatório',
+          texto: 'ALTA com:\n• Profilaxia antitetânica conforme indicado\n• Profilaxia antirrábica conforme indicado\n• Orientações: sinais de infecção (eritema, pus, dor, febre)\n• Retorno em 48-72h para reavaliação\n• Notificação SINAN se acidente por animal de interesse epidemiológico' },
+
+        { tipo: 'fim', cor: 'referencia', condicao: 'ATB indicado',
+          texto: 'ALTA com ATB + curativo + orientações\nNotificação SINAN\nReavaliar em 48-72h\nReferência cirúrgica se ferida complexa em face/mão' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'PROFILAXIA RAIVA salva vidas — a doença, uma vez instalada, é UNIVERSALMENTE FATAL. Não hesitar em iniciar profilaxia em casos suspeitos.' },
+        { tipo: 'aviso', texto: 'MORCEGO: qualquer contato em ambiente fechado (especialmente quarto de criança dormindo) é considerado risco, mesmo sem mordedura visível.' },
+        { tipo: 'info', texto: 'Mordedura HUMANA tem alta taxa de infecção por germes mistos (Eikenella corrodens + anaeróbios) — sempre considerar ATB profilático.' },
+        { tipo: 'info', texto: 'Notificação SINAN obrigatória para acidentes envolvendo animais de interesse à raiva.' }
+      ]
+    }
+  ];
+
+  // ===== INTEGRAÇÃO =====
+  function integrar() {
+    if (!window.FLUXOGRAMAS || !Array.isArray(window.FLUXOGRAMAS)) {
+      setTimeout(integrar, 200);
+      return;
+    }
+    FLUXOGRAMAS_ONDA3.forEach(function(flx){
+      if (window.FLUXOGRAMAS.find(function(f){ return f.id === flx.id; })) return;
+      window.FLUXOGRAMAS.push(flx);
+    });
+    console.log('[FLX v9.3] Onda 3 adicionada: '+FLUXOGRAMAS_ONDA3.length+' (total: '+window.FLUXOGRAMAS.length+')');
+    if (document.getElementById('view-fluxogramas') && typeof window.renderFluxogramas === 'function') {
+      try { window.renderFluxogramas(); } catch(e){}
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', integrar);
+  } else {
+    setTimeout(integrar, 100);
+  }
+  setTimeout(integrar, 700);
+  setTimeout(integrar, 2000);
+})();
+
+</script>
+<!-- INJECT-V93-END -->
+<!-- INJECT-V94-START -->
+<script>
+// ============================================================================
+// FLUXOGRAMAS PEDIÁTRICOS v9.4 — ONDA 4: APS comum + Vulnerabilidade
+//   - Diarreia/desidratação (TRO Plano A/B/C visual)
+//   - Hiperbilirrubinemia neonatal (Bhutani por hora de vida)
+//   - Constipação funcional refratária (ROMA IV)
+//   - Suspeita de maus-tratos (notificação Conselho Tutelar)
+//   - Intoxicação aguda (descontaminação + antídotos)
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const FLUXOGRAMAS_ONDA4 = [
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 16. DIARREIA / DESIDRATAÇÃO — TRO Plano A/B/C
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-diarreia-tro',
+      nome: 'Diarreia aguda — TRO Plano A/B/C',
+      categoria: 'gi',
+      resumo: 'Avaliar grau de desidratação → Plano A (sem) / Plano B (leve-moderada) / Plano C (grave/choque)',
+      publico: 'PA · UBS · APS pediátrica',
+      fontes: 'CAB-MS Saúde da Criança · OMS · AAP · ESPGHAN 2014',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com:\n• ≥3 evacuações líquidas/dia OU\n• Mudança importante do padrão habitual (consistência, frequência, volume)\n• ± Vômitos · febre · cólica · sangue/muco nas fezes' },
+
+        { tipo: 'decisao', texto: 'AVALIAR GRAU DE DESIDRATAÇÃO\n\nSEM DESIDRATAÇÃO: estado geral bom · olhos normais · sede normal · bebe normalmente · prega cutânea desfaz rápido · lágrimas presentes · diurese normal\n\nDESIDRATAÇÃO LEVE-MODERADA (5-9% perda): irrequieto/irritado · olhos fundos · sede ↑ (bebe avidamente) · prega desfaz lentamente · diurese ↓ · mucosas secas · lágrimas escassas · TEC 2-3s\n\nDESIDRATAÇÃO GRAVE / CHOQUE (≥10% perda): letárgico/inconsciente · olhos muito fundos · incapaz de beber · prega desfaz muito lentamente (>2s) · TEC >3s · oligúria/anúria · pulso fraco · taquicardia · hipotensão tardia',
+          ramos: ['SEM desidratação — PLANO A', 'LEVE/MODERADA — PLANO B', 'GRAVE/CHOQUE — PLANO C'] },
+
+        // ━━━ PLANO A ━━━
+        { tipo: 'acao', cor: 'manejo', condicao: 'SEM desidratação — PLANO A',
+          texto: 'PLANO A — domiciliar, prevenir desidratação\n\nLÍQUIDOS APÓS CADA EVACUAÇÃO LÍQUIDA:\n• <1 ano: 50-100 mL após cada evacuação\n• 1-10 anos: 100-200 mL após cada evacuação\n• >10 anos: à vontade (até saciar)\n\nLÍQUIDOS ACEITÁVEIS:\n• SRO (Soro Reidratação Oral) — padrão-ouro\n• Água de coco · sopas leves · chás\n• EVITAR: refrigerantes, sucos açucarados, isotônicos (alta osmolaridade)' },
+
+        { tipo: 'acao', cor: 'info', condicao: 'SEM desidratação — PLANO A',
+          texto: 'MANUTENÇÃO ALIMENTAR:\n• MANTER aleitamento materno (sob livre demanda, aumentar frequência)\n• MANTER alimentação habitual (não suspender, não diluir leite, não restringir)\n• Lactentes com fórmula: manter concentração normal\n• ZINCO 10-20 mg/dia × 10-14 dias (10 mg <6m, 20 mg ≥6m) — reduz duração e gravidade\n• Probióticos podem ajudar (Lactobacillus rhamnosus GG, S. boulardii)' },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'SEM desidratação — PLANO A',
+          texto: 'ALTA com orientações:\n\nSINAIS DE ALERTA — retornar imediatamente:\n• Vômitos persistentes · recusa alimentar\n• Sangue nas fezes · febre alta persistente\n• Piora da diarreia · sinais de desidratação\n• Sonolência/letargia\n• Diurese ausente >6-8h\n\nNÃO PRESCREVER:\n✗ Antieméticos rotineiramente (exceção: ondansetrona em vômito que impede TRO em PA)\n✗ Antidiarreicos (loperamida) em <6 anos · em qualquer idade se sangue/febre\n✗ Antibióticos sem indicação clara' },
+
+        // ━━━ PLANO B ━━━
+        { tipo: 'acao', cor: 'atencao', condicao: 'LEVE/MODERADA — PLANO B',
+          texto: 'PLANO B — TRO supervisionada na UBS/PA\n\nVOLUME: 75 mL/kg de SRO em 4 HORAS\nOferecer EM PEQUENOS VOLUMES (5-10 mL) a cada 5-10 min\n(~5 mL/kg a cada 15 min)\n\nVômito ocasional: aguardar 10 min · reiniciar mais lento\nVômito persistente (>4/hora ou recusa):\n→ ONDANSETRONA VO/SL 0,15 mg/kg (máx 8 mg) dose única — facilita TRO\n→ OU SNG: gotejamento contínuo 20 mL/kg/h de SRO\n→ Reavaliar em 1-2h' },
+
+        { tipo: 'observa', condicao: 'LEVE/MODERADA — PLANO B',
+          texto: 'REAVALIAR APÓS 4 HORAS:\n\nSEM SINAIS DE DESIDRATAÇÃO → Plano A (domicílio)\nDESIDRATAÇÃO MANTIDA → repetir Plano B (mais 4h)\nDESIDRATAÇÃO PIORANDO → Plano C\nINCAPACIDADE TRO (vômitos persistentes mesmo com ondansetrona) → SNG ou EV' },
+
+        { tipo: 'acao', cor: 'info', condicao: 'LEVE/MODERADA — PLANO B',
+          texto: 'MANTER aleitamento materno DURANTE a TRO\nNão suspender alimentação · oferecer assim que aceitar VO\nApós resolução: zinco 10-20 mg/dia × 10-14 dias' },
+
+        // ━━━ PLANO C ━━━
+        { tipo: 'acao', cor: 'urgente', condicao: 'GRAVE/CHOQUE — PLANO C',
+          texto: '🚨 PLANO C — Reposição endovenosa imediata\n\nACESSO VENOSO (2 acessos calibrosos) ou INTRAÓSSEO em <90s se difícil\n\nFASE DE EXPANSÃO:\n• <1 ano: 30 mL/kg em 1 hora · depois 70 mL/kg em 5 horas (TOTAL 100 mL/kg em 6h)\n• ≥1 ano: 30 mL/kg em 30 min · depois 70 mL/kg em 2,5h (TOTAL 100 mL/kg em 3h)\n\nSF 0,9% ou Ringer Lactato (preferível pelo equilíbrio iônico)\n\nSE CHOQUE: bolus 20 mL/kg em 5-10 min · repetir até 60 mL/kg se necessário\nApós 60 mL/kg sem resposta → considerar vasoativo + suspeitar outra causa' },
+
+        { tipo: 'observa', condicao: 'GRAVE/CHOQUE — PLANO C',
+          texto: 'REAVALIAÇÃO CONTÍNUA:\n• Pulso · TEC · estado de consciência · diurese\n• Eletrólitos (Na+, K+, Cl-, bicarbonato) — corrigir distúrbios\n• Glicemia capilar (corrigir hipoglicemia)\n\nQuando começar a aceitar VO e estável:\n→ Iniciar TRO em paralelo · transição gradual\n→ Manter aleitamento materno se possível' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'GRAVE/CHOQUE — PLANO C',
+          texto: '🚑 INTERNAÇÃO em todos os casos do Plano C\n• Distúrbios eletrolíticos podem necessitar UTI\n• Hipernatremia (Na >150): corrigir LENTAMENTE (não >0,5 mEq/L/h) — risco de edema cerebral\n• Hiponatremia <125 sintomática: SF 3% 3-5 mL/kg\n• Hipocalemia <3: reposição cuidadosa\n• Acidose metabólica grave: bicarbonato apenas se pH <7,1 ou bicarbonato <8' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'EVITAR refrigerantes, isotônicos esportivos e sucos açucarados em diarreia — alta osmolaridade piora a diarreia osmótica. SRO é padrão-ouro.' },
+        { tipo: 'aviso', texto: 'NÃO suspender alimentação. Não diluir leite. Não restringir alimentos. Manter dieta habitual reduz duração da diarreia.' },
+        { tipo: 'info', texto: 'Zinco 10-20 mg/dia × 10-14 dias reduz duração e gravidade da diarreia em criança (recomendação OMS/UNICEF).' },
+        { tipo: 'info', texto: 'Diarreia com sangue/muco + febre alta → considerar disenteria bacteriana (Shigella, Salmonella, ECEH) — coprocultura e considerar ATB seletivo (ciprofloxacino, ceftriaxona).' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 17. HIPERBILIRRUBINEMIA NEONATAL (Bhutani)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-hiperbili-rn',
+      nome: 'Hiperbilirrubinemia neonatal',
+      categoria: 'neonatal',
+      resumo: 'Bilirrubina total por hora de vida (Bhutani) → fototerapia / exsanguineotransfusão',
+      publico: 'Maternidade · PA · UBS de seguimento',
+      fontes: 'AAP 2022 (atualização) · Bhutani 1999 · SBP · NICE',
+      passos: [
+        { tipo: 'inicio', texto: 'Recém-nascido com icterícia clínica:\n• Início e progressão (sentido cefalocaudal)\n• Hora exata de nascimento e hora atual (idade pós-natal)\n• Idade gestacional (IG)\n• Fatores de risco' },
+
+        { tipo: 'decisao', texto: 'IDENTIFICAR FATORES DE RISCO PARA NEUROTOXICIDADE\n(modifica curva de Bhutani)\n\nFATORES MAIORES:\n• Doença hemolítica isoimune (incompatibilidade ABO, Rh, antígenos menores)\n• Deficiência G6PD\n• Asfixia perinatal · acidose · sepse · meningite\n• Albumina <3 g/dL\n• Hipotermia · letargia · instabilidade\n• Prematuridade <38 semanas\n\nSEM fatores → curva risco baixo\nCOM fatores → curva risco médio/alto',
+          ramos: ['SEM fatores', 'COM fatores'] },
+
+        { tipo: 'acao', cor: 'info',
+          texto: 'AVALIAÇÃO INICIAL — todos os RN com icterícia:\n\n• Bilirrubina TOTAL e direta (TcB ou sérica)\n• Hemograma · reticulócitos\n• Tipagem sanguínea mãe e RN (ABO, Rh)\n• Coombs direto\n• Esfregaço sanguíneo (esquistócitos sugerem hemólise)\n\nSe icterícia precoce (<24h) ou progressão muito rápida:\n• Considerar G6PD, eletroforese Hb, função hepática\n• Avaliar sepse se sintomas\n\nA TcB (bilirrubina transcutânea) é screening — confirmar com sérica se ≥15 mg/dL ou alta proximidade do limiar de fototerapia' },
+
+        // CURVA DE BHUTANI
+        { tipo: 'decisao',
+          texto: 'NOMOGRAMA DE BHUTANI / AAP 2022 (BST por hora de vida + IG)\n\nValores INDICATIVOS de FOTOTERAPIA (aproximados, RN ≥38 sem e sem fatores risco):\n• 24h: ≥15 mg/dL\n• 36h: ≥17 mg/dL\n• 48h: ≥19 mg/dL\n• 72h: ≥21 mg/dL\n• 96h: ≥22 mg/dL\n\nLimiares são ~3-5 mg/dL MAIS BAIXOS se:\n• IG <38 sem (especialmente 35-37)\n• Presença de fatores de risco\n\nUsar curva AAP 2022 (gráfico) — mais precisa que faixas tabulares',
+          ramos: ['BT abaixo da curva — observação', 'BT na faixa de fototerapia', 'BT na faixa de exsanguíneo'] },
+
+        // OBSERVAÇÃO
+        { tipo: 'acao', cor: 'manejo', condicao: 'BT abaixo da curva — observação',
+          texto: 'Manter aleitamento materno frequente (8-12×/dia)\nReavaliar BT em 12-24h\nMonitorar progressão clínica\nNÃO indicar fototerapia preventiva sem critério' },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'BT abaixo da curva — observação',
+          texto: 'ALTA com orientações:\n• Aleitamento sob livre demanda · estimular sucção\n• Sinais de alerta: piora da icterícia, recusa alimentar, sonolência excessiva, choro estridente, hipertonia\n• Reavaliação ambulatorial em 24-48h\n• Garantir consulta de puericultura precoce (3-5 dias de vida)' },
+
+        // FOTOTERAPIA
+        { tipo: 'acao', cor: 'atencao', condicao: 'BT na faixa de fototerapia',
+          texto: 'FOTOTERAPIA intensiva (≥30 µW/cm²/nm)\n• Luz azul especial (peak 450 nm)\n• Distância 30-50 cm do RN\n• Maior área corporal exposta possível (RN nu, apenas com proteção ocular e genital)\n• Trocar de posição a cada 2-3h (otimizar exposição)\n\nMANTER ALEITAMENTO:\n• Frequente (a cada 2-3h) · pode ser pausado durante mamadas\n• NÃO suspender amamentação por icterícia rotineiramente\n• Suplementar com leite ordenhado ou fórmula só se desidratação ou perda ponderal >10%' },
+
+        { tipo: 'observa', condicao: 'BT na faixa de fototerapia',
+          texto: 'MONITORAR:\n• BT a cada 4-6h após início (resposta esperada: queda ~2-3 mg/dL em 4-6h)\n• Hidratação · peso · diurese\n• Temperatura (risco hipertermia)\n• Suspender quando BT 2-3 mg/dL abaixo do limiar\n\nSe SEM RESPOSTA em 4-6h ou BT em ascensão:\n• Investigar causa (hemólise persistente)\n• Considerar IGIV se doença hemolítica isoimune\n• Reavaliar para exsanguíneo' },
+
+        // EXSANGUÍNEO
+        { tipo: 'acao', cor: 'urgente', condicao: 'BT na faixa de exsanguíneo',
+          texto: '🚨 EXSANGUINEOTRANSFUSÃO — emergência\n\nINDICAÇÕES IMEDIATAS:\n• BT acima da curva de exsanguíneo (≥25 mg/dL em RN termo sem fatores)\n• Sinais de encefalopatia bilirrubínica (letargia, hipotonia, choro estridente, hipertonia, opistótono, convulsão)\n\n• Comunicar regulação/UTI neonatal\n• Manter fototerapia intensiva enquanto aguarda\n• IGIV 0,5-1 g/kg IV se doença hemolítica isoimune (pode evitar exsanguíneo)' },
+
+        { tipo: 'fim', cor: 'internar', condicao: 'BT na faixa de exsanguíneo',
+          texto: '🚑 UTI NEONATAL imediata\nExsanguinotransfusão isovolumétrica com sangue compatível\nMonitorização cardíaca, eletrolítica e hematológica contínua\nReavaliar BT após procedimento · pode necessitar de novas trocas' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'ICTERÍCIA <24h DE VIDA é SEMPRE patológica até prova contrária. Investigar imediatamente (hemólise isoimune, infecção, defeito enzimático).' },
+        { tipo: 'aviso', texto: 'Encefalopatia bilirrubínica aguda → KERNICTERUS irreversível. Sinais: letargia, hipotonia → hipertonia, opistótono, choro estridente, convulsão. EMERGÊNCIA.' },
+        { tipo: 'info', texto: 'Aleitamento materno NÃO causa kernicterus. Quando bem manejado, o aleitamento é PROTETOR contra desidratação que agravaria a icterícia.' },
+        { tipo: 'info', texto: 'Hiperbilirrubinemia direta (>20% do total) NÃO responde a fototerapia — investigar colestase, atresia biliar (urgente), sepse, hepatite.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 18. CONSTIPAÇÃO FUNCIONAL REFRATÁRIA
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-constipacao',
+      nome: 'Constipação funcional crônica/refratária',
+      categoria: 'gi',
+      resumo: 'ROMA IV → desimpactação → manutenção com PEG 3350 → educação familiar',
+      publico: 'UBS · APS · ambulatório de seguimento',
+      fontes: 'NASPGHAN/ESPGHAN 2014 · Critérios ROMA IV · SBP · AAP',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com:\n• Fezes endurecidas, dolorosas, em cíbalos\n• Esforço evacuatório · postura retentiva\n• Frequência reduzida (<3×/sem) · escape fecal (encoprese)\n• Massa fecal palpável no abdome\n• Dor abdominal crônica · perda de apetite' },
+
+        { tipo: 'decisao', texto: 'CRITÉRIOS ROMA IV (≥2 itens por ≥1 mês em criança ≥4 anos ou ≥4 sem em <4a):\n\n① ≤2 evacuações/semana\n② ≥1 episódio de incontinência fecal por semana (após controle esfincteriano)\n③ Comportamento retentivo voluntário\n④ Defecação dolorosa ou fezes endurecidas\n⑤ Massa fecal grande no reto\n⑥ Fezes de grande calibre que entopem privada\n\nDESCARTAR causas orgânicas: doença de Hirschsprung (atraso <48h de mecônio, ampola vazia), hipotireoidismo, doença celíaca, alergia a leite, fibrose cística',
+          ramos: ['CONSTIPAÇÃO FUNCIONAL confirmada', 'BANDEIRAS VERMELHAS — investigar orgânica'] },
+
+        // BANDEIRAS VERMELHAS
+        { tipo: 'acao', cor: 'atencao', condicao: 'BANDEIRAS VERMELHAS — investigar orgânica',
+          texto: 'BANDEIRAS VERMELHAS (referir / investigar):\n• Atraso na evacuação do mecônio (>48h)\n• Início <1 mês de vida\n• Distensão abdominal importante / massa palpável\n• Ampola retal vazia · estenose anal\n• Falência de crescimento\n• Sangue não associado a fissura\n• Sintomas neurológicos · paresia\n• Atraso desenvolvimento\n• Anomalias da região sacral / espinha bífida oculta\n• História familiar de doença de Hirschsprung\n\nInvestigar: hemograma, TSH, anticorpos celíaca, eletrólitos, biópsia retal (Hirschsprung), enema com bário (se Hirschsprung)' },
+
+        // FUNCIONAL
+        { tipo: 'decisao', condicao: 'CONSTIPAÇÃO FUNCIONAL confirmada',
+          texto: 'AVALIAR FASE DE TRATAMENTO\n\nIMPACTAÇÃO FECAL: massa fecal palpável grande, escape contínuo, abdome distendido, dor → necessita DESIMPACTAÇÃO PRIMEIRA\nSEM IMPACTAÇÃO: iniciar manutenção direto',
+          ramos: ['COM impactação fecal', 'SEM impactação — manutenção'] },
+
+        // DESIMPACTAÇÃO
+        { tipo: 'acao', cor: 'manejo', condicao: 'COM impactação fecal',
+          texto: 'FASE 1 — DESIMPACTAÇÃO (3-6 dias):\n\nORAL (preferível):\n• POLIETILENOGLICOL (PEG 3350) sem eletrólitos:\n  - 1-1,5 g/kg/dia (máx 100 g/dia) VO × 3-6 dias até fezes claras\n  - Dissolver em água/suco · dividir em 1-2 tomadas/dia\n\nALTERNATIVA RETAL:\n• Bisacodil supositório pediátrico 5 mg 1×/dia × 1-3 dias\n• OU glicerina supositório (lactente) 1×/dia × 1-3 dias\n• OU enema com sorbitol/glicerina (somente em casos selecionados, em PA)\n\nEvitar enemas em casa rotineiramente — risco de trauma local e desconforto' },
+
+        // MANUTENÇÃO
+        { tipo: 'acao', cor: 'manejo', condicao: 'SEM impactação — manutenção',
+          texto: 'FASE 2 — MANUTENÇÃO (mínimo 2 meses, geralmente 6-12 meses):\n\n1ª LINHA: POLIETILENOGLICOL 3350 (PEG 3350) sem eletrólitos:\n• Dose inicial: 0,4 g/kg/dia (faixa 0,2-0,8 g/kg/dia) VO 1×/dia\n• Titular conforme efeito: aumentar até 1-2 evacuações/dia, fezes pastosas\n• Bem tolerado, seguro a longo prazo\n\n2ª LINHA / ALTERNATIVAS:\n• Lactulose 1-2 mL/kg/dia VO 1-2×/dia\n• Hidróxido de magnésio · óleo mineral (>2a, cuidado aspiração)\n\nNÃO USAR rotineiramente: lubiprostona, linaclotida (não-aprovados pediatria), estimulantes contínuos (bisacodil/sene apenas resgate de curto prazo)' },
+
+        { tipo: 'acao', cor: 'info',
+          texto: 'MEDIDAS NÃO-FARMACOLÓGICAS (todas as fases):\n\nALIMENTARES:\n• Hidratação adequada (água conforme idade)\n• Fibras: frutas com casca, vegetais, cereais integrais, leguminosas\n• EVITAR excesso de leite de vaca em <2 anos (causa frequente)\n\nCOMPORTAMENTAIS:\n• Treino do toalete: 5-10 min após principais refeições (aproveita reflexo gastrocólico)\n• Banco de apoio para os pés (postura adequada)\n• Não punir escapes · valorizar tentativas\n• Diário de evacuações\n\nEDUCAÇÃO FAMILIAR:\n• Explicar o ciclo retenção-medo-retenção\n• Tratamento é LONGO (meses) — não desistir cedo\n• Encoprese é involuntária — NÃO culpar a criança' },
+
+        { tipo: 'observa',
+          texto: 'SEGUIMENTO:\n• Reavaliação em 2-4 semanas inicialmente\n• Mensal nos primeiros 3 meses\n• Trimestral após estabilidade\n\nDesmame: APÓS mínimo 1 mês de evacuações regulares · sem dor · sem escapes\n→ Reduzir 25% da dose a cada 2-4 semanas\n→ Se recidiva → voltar dose anterior + estender tempo' },
+
+        { tipo: 'fim', cor: 'alta',
+          texto: 'ALTA com plano escrito:\n• Posologia de PEG\n• Calendário de evacuações\n• Medidas comportamentais\n• Sinais de retorno antecipado (impactação, dor intensa, vômitos)\n• Próxima consulta marcada' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Tratar PRECOCEMENTE — ciclo de retenção crônica leva a megacólon funcional, encoprese e distúrbios psicossociais.' },
+        { tipo: 'info', texto: 'PEG 3350 é 1ª linha pediátrica (NASPGHAN) — superior a lactulose em eficácia e tolerabilidade. Seguro mesmo em uso prolongado.' },
+        { tipo: 'info', texto: 'Bandeiras vermelhas em <1 ano: SEMPRE investigar Hirschsprung. Atraso na evacuação do mecônio >48h é o sinal mais sensível.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 19. SUSPEITA DE MAUS-TRATOS
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-maus-tratos',
+      nome: 'Suspeita de maus-tratos contra criança/adolescente',
+      categoria: 'vulnerabilidade',
+      resumo: 'Reconhecer sinais → garantir proteção imediata → notificação obrigatória SINAN + Conselho Tutelar',
+      publico: 'PA · UBS · qualquer profissional de saúde',
+      fontes: 'ECA Lei 8069/90 · Lei 13.431/2017 · Notificação SINAN · SBP · MS Linha de Cuidado Violência',
+      passos: [
+        { tipo: 'inicio', texto: 'SUSPEITA pode surgir a partir de:\n• Lesões incompatíveis com história ou com fase de desenvolvimento\n• História mutável, contraditória ou inverossímil\n• Atraso na procura por atendimento\n• Comportamento incongruente (criança apática ou aterrorizada)\n• Múltiplas idas a serviços de saúde\n• Pais hostis, evasivos, não interessados\n• Relatos do paciente, familiares ou comunidade' },
+
+        { tipo: 'decisao', texto: 'IDENTIFICAR TIPO DE VIOLÊNCIA\n\nFÍSICA: hematomas/queimaduras em locais incomuns (couro cabeludo, glúteos, dorso, pavilhão auricular, faces internas das coxas), padrão de objeto (cinto, mão, cigarro), fraturas em diferentes estágios, queimaduras "em luva" ou "em bota"\n\nSEXUAL: lesões genitais/anais, IST inexplicada, gestação adolescente, conhecimento sexual inadequado à idade, comportamento sexualizado precoce\n\nNEGLIGÊNCIA: desnutrição, falta de higiene crônica, faltoso a consultas/vacinas, atraso desenvolvimento sem causa orgânica, exposição a riscos\n\nPSICOLÓGICA: criança ansiosa, depressiva, com regressão de marcos, baixa autoestima, comportamento agressivo ou retraído\n\nMUNCHAUSEN POR PROCURADOR: doenças/sintomas recorrentes inexplicáveis, mãe/cuidador "facilita" exames, melhora com afastamento do cuidador',
+          ramos: ['SINAIS PRESENTES — abordar', 'Sem sinais — manter vigilância'] },
+
+        // SEM SINAIS
+        { tipo: 'fim', cor: 'alta', condicao: 'Sem sinais — manter vigilância',
+          texto: 'Manter vigilância em consultas subsequentes\nFortalecer vínculo com a família\nObservar fatores de risco familiares (uso de álcool/drogas, violência intrafamiliar, vulnerabilidade social)\nReferir a CRAS se necessário (proteção social básica)' },
+
+        // SINAIS PRESENTES
+        { tipo: 'acao', cor: 'urgente', condicao: 'SINAIS PRESENTES — abordar',
+          texto: '⚡ ATENDIMENTO IMEDIATO — proteção e cuidado:\n\n1. ACOLHIMENTO em ambiente reservado, com profissional capacitado\n2. Atender lesões clínicas conforme gravidade\n3. NÃO confrontar agressor presumido na frente da criança\n4. Coletar HISTÓRIA detalhada (separadamente da criança e do cuidador se possível)\n5. EXAME FÍSICO completo, com criança vestida se possível, ou em parcelas\n6. DESCRIÇÃO MINUCIOSA das lesões (localização, formato, tamanho, estágio de cicatrização)\n7. FOTOGRAFIAS médicas com consentimento e propósito clínico\n8. Documentar TEXTUALMENTE o que a criança disse (entre aspas)' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'SINAIS PRESENTES — abordar',
+          texto: 'INVESTIGAÇÃO COMPLEMENTAR conforme suspeita:\n\nFÍSICA:\n• Inquérito esquelético (RX corpo inteiro) se <2a com suspeita de abuso físico\n• Fundoscopia (hemorragias retinianas em "shaken baby")\n• TC crânio se sinais neurológicos\n• Hemograma, coagulograma (afastar coagulopatia)\n• Função hepática/pancreática (lesão visceral)\n\nSEXUAL (referenciar a serviço especializado):\n• Coleta de evidências em até 72h se possível (Programa de Atendimento à Violência Sexual)\n• Profilaxias: HIV (PEP em 72h), ISTs, gravidez, hepatite B (vacina + IGHB)\n• Sorologias basais (HIV, sífilis, hepatites)' },
+
+        { tipo: 'acao', cor: 'urgente',
+          texto: '🚨 NOTIFICAÇÃO OBRIGATÓRIA (Lei 8069/90 ECA + Lei 13.431/17):\n\nQUEM notifica: QUALQUER profissional de saúde que SUSPEITAR (não precisa confirmar)\n\nPARA ONDE:\n• Ficha SINAN de notificação de violência (24h)\n• Conselho Tutelar do município\n• Em violência sexual: também à autoridade policial / IML\n• Em risco iminente de morte: Conselho Tutelar + Ministério Público (24h)\n\nNÃO É OPÇÃO — é obrigação. Omissão configura crime (CP art. 13 §2°).' },
+
+        { tipo: 'acao', cor: 'manejo',
+          texto: 'PLANO DE PROTEÇÃO IMEDIATA:\n\nSe RISCO IMINENTE:\n• INTERNAR para proteção (lesões + segurança)\n• Comunicar Conselho Tutelar imediatamente\n• Considerar acolhimento institucional em conjunto com Conselho\n\nSe sem risco iminente:\n• Plano de segurança com familiar protetor identificado\n• Comunicação com Conselho Tutelar para acompanhamento\n• Rede de apoio (CRAS, CREAS, UBS)\n• Acompanhamento psicossocial · psicoterapia infantil' },
+
+        { tipo: 'observa',
+          texto: 'SEGUIMENTO INTERSETORIAL:\n\n• UBS: acompanhamento clínico e desenvolvimento\n• CREAS: proteção social especializada\n• Saúde Mental (CAPSi): suporte psicológico\n• Escola: monitoramento, articulação intersetorial\n• Conselho Tutelar: acompanhamento da medida protetiva\n• Ministério Público / Vara da Infância: medidas judiciais quando indicadas\n\nNotificação NÃO É UM EVENTO ISOLADO — é o início de uma rede de cuidado.' },
+
+        { tipo: 'fim', cor: 'referencia',
+          texto: 'NÃO ALTA isolada — sempre com plano de proteção e referência\n\nRegistro detalhado no prontuário (pode ser usado em juízo)\nComunicação clara com Conselho Tutelar (não apenas o protocolo, mas conversa direta quando possível)\nAcompanhamento longitudinal pela equipe de saúde' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'NOTIFICAÇÃO É OBRIGAÇÃO LEGAL. Não é uma "decisão moral" do profissional. Pela Lei 8069/90 (ECA), omissão configura crime para o profissional de saúde.' },
+        { tipo: 'aviso', texto: 'NÃO precisa de CONFIRMAÇÃO para notificar — SUSPEITA já é suficiente. A investigação é tarefa do Conselho Tutelar, da Polícia e do MP.' },
+        { tipo: 'info', texto: '"Síndrome do bebê sacudido" (shaken baby): lactente com letargia, irritabilidade, convulsão, vômitos, hemorragia retiniana, hematoma subdural, sem trauma compatível na história. Mortalidade alta.' },
+        { tipo: 'info', texto: 'Em violência sexual, a janela de coleta de evidências forenses é de 72h. NÃO BANHAR a criança antes do exame. Manter roupas em saco de papel (não plástico).' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 20. INTOXICAÇÃO AGUDA
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-intoxicacao',
+      nome: 'Intoxicação aguda pediátrica',
+      categoria: 'vulnerabilidade',
+      resumo: 'Identificação → suporte ABC → descontaminação → antídoto específico → CIATox',
+      publico: 'PA · PS · contato com CIATox 0800-722-6001',
+      fontes: 'CIATox 2024 · Sinitox · AAP · Goldfrank Toxicologic Emergencies',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com história ou suspeita de:\n• Ingestão acidental (mais comum em <5 anos)\n• Intoxicação intencional (adolescente — sempre considerar TENTATIVA DE SUICÍDIO)\n• Exposição a tóxicos do ambiente\n• Erro de dosagem medicamentosa\n• Quadro clínico inexplicado de início agudo' },
+
+        { tipo: 'acao', cor: 'urgente',
+          texto: '🚨 SUPORTE INICIAL — ABC sempre primeiro\n\nA — Via aérea: pérvia? proteger se ↓ consciência\nB — Respiração: oxigenação? IOT se necessário\nC — Circulação: acesso venoso · monitor · ECG · glicemia capilar\nD — Estado neurológico: GCS, pupilas (mióticas/midriáticas), tônus\n\nCOLETAR — sempre que possível:\n• Substância ingerida (rótulo, frasco, bula)\n• Tempo da ingestão\n• Quantidade estimada\n• Sintomas progressivos\n• Tratamentos já realizados\n• Trazer FRASCO da substância para o serviço' },
+
+        { tipo: 'acao', cor: 'info',
+          texto: '📞 CONTATO CIATox — 0800-722-6001 (24h)\n\nOrientação especializada para qualquer suspeita:\n• Identificação do agente · risco · manejo específico\n• Antídoto disponível · onde obter\n• Conduta detalhada por substância\n\nUSO PRECOCE do telefone do CIATox é mandatório e gratuito.\nConsultar SEMPRE — mesmo em casos "leves".' },
+
+        { tipo: 'decisao', texto: 'IDENTIFICAR SÍNDROME / AGENTE\n\nSÍNDROMES CLÁSSICAS (toxidromes):\n\nCOLINÉRGICA: miose, sialorreia, lacrimejamento, broncoespasmo, bradicardia, fasciculação → organofosforado, carbamato\n\nANTICOLINÉRGICA: midríase, mucosa seca, pele seca/quente/vermelha, taquicardia, ↓ peristalse, retenção urinária, alteração mental → atropina, antihistamínicos, antidepressivos tricíclicos, plantas (estramônio)\n\nSIMPATICOMIMÉTICA: midríase, sudorese, taquicardia, hipertensão, hipertermia, agitação → cocaína, anfetaminas, MDMA\n\nOPIOIDE: miose, depressão respiratória, hipotensão, sonolência/coma → morfina, heroína, tramadol\n\nSEDATIVO-HIPNÓTICO: sonolência/coma, hipotensão, depressão respiratória, miose ou midríase → benzodiazepínicos, álcool, barbitúricos',
+          ramos: ['Síndrome ou agente IDENTIFICADO', 'Não identificado — manejo de suporte'] },
+
+        // DESCONTAMINAÇÃO
+        { tipo: 'acao', cor: 'manejo',
+          texto: 'DESCONTAMINAÇÃO — conforme via:\n\nCUTÂNEA: remover roupas · lavar pele com água e sabão (proteger profissional)\nOCULAR: irrigação ocular abundante com SF 0,9% por 15-30 min\nINALATÓRIA: remover do ambiente · O₂ suplementar\n\nGASTROINTESTINAL — quando indicada:\n\n• CARVÃO ATIVADO 1 g/kg VO/SNG (preferível em <1-2h após ingestão)\n  Útil para a maioria dos medicamentos · ineficaz para: álcool, lítio, metais pesados, ácidos, álcalis, hidrocarbonetos\n  CONTRAINDICADO: rebaixamento sem proteção VA, íleo, corrosivo, vômito incoercível\n\n• LAVAGEM GÁSTRICA: raramente indicada hoje · apenas <60 min, dose maciça, agente sem antídoto, sem outra opção\n\n• ÊMESE PROVOCADA (xarope de ipeca): NÃO É MAIS RECOMENDADA\n\n• IRRIGAÇÃO INTESTINAL TOTAL: lítio, ferro, comprimidos de liberação prolongada' },
+
+        // ANTÍDOTOS COMUNS
+        { tipo: 'acao', cor: 'urgente', condicao: 'Síndrome ou agente IDENTIFICADO',
+          texto: 'ANTÍDOTOS ESPECÍFICOS COMUNS:\n\nPARACETAMOL → N-acetilcisteína 150 mg/kg em 1h + 50 mg/kg em 4h + 100 mg/kg em 16h IV (esquema 21h)\n  Nomograma de Rumack-Matthew para indicação >4h após ingestão\n\nOPIOIDES → Naloxona 0,01-0,1 mg/kg IV/IM/SC (lactente) · 0,1-2 mg adulto · repetir a cada 2-3 min\n\nBENZODIAZEPÍNICOS → Flumazenil 0,01 mg/kg IV (cuidado: convulsão em uso crônico)\n\nORGANOFOSFORADO → Atropina 0,05-0,1 mg/kg IV (até secar secreções) + Pralidoxima 20-40 mg/kg IV\n\nFERRO → Deferoxamina 15 mg/kg/h IV se ferro sérico >500 mcg/dL\n\nMETOTREXATO → Leucovorin (folínico) 10-15 mg IV 6/6h\n\nDIGITÁLICOS → Fab antidigital (raro em pediatria)\n\nMETANOL/ETILENOGLICOL → Fomepizol OU etanol IV + hemodiálise\n\nCIANETO → Hidroxicobalamina 70 mg/kg IV + tiossulfato\n\nMETEMOGLOBINEMIA → Azul de metileno 1-2 mg/kg IV em 5 min' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'Não identificado — manejo de suporte',
+          texto: 'SUPORTE DE SUPORTE — sem antídoto identificado:\n\n• Manter ABCs · monitorização contínua\n• Reposição volêmica conforme estado\n• Correção de eletrólitos / glicemia / temperatura\n• Tratar convulsão (BZD)\n• Tratar arritmia\n• Cuidados com pele/mucosas se corrosivo\n\n• Coleta de SANGUE TOXICOLÓGICO em tubo conservado (para análise posterior)\n• Coleta de URINA (screening de drogas)\n• Manter informação documentada' },
+
+        { tipo: 'observa',
+          texto: 'OBSERVAÇÃO MÍNIMA por tempo conforme agente:\n• Maioria das substâncias: 4-6h após ingestão\n• Liberação prolongada / opioides: 12-24h\n• Antidepressivos tricíclicos: 24h (risco arritmia tardia)\n• Paracetamol: aguardar nível em 4h pós-ingestão\n\nCONSIDERAR:\n• Avaliação psiquiátrica em adolescente (sempre tratar como tentativa de suicídio até prova contrária)\n• Conselho Tutelar em criança pequena com ingestão acidental (avaliar contexto familiar)\n• Notificação SINAN para intoxicação\n• Investigar acesso a medicamentos / venenos no ambiente' },
+
+        { tipo: 'fim', cor: 'internar',
+          texto: '🚑 INTERNAR se:\n• Agente potencialmente letal\n• Sintomas persistentes\n• Tentativa de suicídio (avaliação psi mandatória)\n• Necessidade de antídoto prolongado\n• Idade <5 anos com ingestão de risco' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'CIATox: 0800-722-6001 (24h, gratuito) — usar SEMPRE. Orientação especializada salva tempo e vidas.' },
+        { tipo: 'aviso', texto: 'Adolescente com intoxicação intencional = TENTATIVA DE SUICÍDIO até prova contrária. Avaliação psiquiátrica é mandatória antes da alta, mesmo se assintomático.' },
+        { tipo: 'aviso', texto: 'NUNCA induzir êmese em casa. Xarope de ipeca foi descontinuado. Pode piorar quadro (aspiração, lesão esofágica em corrosivo).' },
+        { tipo: 'info', texto: 'Em criança pequena, intoxicação acidental "isolada" deve ser investigada como possível negligência ou risco ambiental. Conselho Tutelar quando recorrente.' }
+      ]
+    }
+  ];
+
+  // ===== INTEGRAÇÃO =====
+  function integrar() {
+    if (!window.FLUXOGRAMAS || !Array.isArray(window.FLUXOGRAMAS)) {
+      setTimeout(integrar, 200);
+      return;
+    }
+    FLUXOGRAMAS_ONDA4.forEach(function(flx){
+      if (window.FLUXOGRAMAS.find(function(f){ return f.id === flx.id; })) return;
+      window.FLUXOGRAMAS.push(flx);
+    });
+    console.log('[FLX v9.4] Onda 4 adicionada: '+FLUXOGRAMAS_ONDA4.length+' (total: '+window.FLUXOGRAMAS.length+')');
+    if (document.getElementById('view-fluxogramas') && typeof window.renderFluxogramas === 'function') {
+      try { window.renderFluxogramas(); } catch(e){}
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', integrar);
+  } else {
+    setTimeout(integrar, 100);
+  }
+  setTimeout(integrar, 700);
+  setTimeout(integrar, 2000);
+})();
+
+</script>
+<!-- INJECT-V94-END -->
+<!-- INJECT-V95-START -->
+<script>
+// ============================================================================
+// FLUXOGRAMAS PEDIÁTRICOS v9.5 — ONDA 5: Sentinela / quadros graves específicos
+//   - Cetoacidose Diabética (CAD) pediátrica
+//   - Anemia falciforme — Crise Vaso-Oclusiva (CVO)
+//   - Convulsão neonatal
+//   - Apneia de prematuro
+//   - Síndrome nefrótica em crise
+// ============================================================================
+
+(function(){
+  'use strict';
+
+  const FLUXOGRAMAS_ONDA5 = [
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 21. CETOACIDOSE DIABÉTICA (CAD) PEDIÁTRICA
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-cad',
+      nome: 'Cetoacidose Diabética (CAD) pediátrica',
+      categoria: 'emergencia',
+      resumo: 'Hidratação cautelosa → insulina ≥1h após hidratação → reposição de K+ → vigilância de edema cerebral',
+      publico: 'PA · PS · UTI pediátrica · ISPAD 2022',
+      fontes: 'ISPAD 2022 (Consensus Guidelines) · SBD · AAP · SBP',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com:\n• Hiperglicemia (geralmente >200 mg/dL)\n• Cetonemia/cetonúria positiva\n• Acidose metabólica: pH <7,3 OU HCO₃ <15-18 mEq/L\n\nApresentação típica: poliúria, polidipsia, perda ponderal, vômitos, dor abdominal, hálito cetônico, hiperpneia (Kussmaul), desidratação, alteração mental\n\nMaioria dos casos = primodescompensação (diabetes recém-diagnosticado) ou má adesão' },
+
+        { tipo: 'decisao', texto: 'CLASSIFICAR GRAVIDADE (ISPAD 2022)\n\nLEVE: pH 7,2-7,3 · HCO₃ 10-15 · cetonemia presente · paciente alerta\nMODERADA: pH 7,1-7,2 · HCO₃ 5-10 · vômitos · letargia\nGRAVE: pH <7,1 · HCO₃ <5 · alteração mental · choque iminente\n\nDesidratação estimada:\n• Leve: 3-5% (5%)\n• Moderada: 7%\n• Grave: 10%',
+          ramos: ['LEVE — possível VO', 'MODERADA/GRAVE — IV obrigatório', 'CHOQUE descompensado'] },
+
+        // CHOQUE
+        { tipo: 'acao', cor: 'urgente', condicao: 'CHOQUE descompensado',
+          texto: '🚨 RESSUSCITAÇÃO DE CHOQUE — PRIORIDADE ABSOLUTA\nBolus SF 0,9% 10-20 mL/kg em 5-10 min\nReavaliar após cada bolus · pode repetir até 40 mL/kg\nApós estabilização hemodinâmica → seguir protocolo CAD\nAcesso venoso 2 vias · monitor · ECG · glicemia capilar' },
+
+        // LEVE
+        { tipo: 'acao', cor: 'manejo', condicao: 'LEVE — possível VO',
+          texto: 'CAD LEVE em criança alerta, aceita VO, vômito ausente:\n• Hidratação oral generosa\n• Insulina regular SC 0,1 U/kg a cada 2-4h (cuidado, off-label) OU manter o protocolo padrão IV\n• Reavaliar a cada 2h\n• Maioria dos serviços prefere ainda assim manter via IV — menor risco de erro\n• Pode resolver em 6-12h sem internação em alguns casos selecionados (centros experientes)' },
+
+        // FASE 1 — HIDRATAÇÃO (MODERADA/GRAVE)
+        { tipo: 'acao', cor: 'atencao', condicao: 'MODERADA/GRAVE — IV obrigatório',
+          texto: 'FASE 1 — HIDRATAÇÃO INICIAL (primeiras 1-2 horas)\n\nSF 0,9% 10 mL/kg em 1 HORA\n• LIMITE MÁXIMO de 20 mL/kg na 1ª hora (só se choque persistente)\n• EVITAR hidratação rápida demais → risco de EDEMA CEREBRAL\n• A correção é GRADUAL — déficit em 24-48h, não em horas\n\nObjetivos da fase 1:\n• Restaurar perfusão (TEC <2s, débito urinário)\n• Iniciar reversão da acidose\n• Preparar para insulinoterapia (NUNCA antes de 1h de hidratação)' },
+
+        // FASE 2 — INSULINOTERAPIA
+        { tipo: 'acao', cor: 'atencao', condicao: 'MODERADA/GRAVE — IV obrigatório',
+          texto: 'FASE 2 — INSULINOTERAPIA (após 1ª hora de hidratação)\n\n⚠️ NUNCA fazer BOLUS de insulina em pediatria (aumenta risco edema cerebral)\n\nINSULINA REGULAR (humana) em infusão contínua:\n• Dose: 0,05-0,1 U/kg/h IV contínua\n• Preparar: 50 U insulina regular em 50 mL SF 0,9% (= 1 U/mL)\n• Ajustar conforme glicemia:\n  - Queda esperada: 50-100 mg/dL/hora (não maior)\n  - Se queda muito rápida → reduzir dose ou adicionar SG\n• Manter até resolução da acidose (pH >7,3 e HCO₃ >18) — NÃO suspender só pela glicemia\n\nQuando glicemia <250-300 mg/dL → ADICIONAR SG 5% ou 10% à hidratação (manter insulina rodando)' },
+
+        // FASE 3 — REPOSIÇÃO ELETROLÍTICA E HIDRATAÇÃO DE MANUTENÇÃO
+        { tipo: 'acao', cor: 'manejo', condicao: 'MODERADA/GRAVE — IV obrigatório',
+          texto: 'FASE 3 — HIDRATAÇÃO DE MANUTENÇÃO + ELETRÓLITOS (após 1ª hora)\n\nCÁLCULO de hidratação:\n• Déficit hídrico: peso × % desidratação × 10 mL\n• + Manutenção (Holliday-Segar)\n• Repor déficit em 24-48 HORAS (não em horas — risco edema cerebral)\n\nSF 0,45% + KCl (após verificar K+):\n• K+ >5,5: não repor inicialmente\n• K+ 4-5,5: KCl 20-30 mEq/L na hidratação\n• K+ <4: KCl 40 mEq/L (CUIDADO: monitorar)\n• K+ <3: REPOSIÇÃO RÁPIDA antes de iniciar insulina\n\nObservação: a insulinoterapia FAZ POTÁSSIO CAIR (entra na célula) — sempre repor K+ profilaticamente, mesmo se inicialmente normal' },
+
+        // VIGILÂNCIA EDEMA CEREBRAL
+        { tipo: 'observa',
+          texto: '🚨 VIGILÂNCIA DE EDEMA CEREBRAL (complicação mais grave da CAD pediátrica)\n\nFATORES DE RISCO:\n• Idade <5 anos\n• Primodescompensação\n• Hidratação muito rápida\n• Bicarbonato (uso desnecessário)\n• Acidose muito grave\n• Queda muito rápida da osmolaridade\n• Hipocapnia (Kussmaul mantida)\n\nSINAIS DE ALARME:\n• Cefaleia, alteração mental, agitação ou sonolência\n• Bradicardia · hipertensão\n• Vômitos\n• Convulsão\n• Alteração pupilar · sinais de tronco\n\nTRATAMENTO IMEDIATO se suspeita:\n• MANITOL 0,5-1 g/kg IV em 10-15 min · OU\n• SALINA HIPERTÔNICA 3% 5-10 mL/kg em 30 min\n• Reduzir taxa de fluidos para 50% do basal\n• Elevar cabeceira · IOT se Glasgow ≤8\n• Comunicar UTI imediatamente · TC crânio após estabilização' },
+
+        // MONITORIZAÇÃO
+        { tipo: 'observa',
+          texto: 'MONITORIZAÇÃO HORÁRIA na CAD:\n• Glicemia capilar a cada 1h\n• Eletrólitos (Na, K, Cl, HCO₃) a cada 2-4h\n• Gaso a cada 2-4h\n• Sinais vitais e estado mental a cada 1h (mais frequente se grave)\n• Diurese horária\n• ECG inicial e conforme alterações de K+\n\nINVESTIGAÇÃO DA CAUSA:\n• Infecção como precipitante (urina, hemocultura, RX tórax)\n• Adesão · técnica de aplicação · bomba\n• Eventos estressores (cirurgia, trauma)\n\nCRITÉRIOS DE RESOLUÇÃO (transição p/ insulina SC):\n• pH >7,3 e HCO₃ >18\n• Glicemia <200 e estável\n• Anion gap fechado\n• Paciente alerta, aceitando VO\n→ Iniciar insulina basal SC 1-2h ANTES de suspender bomba IV (sobreposição)' },
+
+        { tipo: 'fim', cor: 'internar',
+          texto: '🚑 INTERNAÇÃO em UTI pediátrica em todos os casos moderado-grave\n• Educação intensiva para família (primodescompensação)\n• Equipe multidisciplinar: endocrino, enfermagem, nutrição, psicologia\n• Plano de transição para insulina SC: basal-bolus (NPH+Regular OU análogos)\n• Acompanhamento longitudinal com endocrinopediatra\n• Monitor glicêmico contínuo se disponível' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'EDEMA CEREBRAL é a principal causa de mortalidade na CAD pediátrica (~50% das mortes). Fatores: <5 anos, primodescompensação, hidratação rápida, bicarbonato, hipocapnia. Vigiar SEMPRE.' },
+        { tipo: 'aviso', texto: 'NUNCA fazer bolus de insulina em pediatria. Sempre infusão contínua 0,05-0,1 U/kg/h. Iniciar APÓS 1h de hidratação, nunca antes.' },
+        { tipo: 'aviso', texto: 'NÃO usar bicarbonato de rotina — mesmo em pH <7,1. Risco de edema cerebral aumenta. Restrito a pH <6,9 com instabilidade hemodinâmica refratária.' },
+        { tipo: 'info', texto: 'A insulinoterapia faz potássio cair (entra na célula). SEMPRE repor K+ profilaticamente, mesmo se K+ inicial normal. Se K+ <3,5 inicial: repor antes de iniciar insulina.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 22. ANEMIA FALCIFORME — CRISE VASO-OCLUSIVA
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-falciforme-cvo',
+      nome: 'Anemia falciforme — crise vaso-oclusiva',
+      categoria: 'emergencia',
+      resumo: 'Analgesia escalonada precoce · hidratação 1,5× manutenção · vigilância de STA, sequestro, AVC',
+      publico: 'PA · PS · hematologia · seguimento longitudinal',
+      fontes: 'ASH 2020 (American Society of Hematology) · NHLBI 2014 · SBHH · MS Programa Falciforme',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com anemia falciforme (Hb SS, Hb SC ou outras) apresentando:\n• Dor óssea/articular intensa (mais comum — >90% das crises)\n• Pode envolver dorso, extremidades, tórax, abdome\n• Fatores precipitantes: infecção, desidratação, frio, estresse, hipóxia, esforço\n\nSEMPRE TRIAGEM PARA COMPLICAÇÕES GRAVES no atendimento inicial' },
+
+        { tipo: 'decisao', texto: 'TRIAGEM DE COMPLICAÇÕES GRAVES (qualquer presente = abordagem urgente)\n\n🚨 SÍNDROME TORÁCICA AGUDA (STA): febre + tosse + dor torácica + dispneia/taquipneia + infiltrado novo no RX\n🚨 SEQUESTRO ESPLÊNICO: esplenomegalia aguda + queda Hb ≥2 g/dL do basal · choque · mais comum <5 anos\n🚨 AVC ISQUÊMICO/HEMORRÁGICO: sintomas neurológicos focais\n🚨 PRIAPISMO >4 HORAS\n🚨 SEPSE/INFECÇÃO GRAVE: febre alta + toxemia (asplenia funcional → risco Strep pneumo, Hib, Salmonella)\n🚨 CRISE APLÁSTICA: queda profunda de Hb + reticulopenia (parvovírus B19)\n🚨 IRA · IRpA\n🚨 DOR ABDOMINAL com defesa (suspeitar de sequestro hepático, infarto, colelitíase, perfuração)',
+          ramos: ['COMPLICAÇÃO presente — urgência', 'CVO simples — analgesia/hidratação'] },
+
+        // CVO SIMPLES
+        { tipo: 'acao', cor: 'manejo', condicao: 'CVO simples — analgesia/hidratação',
+          texto: 'AVALIAÇÃO DA DOR — escala apropriada para idade (FLACC, faces, numérica)\n\nANALGESIA ESCALONADA — INICIAR PRECOCEMENTE (não subdosar):\n\n🟢 DOR LEVE (escala ≤3):\n• Paracetamol 10-15 mg/kg VO 6/6h (máx 75 mg/kg/dia)\n• OU Ibuprofeno 5-10 mg/kg VO 6-8/8h (cuidado em IRA)\n\n🟡 DOR MODERADA (4-6):\n• Adicionar TRAMADOL 1-2 mg/kg VO/IV 6/6h (máx 8 mg/kg/dia, máx 400 mg/dia)\n• OU codeína (cuidado <12 anos, descontinuada em vários países)\n\n🔴 DOR INTENSA (≥7):\n• MORFINA 0,1-0,2 mg/kg IV/SC inicial · repetir a cada 2-4h\n• OU PCA (analgesia controlada pelo paciente) em paciente colaborativo\n• Considerar cetorolaco IV (cuidado IRA)\n• Adjuvantes: cetorolaco, gabapentinoides em dor crônica\n\nRegra de ouro: ALÍVIO em 30 MIN ou ESCALAR' },
+
+        { tipo: 'acao', cor: 'info', condicao: 'CVO simples — analgesia/hidratação',
+          texto: 'HIDRATAÇÃO:\n• 1,5× MANUTENÇÃO (Holliday-Segar)\n• NÃO hiperidratar (>2× manutenção) — risco de STA por sobrecarga\n• Preferir SF 0,9% ou SG 5% em SF 0,45%\n• Avaliar tolerância VO antes de IV — se paciente aceita, VO é preferível\n\nOXIGÊNIO:\n• APENAS se SatO₂ <94% (não rotina)\n• Em STA: alvo SatO₂ ≥94%\n\nINVESTIGAÇÃO mínima:\n• Hemograma com reticulócitos\n• Hemocultura se febre\n• Eletrólitos, função renal/hepática se grave\n• RX tórax se sintomas respiratórios ou febre' },
+
+        // COMPLICAÇÕES GRAVES
+        { tipo: 'acao', cor: 'urgente', condicao: 'COMPLICAÇÃO presente — urgência',
+          texto: 'CONDUTA POR COMPLICAÇÃO:\n\n🚨 STA (Síndrome Torácica Aguda):\n• O₂ alvo ≥94% · UTI se grave\n• ATB amplo: CEFTRIAXONA 75 mg/kg/dia + AZITROMICINA 10 mg/kg/dia (cobertura S. pneumoniae, Mycoplasma, Chlamydia)\n• Hidratação cuidadosa (não hiperidratar — agrava)\n• Analgesia\n• TRANSFUSÃO SIMPLES (Hb objetivo 9-10) se Hb 2 abaixo do basal · TRANSFUSÃO DE TROCA se grave\n• Espirômetro de incentivo a cada 2h\n• Considerar broncodilatador se sibilância (asma + AF é comum)\n\n🚨 SEQUESTRO ESPLÊNICO:\n• Acesso venoso 2 vias\n• Hidratação · transfusão de hemácias 5-10 mL/kg URGENTE\n• Avaliar esplenectomia (recidiva grave)' },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'COMPLICAÇÃO presente — urgência',
+          texto: 'MAIS COMPLICAÇÕES:\n\n🚨 AVC (isquêmico/hemorrágico):\n• TC crânio sem contraste IMEDIATA\n• TRANSFUSÃO DE TROCA URGENTE (objetivo HbS <30%)\n• UTI pediátrica · neurologia\n\n🚨 PRIAPISMO:\n• <4h: hidratação + analgesia + estímulo a urinar + caminhada\n• ≥4h: EMERGÊNCIA UROLÓGICA · drenagem dos corpos cavernosos + transfusão de troca\n\n🚨 SEPSE/INFECÇÃO GRAVE:\n• Hemocultura · ATB amplo PRECOCE (CEFTRIAXONA 75-100 mg/kg/dia)\n• Vancomicina se suspeita Staph\n• Ver fluxograma Sepse pediátrica\n\n🚨 CRISE APLÁSTICA:\n• Suporte transfusional · sorologia parvovírus B19\n• Resolve em 7-10 dias' },
+
+        { tipo: 'observa',
+          texto: 'CRITÉRIOS DE INTERNAÇÃO:\n• Dor intensa não controlada com analgesia VO\n• Necessidade de morfina IV repetida\n• Suspeita de complicação grave\n• Febre >38,5°C (necessita hemocultura e ATB IV)\n• Vômitos persistentes / desidratação\n• Hb 2 g/dL abaixo do basal · reticulopenia\n• Comorbidades · contexto social desfavorável\n\nCRITÉRIOS DE ALTA:\n• Dor controlada com analgesia VO\n• Hidratado · tolerando VO\n• Sem febre nas últimas 24h\n• Sem suspeita de complicação ativa\n• Plano de seguimento ambulatorial' },
+
+        { tipo: 'fim', cor: 'referencia',
+          texto: 'ALTA com:\n• Receita de analgesia em plano escalonado\n• Sinais de retorno: dor refratária, febre, dispneia, dor torácica, sintomas neurológicos, palidez, abdome doloroso\n• Reavaliação em 24-48h\n• Seguimento com hematologia\n\nPREVENÇÃO em longo prazo:\n• Hidroxiureia (alta evidência — reduz crises, STA, transfusões)\n• Profilaxia com penicilina V VO até 5 anos (asplenia funcional)\n• Vacinação completa + pneumocócica 23-valente + meningocócica\n• Doppler transcraniano anual (rastreio AVC) de 2-16 anos\n• Suplementação ácido fólico\n• Educação da família' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'STA é a 2ª causa mais comum de morte em anemia falciforme. Limiar BAIXO para suspeita — qualquer sintoma respiratório novo + febre ou dor torácica = investigar RX e tratar agressivamente.' },
+        { tipo: 'aviso', texto: 'NÃO SUBDOSAR ANALGESIA. Crianças com falciforme costumam ser sub-tratadas por viés (medo de "dependência"). Dor crônica leva a hiperalgesia. Use morfina sem hesitação se indicada.' },
+        { tipo: 'aviso', texto: 'Febre >38,5°C em criança com falciforme NÃO É BANAL — função esplênica reduzida = risco de sepse fulminante por S. pneumoniae. Hemocultura + ATB IV mesmo se aparentemente bem.' },
+        { tipo: 'info', texto: 'Hiperidratação (>2× manutenção) NÃO ajuda na CVO e AUMENTA risco de STA por congestão pulmonar. Manter em 1,5× manutenção como teto.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 23. CONVULSÃO NEONATAL
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-convulsao-neonatal',
+      nome: 'Convulsão neonatal (<28 dias)',
+      categoria: 'neonatal',
+      resumo: 'Reconhecer fenótipos (sutil é mais comum) → corrigir metabólica primeiro → fenobarbital 1ª linha',
+      publico: 'Maternidade · UTI neonatal · PA',
+      fontes: 'ILAE 2021 (Neonatal Seizures) · AAP · WHO Neonatal · NICE 2019',
+      passos: [
+        { tipo: 'inicio', texto: 'RN <28 dias com manifestações sugestivas de convulsão.\n\nFENÓTIPOS (diferente de criança maior):\n\nSUTIL (60-70% — mais comum):\n• Movimentos oculares anormais (desvio, nistagmo, fixação)\n• Movimentos de sucção/mastigação não relacionados à alimentação\n• Movimentos de pedalagem/boxeur\n• Postura tônica de membros isolada\n• Apneia (especialmente em RNT)\n• Alteração de cor sem causa explicada\n\nCLÔNICA FOCAL: movimentos rítmicos localizados (face, membro)\nCLÔNICA MULTIFOCAL: clônicas migratórias\nTÔNICA: postura mantida (descerebração/decorticação)\nMIOCLÔNICA: movimentos rápidos, isolados\n\n⚠️ Convulsão neonatal pode ser SUB-CLÍNICA (apenas EEG)' },
+
+        { tipo: 'decisao', texto: 'DIFERENCIAR DE NÃO-CONVULSÃO:\n\nMOVIMENTOS NÃO-EPILÉPTICOS:\n• Tremor (jitteriness): cessa com contenção · movimento simétrico · sem alteração ocular\n• Hipertonia/clônus normal\n• Mioclonia benigna do sono\n• Hiperecplexia\n\nSE EM DÚVIDA: EEG é padrão-ouro · vídeo-EEG ideal',
+          ramos: ['CONVULSÃO confirmada/forte suspeita', 'Movimento não-epiléptico'] },
+
+        { tipo: 'fim', cor: 'alta', condicao: 'Movimento não-epiléptico',
+          texto: 'Tranquilizar família\nObservação clínica\nReavaliação se persistência ou características epilépticas\nGarantir puericultura precoce' },
+
+        // CONVULSÃO CONFIRMADA — ABC E INVESTIGAÇÃO
+        { tipo: 'acao', cor: 'urgente', condicao: 'CONVULSÃO confirmada/forte suspeita',
+          texto: '🚨 ABORDAGEM IMEDIATA\n\nABC:\n• Via aérea pérvia · posicionamento\n• O₂ suplementar · monitorar SpO₂\n• Acesso venoso\n• Monitor cardíaco\n• Aspiração se secreções\n\nCOLETAR IMEDIATAMENTE:\n• Glicemia capilar (HGT)\n• Cálcio · magnésio · sódio iônico\n• Gaso arterial · lactato\n• Hemograma · plaquetas\n• Hemocultura\n• Função renal/hepática\n• Coagulograma' },
+
+        { tipo: 'decisao', condicao: 'CONVULSÃO confirmada/forte suspeita',
+          texto: 'INVESTIGAR CAUSA — 5 GRUPOS PRINCIPAIS\n\n① Encefalopatia hipóxico-isquêmica (EHI) — MAIS COMUM\n   Antecedente de sofrimento fetal · Apgar baixo · acidose · convulsão nas primeiras 24-72h\n\n② AVC neonatal (isquêmico/hemorrágico)\n   Convulsão focal · imagem alterada (USG transfontanela, RM)\n\n③ Infecção: sepse, meningite, TORCH\n   Investigar hemocultura + LÍQUOR · VDRL · TORCH conforme suspeita\n\n④ Distúrbio metabólico: hipoglicemia, hipocalcemia, hipoMg, hipo/hipernatremia, deficiência piridoxina (B6), erros inatos\n   Corrigir DISTÚRBIO METABÓLICO PRIMEIRO antes de anticonvulsivantes\n\n⑤ Hemorragia intracraniana (subdural, subaracnóide, intraventricular)\n   Imagem (USG transfontanela, TC se grave)',
+          ramos: ['Causa METABÓLICA identificada', 'Causa NÃO-metabólica ou empírica'] },
+
+        // METABÓLICA — CORRIGIR PRIMEIRO
+        { tipo: 'acao', cor: 'manejo', condicao: 'Causa METABÓLICA identificada',
+          texto: 'CORREÇÃO METABÓLICA — antes de anticonvulsivante\n\nHIPOGLICEMIA (<45 mg/dL no RN):\n• GLICOSE 10% 2 mL/kg IV em bolus (200 mg/kg)\n• Manutenção GIR 6-8 mg/kg/min · ajustar conforme HGT\n\nHIPOCALCEMIA (Ca total <7 ou iônico <1):\n• GLUCONATO DE CÁLCIO 10% 100-200 mg/kg IV LENTO em 10-30 min\n• MONITOR cardíaco (risco bradicardia, arritmia)\n• NÃO ADMINISTRAR via periférica problemática (necrose)\n\nHIPOMAGNESEMIA (Mg <1,6):\n• SULFATO DE MAGNÉSIO 25-50 mg/kg IV em 30 min\n\nHIPONATREMIA SINTOMÁTICA:\n• SF 3% 3-5 mL/kg IV em 10-20 min (corrigir LENTAMENTE)\n\nDEFICIÊNCIA DE PIRIDOXINA (B6):\n• PIRIDOXINA 100 mg IV — DOSE TESTE em convulsão refratária a anticonvulsivante padrão (especialmente <1 mês)\n• Se cessa = piridoxino-dependente — manter manutenção' },
+
+        // NÃO-METABÓLICA OU EMPÍRICA
+        { tipo: 'acao', cor: 'urgente', condicao: 'Causa NÃO-metabólica ou empírica',
+          texto: 'ANTICONVULSIVANTE — 1ª LINHA EM RN\n\n⚠️ DIAZEPAM EVITADO em neonato (depressão respiratória, eficácia inferior, deslocamento de bilirrubina)\n\n1ª ESCOLHA — FENOBARBITAL:\n• Dose ATAQUE: 20 mg/kg IV em 20-30 min\n• Se persistir: 10 mg/kg adicional IV (até dose total acumulada de 40 mg/kg)\n• Manutenção: 3-5 mg/kg/dia IV/VO 12/12h\n• Monitor cardíaco e respiratório (risco depressão respiratória, hipotensão)\n\n2ª ESCOLHA — FENITOÍNA:\n• Dose ATAQUE: 20 mg/kg IV em 20-30 min (máx 1 mg/kg/min)\n• Diluir em SF 0,9% (NUNCA em SG — precipita)\n• Monitor cardíaco contínuo (risco arritmia, bradicardia)\n• Manutenção: 5-8 mg/kg/dia IV 12/12h\n\n3ª ESCOLHA — LEVETIRACETAM:\n• Dose ATAQUE: 40-60 mg/kg IV em 5-15 min\n• Manutenção: 30-60 mg/kg/dia IV/VO 12/12h\n• Cada vez mais usado como 1ª linha em alguns centros (menos efeito sedativo, sem prejuízo cognitivo)\n\nSE REFRATÁRIO (após esses):\n• MIDAZOLAM infusão contínua 0,15 mg/kg ataque + 0,1-0,4 mg/kg/h\n• Considerar lidocaína (segunda linha em alguns centros europeus)\n• UTI + EEG contínuo' },
+
+        { tipo: 'observa',
+          texto: 'MONITORIZAÇÃO PÓS-CONTROLE:\n• EEG (idealmente contínuo) — convulsão subclínica é frequente (até 50%)\n• Imagem: USG transfontanela inicial · RM em 7-10 dias se possível\n• Líquor após estabilidade se suspeita de infecção\n• Eletrólitos seriados\n\nINVESTIGAÇÃO ETIOLÓGICA prolongada se causa não identificada:\n• Erros inatos do metabolismo (amônia, lactato, urina screening)\n• TORCH completo\n• Painel genético em refratárias\n• Avaliação por neurologia neonatal\n\nDURAÇÃO DO TRATAMENTO ANTICONVULSIVANTE:\n• Variável conforme causa e EEG\n• Se EEG normal e exame neurológico normal → suspender após período breve\n• Convulsão sintomática aguda (metabólica, EHI): muitas vezes suspende após resolução\n• Epilepsia neonatal estrutural/genética: tratamento prolongado' },
+
+        { tipo: 'fim', cor: 'internar',
+          texto: '🚑 INTERNAÇÃO em UTI Neonatal — todos os casos\n• Monitor multiparamétrico contínuo · EEG seriado\n• Suporte ventilatório se necessário\n• Equipe: neonatologia, neuropediatria, enfermagem especializada\n• Discussão com família sobre prognóstico (depende muito da causa)\n• Encaminhamento neuropediátrico para seguimento' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Convulsão neonatal frequentemente é SUBCLÍNICA (sem manifestação motora). Em RN com encefalopatia ou EHI, EEG contínuo é fundamental para detectar e tratar.' },
+        { tipo: 'aviso', texto: 'NÃO usar diazepam em RN — eficácia inferior, depressão respiratória, deslocamento de bilirrubina (risco kernicterus). Use fenobarbital como 1ª linha.' },
+        { tipo: 'info', texto: 'Tremor (jitteriness) ≠ convulsão. Características: simétrico, cessa com contenção, não tem alteração ocular ou cor. Comum em RN normal.' },
+        { tipo: 'info', texto: 'Em convulsão refratária inexplicada, considere DOSE TESTE de piridoxina 100 mg IV — diagnóstico de convulsão piridoxino-dependente. Salva vidas e neuroproteção.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 24. APNEIA DE PREMATURO
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-apneia-prematuro',
+      nome: 'Apneia de prematuro',
+      categoria: 'neonatal',
+      resumo: 'Diferenciar apneia primária do prematuro vs secundária patológica → cafeína 1ª linha → CPAP/IOT escalonado',
+      publico: 'UTI Neonatal · UCIN · seguimento do pré-termo',
+      fontes: 'AAP 2016 (rev. 2024) · SBP · NICE Preterm Care · ESPNIC',
+      passos: [
+        { tipo: 'inicio', texto: 'Prematuro (<37 semanas IG, especialmente <34 sem) com pausas respiratórias significativas\n\nDEFINIÇÃO:\n• Pausa respiratória >20 segundos, OU\n• Pausa qualquer duração + bradicardia (<80-100 bpm) ou dessaturação (<85-90%)\n\nINCIDÊNCIA:\n• >50% em <34 semanas\n• ~100% em <28 semanas\n• Geralmente resolve até 36-40 semanas pós-menstruais\n• Pode persistir até 43-44 semanas em extremo pré-termo' },
+
+        { tipo: 'decisao', texto: 'CLASSIFICAR O TIPO DE APNEIA\n\nCENTRAL (10-25%):\n• Ausência completa de esforço respiratório e fluxo aéreo\n• Imaturidade do controle respiratório central\n\nOBSTRUTIVA (10-20%):\n• Esforço respiratório PRESENTE mas sem fluxo aéreo\n• Posição flexionada do pescoço · secreções · refluxo · estridor\n\nMISTA (50-75% — mais comum):\n• Componente central + obstrutivo na mesma pausa\n\nDIFERENCIAR APNEIA PRIMÁRIA do PREMATURO de APNEIA SECUNDÁRIA (patológica)',
+          ramos: ['APNEIA PRIMÁRIA do prematuro', 'APNEIA SECUNDÁRIA — investigar causa'] },
+
+        // SECUNDÁRIA - INVESTIGAÇÃO
+        { tipo: 'acao', cor: 'urgente', condicao: 'APNEIA SECUNDÁRIA — investigar causa',
+          texto: 'INVESTIGAR CAUSAS SECUNDÁRIAS — toda apneia em RN merece investigação inicial\n\n• SEPSE/INFECÇÃO: hemograma, PCR, hemocultura, líquor, urocultura\n• HIPÓXIA: avaliar oxigenação, hematócrito\n• HIPOGLICEMIA: HGT seriada\n• DISTÚRBIOS ELETROLÍTICOS: Na, Ca, Mg\n• ANEMIA: hematócrito (transfundir se <25-30% conforme idade)\n• RGE significativo: avaliar sintomas\n• PERSISTÊNCIA DO CANAL ARTERIAL: ecocardiograma\n• HEMORRAGIA INTRACRANIANA: USG transfontanela\n• CONVULSÃO: EEG\n• DOR · estresse · medicação materna (opioides, sedativos)\n• HIPOTERMIA OU HIPERTERMIA\n• Distúrbio metabólico (acidose, alcalose)\n• Doença respiratória ativa: pneumonia, DPB, atelectasia\n\nTRATAR A CAUSA — apneia secundária resolve com correção do fator subjacente' },
+
+        // PRIMÁRIA - MANEJO
+        { tipo: 'acao', cor: 'manejo', condicao: 'APNEIA PRIMÁRIA do prematuro',
+          texto: 'MEDIDAS GERAIS — todas as fases\n\nPOSICIONAMENTO:\n• Decúbito ventral pode reduzir apneias obstrutivas (sob monitorização!)\n• Evitar flexão cervical extrema\n• Aspirar secreções suavemente se necessário (não rotineiramente)\n\nMONITORIZAÇÃO:\n• Monitor cardíaco contínuo · oximetria · respirograma\n• Documentar frequência, duração, gravidade\n\nESTIMULAÇÃO TÁTIL durante o episódio:\n• Estimulação leve (toque, ajuste de posição) suficiente para maioria\n• Se não responde em 15-20s: ventilação com balão e máscara' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: 'APNEIA PRIMÁRIA do prematuro',
+          texto: 'TRATAMENTO FARMACOLÓGICO — METILXANTINAS\n\n1ª ESCOLHA: CITRATO DE CAFEÍNA (preferido vs aminofilina/teofilina)\n• Vantagens: meia-vida longa (1×/dia), janela terapêutica ampla, sem necessidade de monitorar nível sérico, perfil de efeitos adversos menor\n• Dose ATAQUE: 20 mg/kg de citrato de cafeína (= 10 mg/kg de cafeína base) IV em 30 min OU VO\n• Manutenção: 5-10 mg/kg/dia 1×/dia (24/24h) IV ou VO\n• Iniciar precocemente (D1 de vida em <28 semanas) — estudos CAP demonstraram benefício neurológico e respiratório\n\nALTERNATIVA: AMINOFILINA (se cafeína indisponível)\n• Dose ataque: 6 mg/kg IV em 30 min\n• Manutenção: 2-3 mg/kg/dose IV/VO 8-12/12h\n• Monitorar nível sérico (alvo 7-12 mcg/mL)\n• Mais efeitos adversos (taquicardia, intolerância alimentar)' },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'APNEIA PRIMÁRIA do prematuro',
+          texto: 'SE APNEIA PERSISTE OU GRAVE:\n\nCPAP NASAL:\n• Indicação: apneia persistente apesar de cafeína · necessidade frequente de estimulação\n• Pressão geralmente 4-6 cmH₂O\n• Útil em apneia OBSTRUTIVA e MISTA (mantém VA aberta + recrutamento alveolar)\n• Cânula nasal de alto fluxo (HHHFNC) é alternativa em alguns serviços\n\nVNI BINIVEL (NIPPV):\n• Próximo escalão se CPAP insuficiente\n\nIOT + VENTILAÇÃO MECÂNICA:\n• Apneia muito frequente · necessidade de bolsa-máscara repetidas\n• Falha de CPAP/VNI\n• Bradicardia persistente · instabilidade\n\nTRANSFUSÃO DE HEMÁCIAS:\n• Considerar se Ht <25-30% com apneias frequentes' },
+
+        { tipo: 'observa',
+          texto: 'CRITÉRIOS DE CONTROLE / RESOLUÇÃO:\n\n• Sem apneia significativa por 5-7 DIAS CONSECUTIVOS\n• Inclui ausência de bradicardia/dessaturação significativas\n• Geralmente após 34-36 semanas pós-menstruais (mas pode persistir mais em extremo pré-termo)\n\nSUSPENSÃO DA CAFEÍNA:\n• Quando RN está sem apneia há 5-7 dias\n• E idade pós-menstrual ≥34 semanas\n• Meia-vida longa da cafeína = efeito persiste 1-2 sem após suspensão (manter observação)\n\nMONITORIZAÇÃO PÓS-SUSPENSÃO:\n• Observação clínica + monitor por 5-7 dias antes de alta\n• Para extremo pré-termo: considerar polissonografia pré-alta' },
+
+        { tipo: 'fim', cor: 'alta',
+          texto: 'CRITÉRIOS DE ALTA HOSPITALAR:\n\n• Sem apneia/bradicardia significativa por 5-7 dias após suspensão da cafeína\n• Estável termicamente em berço\n• Ganho ponderal adequado\n• Aleitamento materno/fórmula estabelecido\n• Pais treinados em RCP e reconhecimento de sinais de alerta\n\nMONITOR DOMICILIAR (em casos selecionados):\n• Não rotineiro\n• Considerar em prematuros extremos com apneias residuais\n• Discussão com família · suporte da equipe\n\nSEGUIMENTO AMBULATORIAL:\n• Puericultura precoce no follow-up do pré-termo (FUP)\n• Equipe multidisciplinar: pediatra, neuropediatra, fisioterapeuta, fonoaudiologia\n• Avaliar desenvolvimento neuropsicomotor periodicamente' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Apneia em RN A TERMO (≥37 semanas) NÃO é fisiológica — sempre indica causa subjacente (sepse, convulsão, distúrbio metabólico, RGE grave). Investigar agressivamente.' },
+        { tipo: 'aviso', texto: 'Apneia + bradicardia em prematuro pode preceder DETERIORAÇÃO clínica grave (sepse de início tardio, NEC, hemorragia). Mudança no padrão da apneia DEVE ser investigada.' },
+        { tipo: 'info', texto: 'Cafeína iniciada precocemente em pré-termo extremo demonstrou benefício neuroprotetor (estudo CAP) — não é só sintomático.' },
+        { tipo: 'info', texto: 'Sobrevida sem apneia ≠ desenvolvimento normal. Pré-termo é grupo de risco para alterações neurológicas — seguimento multidisciplinar é fundamental.' }
+      ]
+    },
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // 25. SÍNDROME NEFRÓTICA EM CRISE
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    {
+      id: 'flx-nefrotica-crise',
+      nome: 'Síndrome nefrótica em crise',
+      categoria: 'emergencia',
+      resumo: 'Reconhecer complicações (infecção, trombose, IRA, edema grave) · corticoide · controle de edema com cautela',
+      publico: 'PA · PS · nefropediatria',
+      fontes: 'KDIGO 2021 · ISKDC · SBP · SBN · IPNA 2022',
+      passos: [
+        { tipo: 'inicio', texto: 'Criança com diagnóstico ou suspeita de Síndrome Nefrótica (SN):\n\nDEFINIÇÃO (todos):\n• Proteinúria nefrótica (>40 mg/m²/hora ou relação P/Cr >2,0 mg/mg)\n• Hipoalbuminemia (<2,5 g/dL)\n• Edema (geralmente generalizado, com periorbital matinal)\n• Hiperlipidemia\n\nIDADE típica primeira crise: 2-8 anos (pico 3-5 anos)\nMAIORIA é Lesão Mínima — responde a corticoide (80-90%)' },
+
+        { tipo: 'decisao', texto: 'AVALIAR — É 1ª CRISE OU RECAÍDA / COMPLICAÇÃO?\n\nRECAÍDA:\n• Proteinúria 3+/4+ por 3 dias consecutivos OU\n• Albuminemia <2,5 + edema\n\nCOMPLICAÇÕES GRAVES (avaliar SEMPRE no atendimento):\n🚨 INFECÇÃO: peritonite primária (S. pneumoniae) · celulite · sepse · pneumonia\n🚨 TROMBOSE: TVP, TEP, trombose de veia renal/sagital (estado hipercoagulável)\n🚨 HIPOVOLEMIA EFETIVA: intravascular vazio apesar de edema (terceiro espaço)\n🚨 IRA: pré-renal (hipovolemia) ou outras\n🚨 EDEMA AGUDO DE PULMÃO: descompensação cardíaca ou sobrecarga iatrogênica\n🚨 EDEMA CEREBRAL: pode ocorrer em uso de corticoide alta dose · hiponatremia',
+          ramos: ['COMPLICAÇÃO grave presente', 'CRISE / recaída sem complicação', '1ª crise — investigar'] },
+
+        // 1ª CRISE
+        { tipo: 'acao', cor: 'info', condicao: '1ª crise — investigar',
+          texto: 'INVESTIGAÇÃO INICIAL:\n\nLABORATÓRIO:\n• Função renal (ureia, creatinina, eletrólitos)\n• Albumina sérica · perfil lipídico\n• Hemograma · plaquetas\n• EAS · relação proteína/creatinina urinária (P/Cr)\n• Proteinúria de 24h (se possível)\n• C3, C4 (afastar diagnósticos com hipocomplementemia)\n• ASLO, FAN (em ≥5 anos · características atípicas)\n• Sorologias HBV, HCV, HIV em adolescente\n\nIMAGEM:\n• USG renal (descartar anatomia anormal)\n• RX tórax se sintomas respiratórios\n\nQUANDO BIOPSIAR? (não rotina na 1ª crise se "típica"):\n• Idade <1 ano · ou >12 anos\n• Hematúria persistente\n• Hipertensão arterial\n• IRA · função renal alterada\n• Hipocomplementemia\n• Cortico-resistência (>4-6 semanas sem resposta)\n• Características atípicas' },
+
+        { tipo: 'acao', cor: 'manejo', condicao: '1ª crise — investigar',
+          texto: 'TRATAMENTO PADRÃO DA 1ª CRISE (KDIGO):\n\nCORTICOIDE:\n• PREDNISOLONA 2 mg/kg/dia (máx 60 mg/dia) OU 60 mg/m²/dia VO\n• 1×/dia pela manhã (preferível) por 4-6 SEMANAS\n• Seguido de 1,5 mg/kg em DIAS ALTERNADOS por 4-6 semanas\n• Duração total: 8-12 semanas (KDIGO 2021)\n\nRESPOSTA ESPERADA:\n• Cortico-sensível: remissão em 4-6 semanas (~90% da Lesão Mínima)\n• Cortico-resistente: sem resposta após 4-6 semanas → biopsiar + nefrologia' },
+
+        // RECAÍDA SEM COMPLICAÇÃO
+        { tipo: 'acao', cor: 'manejo', condicao: 'CRISE / recaída sem complicação',
+          texto: 'MANEJO DE RECAÍDA:\n\nCORTICOIDE:\n• PREDNISOLONA 2 mg/kg/dia até proteinúria negativa por 3 dias consecutivos\n• Depois 1,5 mg/kg em dias alternados por 4 semanas\n\nMEDIDAS GERAIS:\n• RESTRIÇÃO de sódio (não rígida — moderada)\n• RESTRIÇÃO HÍDRICA SE EDEMA GRAVE ou hiponatremia (não rotineira)\n• Repouso relativo (não restrito) — risco de TVP em imobilização\n• Manter nutrição adequada (não restrição proteica)\n• Tratar infecções intercorrentes\n\nQUANDO INTERNAR:\n• Edema grave (anasarca, derrame pleural, ascite tensa, edema escrotal/peniano)\n• Suspeita de complicação (vide acima)\n• 1ª crise (avaliação inicial e educação)' },
+
+        // COMPLICAÇÕES
+        { tipo: 'acao', cor: 'urgente', condicao: 'COMPLICAÇÃO grave presente',
+          texto: '🚨 INFECÇÃO em Síndrome Nefrótica\n\nALTA SUSPEIÇÃO sempre que:\n• Dor abdominal súbita (PERITONITE PRIMÁRIA — paracentese!)\n• Febre + toxemia\n• Sinais de celulite, pneumonia\n\nETIOLOGIA típica:\n• Strep pneumoniae (peritonite primária — 50%)\n• Gram-negativos · raramente E. coli\n• Staph em celulite\n\nMANEJO:\n• HEMOCULTURA · culturas dirigidas (líquido ascítico se peritonite)\n• ATB EMPÍRICO PRECOCE: CEFTRIAXONA 75-100 mg/kg/dia IV\n• Adicionar amox+clav ou vancomicina se Staph suspeito (celulite)\n• Paracentese diagnóstica + terapêutica se peritonite (>1000 leucocitos/mm³ com >50% neutrófilos)\n\nPROFILAXIA: \n• Vacinação completa + pneumocócica 23-valente conforme MS\n• Imunoglobulina IV em casos selecionados (não rotina)' },
+
+        { tipo: 'acao', cor: 'urgente', condicao: 'COMPLICAÇÃO grave presente',
+          texto: '🚨 TROMBOSE em Síndrome Nefrótica\n\nFATORES DE RISCO:\n• Albumina <2,0 g/dL\n• Idade >12 anos\n• Imobilização\n• Cateter venoso central\n• Membranosa, focal segmentar\n\nSINAIS DE TVP/TEP:\n• Edema unilateral, dor em panturrilha\n• Dispneia súbita, dor torácica · sinais respiratórios\n• Trombose venosa renal: dor em flanco, hematúria, deterioração função renal\n• Trombose sinusal cerebral: cefaleia, alteração mental, convulsão\n\nMANEJO:\n• Doppler venoso · angio-TC se TEP suspeito · RM se trombose sinusal\n• HEPARINIZAÇÃO: enoxaparina 1 mg/kg SC 12/12h ou heparina não fracionada\n• PROFILAXIA em alto risco (albumina <2 + imobilização + outro fator)' },
+
+        { tipo: 'acao', cor: 'atencao', condicao: 'COMPLICAÇÃO grave presente',
+          texto: 'MANEJO DE EDEMA GRAVE / HIPOVOLEMIA\n\nAVALIAR ESTADO INTRAVASCULAR antes de diurético:\n• Edema generalizado pode coexistir com HIPOVOLEMIA EFETIVA\n• Sinais de hipovolemia: TEC ↑, taquicardia, hipotensão postural, oligúria, hemoconcentração\n\nSE HIPOVOLEMIA com edema:\n• ALBUMINA 25% 0,5-1 g/kg IV em 2-4h (cuidado em IC, IRA)\n• Seguido de FUROSEMIDA 1-2 mg/kg IV ao final da albumina\n• Monitorizar PA, débito urinário, FC\n• Considerar UTI se instabilidade\n\nSE EUVOLÊMICO com edema:\n• Restrição moderada de sódio + hídrica\n• Furosemida 1-2 mg/kg/dose VO 1-2×/dia se edema sintomático\n• NÃO iniciar diurético sem cautela — risco de hipovolemia e IRA pré-renal\n\nIRA em síndrome nefrótica:\n• Causas: hipovolemia (pré-renal) · diurético excessivo · trombose veia renal · NTA · nefrite intersticial por droga\n• Investigar · ajustar medicação · referenciar nefro' },
+
+        { tipo: 'observa',
+          texto: 'SEGUIMENTO E EDUCAÇÃO FAMILIAR:\n\n• Aprender a fazer FITA DE PROTEINÚRIA em casa diariamente\n• Documentar em diário (proteinúria, edema, peso, sintomas)\n• Reconhecer recaída precocemente\n• Vacinação completa antes de iniciar corticoide se possível\n• Vacinas vivas-atenuadas SUSPENSAS durante imunossupressão e até 3 meses após\n• Adesão à corticoterapia (não suspender abruptamente)\n• Profilaxia osteoporose (cálcio + vit D)\n• Acompanhar pressão arterial · função renal · perfil lipídico\n\nCRITÉRIOS DE REFERÊNCIA NEFROPEDIATRIA:\n• 1ª crise (avaliação inicial)\n• Cortico-resistência (>4-6 sem)\n• Cortico-dependência (recaída ao reduzir/suspender corticoide)\n• Recaídas frequentes (≥2 em 6m ou ≥4 em 12m)\n• Hematúria persistente · hipertensão · IRA\n• Complicações graves' },
+
+        { tipo: 'fim', cor: 'referencia',
+          texto: 'INTERNAÇÃO se:\n• 1ª crise (educação + investigação)\n• Edema grave (anasarca, derrame, edema escrotal/peniano)\n• Complicação suspeita ou confirmada\n• Cortico-resistência\n• Necessidade de albumina IV\n\nALTA com:\n• Receita de corticoide com plano escrito\n• Fitas de proteinúria + diário\n• Sinais de alerta (febre, dor abdominal, dispneia, edema unilateral)\n• Próxima consulta de seguimento marcada\n• Contato direto com nefro/equipe' }
+      ],
+      alertas: [
+        { tipo: 'aviso', texto: 'Dor abdominal súbita em criança com síndrome nefrótica = PERITONITE PRIMÁRIA até prova contrária. Não atrasar paracentese + ATB.' },
+        { tipo: 'aviso', texto: 'CUIDADO COM DIURÉTICO em SN — risco de hipovolemia e IRA pré-renal. Avaliar volemia ANTES. Em edema com hipovolemia, albumina + furosemida juntos.' },
+        { tipo: 'aviso', texto: 'Estado hipercoagulável é REAL — TVP/TEP em criança com SN pode ser fatal. Mobilizar, evitar cateteres centrais desnecessários, considerar profilaxia em alto risco.' },
+        { tipo: 'info', texto: 'A maioria das SN da infância (80-90%) é Lesão Mínima e responde a corticoide. A resposta é o critério clínico mais importante — biópsia é desnecessária na 1ª crise típica.' }
+      ]
+    }
+  ];
+
+  // ===== INTEGRAÇÃO =====
+  function integrar() {
+    if (!window.FLUXOGRAMAS || !Array.isArray(window.FLUXOGRAMAS)) {
+      setTimeout(integrar, 200);
+      return;
+    }
+    FLUXOGRAMAS_ONDA5.forEach(function(flx){
+      if (window.FLUXOGRAMAS.find(function(f){ return f.id === flx.id; })) return;
+      window.FLUXOGRAMAS.push(flx);
+    });
+    console.log('[FLX v9.5] Onda 5 sentinela: '+FLUXOGRAMAS_ONDA5.length+' (total: '+window.FLUXOGRAMAS.length+')');
+    if (document.getElementById('view-fluxogramas') && typeof window.renderFluxogramas === 'function') {
+      try { window.renderFluxogramas(); } catch(e){}
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', integrar);
+  } else {
+    setTimeout(integrar, 100);
+  }
+  setTimeout(integrar, 700);
+  setTimeout(integrar, 2000);
+})();
+
+</script>
+<!-- INJECT-V95-END -->
 </body>
 </html>

@@ -1281,6 +1281,30 @@ const calcDose = (dose, peso, max) => {
   return {valor: parseFloat(valor.toFixed(2)), capped: false};
 };
 
+// Deriva quantas tomadas/dia o campo "intervalo" indica (para fracionar a dose diária).
+// Retorna array de {tomadas, rotulo} cobrindo intervalos curtos comuns. null se for dose única.
+function tomadasPorDia(intervalo) {
+  if (!intervalo) return null;
+  const s = String(intervalo).toLowerCase();
+  // dose única / 1x ao dia → não fraciona
+  if (/1\s*[×x]\s*\/?\s*dia/.test(s) || /única|unica|1\s*x\b/.test(s)) return null;
+  const opts = [];
+  const add = (t, r) => { if (!opts.some(o => o.tomadas === t)) opts.push({tomadas: t, rotulo: r}); };
+  // padrões "N/N h" → 24/N tomadas; aceita faixas tipo "8-12/12 h"
+  if (/6\s*\/\s*6/.test(s)) add(4, '6/6h');
+  if (/8\s*\/\s*8/.test(s)) add(3, '8/8h');
+  if (/12\s*\/\s*12/.test(s)) add(2, '12/12h');
+  if (/2\s*[×x]\s*\/?\s*dia/.test(s)) add(2, '12/12h');
+  if (/3\s*[×x]\s*\/?\s*dia/.test(s)) add(3, '8/8h');
+  if (/4\s*[×x]\s*\/?\s*dia/.test(s)) add(4, '6/6h');
+  return opts.length ? opts.sort((a, b) => a.tomadas - b.tomadas) : null;
+}
+function fmtDose(n) {
+  // arredonda "clínico": 1 casa se <10, inteiro se ≥10
+  const v = n >= 10 ? Math.round(n) : Math.round(n * 10) / 10;
+  return String(v).replace('.', ',');
+}
+
 function renderCalcs() {
   const c = $('calcs-content');
   if (!estado.peso && !estado.idade) {
@@ -1328,9 +1352,12 @@ function filtrar() {
     const q = estado.busca.toLowerCase().trim();
     lista = lista.filter(m =>
       m.nome.toLowerCase().includes(q) ||
-      m.apresentacao.toLowerCase().includes(q) ||
+      (m.apresentacao||'').toLowerCase().includes(q) ||
       classeNome(m.classe).toLowerCase().includes(q) ||
-      m.indicacoes.some(i => i.nome.toLowerCase().includes(q))
+      (Array.isArray(m.indicacoes) && m.indicacoes.some(i => {
+        const txt = (typeof i === 'string') ? i : (i && i.nome) || '';
+        return txt.toLowerCase().includes(q);
+      }))
     );
   }
   return lista;
@@ -1389,9 +1416,21 @@ function renderMed(m) {
         </div>`;
       if (ind.minNota) html += `<div class="ind-nota">${esc(ind.minNota)}</div>`;
       if (calc) {
+        const unidLimpa = (ind.unidade||'').replace('/kg','');
+        let fracHtml = '';
+        // Se a dose é um TOTAL DIÁRIO e o intervalo indica divisão, mostra a dose POR TOMADA
+        if (/\/dia/.test(ind.unidade||'') && !calc.capped) {
+          const ops = tomadasPorDia(ind.intervalo);
+          if (ops) {
+            const unidDose = unidLimpa.replace('/dia','').replace('/m²','/m²');
+            const partes = ops.map(o => `<span class="frac-op">${o.rotulo} <b>${fmtDose(calc.valor / o.tomadas)} ${esc(unidDose)}</b>/dose</span>`).join('');
+            fracHtml = `<div class="ind-frac"><span class="ind-frac-lbl">por tomada →</span>${partes}</div>`;
+          }
+        }
         html += `<div class="ind-calc">
           <div class="lbl">Para ${estado.peso} kg →</div>
-          <div class="val">${String(calc.valor).replace('.', ',')} ${esc((ind.unidade||'').replace('/kg',''))}${calc.capped ? '<span class="capped">(dose máx atingida)</span>' : ''}</div>
+          <div class="val">${String(calc.valor).replace('.', ',')} ${esc(unidLimpa)}${calc.capped ? '<span class="capped">(dose máx atingida)</span>' : ''}</div>
+          ${fracHtml}
         </div>`;
       }
       const extras = [];
@@ -13930,6 +13969,10 @@ main{max-width:1180px!important;margin:0 auto;padding:0 22px 44px!important}
 .ind-calc{background:var(--sig-glow)!important;border-top:1px solid var(--sig)!important}
 .ind-calc .lbl{color:var(--sig-ink)!important;font-family:var(--f-mono)!important}
 .ind-calc .val{color:var(--sig-ink)!important;font-family:var(--f-mono)!important;font-weight:700}
+.ind-frac{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-top:8px;padding-top:8px;border-top:1px dashed color-mix(in srgb,var(--sig) 35%,transparent)}
+.ind-frac-lbl{font-family:var(--f-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.frac-op{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
+.frac-op b{color:var(--sig-ink);font-weight:700}
 .ind-extra{color:var(--ink2)!important;font-family:var(--f-mono)!important;font-size:11.5px!important}
 .ind-extra b{color:var(--ink)!important}
 .contra-list .x{color:var(--crit)!important}
@@ -14280,5 +14323,49 @@ setTimeout(all,500);setTimeout(all,1500);
 
 </script>
 <!-- DS-NORM-END -->
+<!-- PC-TOTOP-START -->
+<style>
+#pc-totop{
+  position:fixed;right:18px;bottom:18px;z-index:120;
+  width:48px;height:48px;border-radius:50%;border:1px solid var(--line2);
+  background:var(--sig);color:#fff;cursor:pointer;display:grid;place-items:center;
+  box-shadow:0 4px 16px var(--sig-glow),0 2px 8px rgba(0,0,0,.25);
+  opacity:0;transform:translateY(12px) scale(.9);pointer-events:none;transition:opacity .2s,transform .2s;
+}
+#pc-totop.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+#pc-totop:hover{filter:brightness(1.08)}
+#pc-totop:active{transform:scale(.94)}
+#pc-totop svg{width:22px;height:22px}
+#pc-totop .lbl{position:absolute;right:56px;background:var(--panel);color:var(--ink);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:5px 10px;font-family:var(--f-mono);font-size:11px;white-space:nowrap;
+  opacity:0;transform:translateX(6px);transition:.16s;pointer-events:none}
+#pc-totop:hover .lbl{opacity:1;transform:translateX(0)}
+@media(max-width:640px){#pc-totop{right:14px;bottom:14px;width:46px;height:46px}}
+@media(prefers-reduced-motion:reduce){#pc-totop{transition:none}}
+</style>
+<button id="pc-totop" aria-label="Voltar ao topo (peso e busca)" title="Voltar ao topo">
+  <span class="lbl">Topo · peso &amp; busca</span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+<script>
+(function(){
+  var btn=document.getElementById('pc-totop');
+  if(!btn) return;
+  var ticking=false;
+  function upd(){
+    ticking=false;
+    if(window.scrollY>360) btn.classList.add('show'); else btn.classList.remove('show');
+  }
+  window.addEventListener('scroll',function(){ if(!ticking){requestAnimationFrame(upd);ticking=true;} },{passive:true});
+  btn.addEventListener('click',function(){
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+    // foca o campo de peso para ajuste rápido
+    setTimeout(function(){var p=document.getElementById('peso');if(p)p.focus();},reduce?0:420);
+  });
+  upd();
+})();
+</script>
+<!-- PC-TOTOP-END -->
 </body>
 </html>

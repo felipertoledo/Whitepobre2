@@ -1286,23 +1286,67 @@ const calcDose = (dose, peso, max) => {
 function tomadasPorDia(intervalo) {
   if (!intervalo) return null;
   const s = String(intervalo).toLowerCase();
-  // dose única / 1x ao dia → não fraciona
-  if (/1\s*[×x]\s*\/?\s*dia/.test(s) || /única|unica|1\s*x\b/.test(s)) return null;
+  // NÃO fracionar: dose única, ataque, BIC, tópico, emergência ("repetir", "cada X min", etc.)
+  if (/dose [úu]nica|única|unica|ataque|\bbic\b|repetir|cada \d|\bmin\b|pré-iot|pre-iot|atropiniz|qrs|antes do tubo|pode repetir|necess[aá]rio se|observar|reavaliar/.test(s)) return null;
   const opts = [];
-  const add = (t, r) => { if (!opts.some(o => o.tomadas === t)) opts.push({tomadas: t, rotulo: r}); };
-  // padrões "N/N h" → 24/N tomadas; aceita faixas tipo "8-12/12 h"
-  if (/6\s*\/\s*6/.test(s)) add(4, '6/6h');
-  if (/8\s*\/\s*8/.test(s)) add(3, '8/8h');
-  if (/12\s*\/\s*12/.test(s)) add(2, '12/12h');
-  if (/2\s*[×x]\s*\/?\s*dia/.test(s)) add(2, '12/12h');
-  if (/3\s*[×x]\s*\/?\s*dia/.test(s)) add(3, '8/8h');
-  if (/4\s*[×x]\s*\/?\s*dia/.test(s)) add(4, '6/6h');
+  const addH = (h) => {            // por intervalo em horas (12/12h, 8/8h, 6/6h, 4/4h)
+    h = +h; if (!h || h < 1 || h > 24) return;
+    const t = Math.round(24 / h);
+    if (!opts.some(o => o.tomadas === t)) opts.push({ tomadas: t, rotulo: h + '/' + h + 'h' });
+  };
+  const addT = (t) => {            // por nº de tomadas/dia (1×→24/24h, 2×→12/12h...)
+    t = +t; if (!t || t < 1) return;
+    const h = Math.round(24 / t);
+    const rot = (t === 1) ? '24/24h' : (h + '/' + h + 'h');
+    if (!opts.some(o => o.tomadas === t)) opts.push({ tomadas: t, rotulo: rot });
+  };
+  // faixa "X-Y/Y h" (ex.: 6-8/8 h, 8-12/12 h, 4-6/6 h) → opções q-X-h e q-Y-h
+  let m = s.match(/(\d+)\s*-\s*(\d+)\s*\/\s*\d+\s*h/);
+  if (m) { addH(m[1]); addH(m[2]); }
+  else { let m2 = s.match(/(\d+)\s*\/\s*\d+\s*h/); if (m2) addH(m2[1]); }   // "N/N h" simples
+  // faixa "X-Y×/dia" (ex.: 1-2×/dia) → opções
+  let md = s.match(/(\d+)\s*-\s*(\d+)\s*[×x]\s*\/?\s*dia/);
+  if (md) { addT(md[1]); addT(md[2]); }
+  else { let md2 = s.match(/(\d+)\s*[×x]\s*\/?\s*dia/); if (md2) addT(md2[1]); }  // "N×/dia"
   return opts.length ? opts.sort((a, b) => a.tomadas - b.tomadas) : null;
 }
 function fmtDose(n) {
   // arredonda "clínico": 1 casa se <10, inteiro se ≥10
   const v = n >= 10 ? Math.round(n) : Math.round(n * 10) / 10;
   return String(v).replace('.', ',');
+}
+function fmtGotas(n) {
+  if (n < 0.5) return '<½';
+  const v = Math.round(n);           // gotas em número inteiro (não se fraciona gota)
+  return String(v);
+}
+// Concentrações em gotas por medicação (curadas do apresentacao; padrão 20 gotas/mL).
+// mgGota = mg por gota; uiGota = UI por gota; tipo='mg' usa a dose calculada em mg,
+// tipo='ml' multiplica mL × gotasML, tipo='ui' usa a dose em UI.
+const GOTAS_INFO = {
+  'paracetamol': { tipo:'mg', via:'VO', conc:[{lbl:'200 mg/mL', mgGota:10},{lbl:'100 mg/mL', mgGota:5}] },
+  'dipirona':    { tipo:'mg', via:'VO', conc:[{lbl:'500 mg/mL', mgGota:25}] },
+  'escopolamina':{ tipo:'mg', via:'VO', conc:[{lbl:'10 mg/mL', mgGota:0.5}] },
+  'sulfato-ferroso': { tipo:'mg', via:'VO', conc:[{lbl:'25 mg/mL Fe (≈5 mg/gota)', mgGota:5}] },
+  'simeticona':  { tipo:'ml', via:'VO', gotasML:20, conc:[{lbl:'75 mg/mL', mgGota:3.75}] },
+  'vitamina-d':  { tipo:'ui', via:'VO', conc:[{lbl:'200 UI/gota', uiGota:200},{lbl:'400 UI/gota', uiGota:400},{lbl:'2.000 UI/gota', uiGota:2000}] }
+};
+// Calcula as gotas para uma dose já em mg (perDoseMg) ou mL/UI, conforme o produto.
+function calcGotas(medId, ind, perDoseMg) {
+  const g = GOTAS_INFO[medId];
+  if (!g) return null;
+  if (!/vo|oral/i.test(ind.via || '')) return null;          // só formulação oral
+  const un = (ind.unidade || '');
+  let linhas = [];
+  if (g.tipo === 'mg' && perDoseMg != null) {
+    linhas = g.conc.map(c => `${c.lbl}: <b>${fmtGotas(perDoseMg / c.mgGota)} gota${Math.round(perDoseMg/c.mgGota)>1?'s':''}</b>`);
+  } else if (g.tipo === 'ml' && /ml/i.test(un) && ind.dose) {
+    const n = ind.dose * (g.gotasML || 20);
+    linhas = [`${g.conc[0].lbl}: <b>${fmtGotas(n)} gotas</b> (${String(ind.dose).replace('.',',')} mL)`];
+  } else if (g.tipo === 'ui' && /ui/i.test(un) && ind.dose) {
+    linhas = g.conc.map(c => `${c.lbl}: <b>${fmtGotas(ind.dose / c.uiGota)} gota${Math.round(ind.dose/c.uiGota)>1?'s':''}</b>`);
+  }
+  return linhas.length ? linhas : null;
 }
 
 function renderCalcs() {
@@ -1417,20 +1461,37 @@ function renderMed(m) {
       if (ind.minNota) html += `<div class="ind-nota">${esc(ind.minNota)}</div>`;
       if (calc) {
         const unidLimpa = (ind.unidade||'').replace('/kg','');
+        const ehDiaria = /\/dia/.test(ind.unidade||'');
+        const ops = (!calc.capped) ? tomadasPorDia(ind.intervalo) : null;
         let fracHtml = '';
-        // Se a dose é um TOTAL DIÁRIO e o intervalo indica divisão, mostra a dose POR TOMADA
-        if (/\/dia/.test(ind.unidade||'') && !calc.capped) {
-          const ops = tomadasPorDia(ind.intervalo);
-          if (ops) {
-            const unidDose = unidLimpa.replace('/dia','').replace('/m²','/m²');
-            const partes = ops.map(o => `<span class="frac-op">${o.rotulo} <b>${fmtDose(calc.valor / o.tomadas)} ${esc(unidDose)}</b>/dose</span>`).join('');
-            fracHtml = `<div class="ind-frac"><span class="ind-frac-lbl">por tomada →</span>${partes}</div>`;
-          }
+        // perDoseMg: dose por TOMADA em mg (para diária = total/tomadas; senão = a própria dose calculada)
+        let perDoseRef = null;
+        if (ehDiaria && ops) {
+          // mostra a dose POR TOMADA para cada intervalo recomendado (uma ou várias opções)
+          const unidDose = unidLimpa.replace('/dia','');
+          const partes = ops.map(o => `<span class="frac-op">${o.rotulo} <b>${fmtDose(calc.valor / o.tomadas)} ${esc(unidDose)}</b>/dose</span>`).join('');
+          fracHtml = `<div class="ind-frac"><span class="ind-frac-lbl">por tomada →</span>${partes}</div>`;
+          // referência p/ gotas: usa a 1ª opção (intervalo mais espaçado)
+          perDoseRef = calc.valor / ops[0].tomadas;
+        } else if (!ehDiaria && /mg|mcg/i.test(ind.unidade||'') && ops && ops.length > 1) {
+          // dose JÁ é por tomada, mas há mais de um intervalo recomendado → lista as frequências
+          const freqs = ops.map(o => o.rotulo).join(' · ');
+          fracHtml = `<div class="ind-frac"><span class="ind-frac-lbl">frequência →</span><span class="frac-op">${freqs} <b>(${String(calc.valor).replace('.',',')} ${esc(unidLimpa)}/dose)</b></span></div>`;
+          perDoseRef = calc.valor;
+        } else if (!ehDiaria) {
+          perDoseRef = calc.valor;
+        }
+        // GOTAS — para medicações em gotas (oral), converte a dose por tomada em nº de gotas
+        let gotasHtml = '';
+        const gLin = calcGotas(m.id, ind, /mg|mcg/i.test(ind.unidade||'') ? perDoseRef : null);
+        if (gLin) {
+          gotasHtml = `<div class="ind-gotas"><span class="ind-frac-lbl">💧 gotas/dose →</span><span class="frac-gtt">${gLin.join(' &nbsp;·&nbsp; ')}</span></div>`;
         }
         html += `<div class="ind-calc">
           <div class="lbl">Para ${estado.peso} kg →</div>
           <div class="val">${String(calc.valor).replace('.', ',')} ${esc(unidLimpa)}${calc.capped ? '<span class="capped">(dose máx atingida)</span>' : ''}</div>
           ${fracHtml}
+          ${gotasHtml}
         </div>`;
       }
       const extras = [];
@@ -13971,6 +14032,9 @@ main{max-width:1180px!important;margin:0 auto;padding:0 22px 44px!important}
 .ind-calc .val{color:var(--sig-ink)!important;font-family:var(--f-mono)!important;font-weight:700}
 .ind-frac{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-top:8px;padding-top:8px;border-top:1px dashed color-mix(in srgb,var(--sig) 35%,transparent)}
 .ind-frac-lbl{font-family:var(--f-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.ind-gotas{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-top:7px;padding-top:7px;border-top:1px dashed color-mix(in srgb,var(--info) 40%,transparent)}
+.frac-gtt{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
+.frac-gtt b{color:var(--info);font-weight:700}
 .frac-op{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
 .frac-op b{color:var(--sig-ink);font-weight:700}
 .ind-extra{color:var(--ink2)!important;font-family:var(--f-mono)!important;font-size:11.5px!important}

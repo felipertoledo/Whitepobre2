@@ -1349,6 +1349,89 @@ function calcGotas(medId, ind, perDoseMg) {
   return linhas.length ? linhas : null;
 }
 
+
+// ===== VOLUME EM mL para formulações líquidas orais (concentração curada do apresentacao) =====
+const CONC_LIQ = {
+  'paracetamol':[{l:'32 mg/mL',c:32.0}],
+  'dipirona':[{l:'50 mg/mL',c:50.0}],
+  'ibuprofeno':[{l:'50 mg/mL',c:50.0},{l:'20 mg/mL',c:20.0}],
+  'amoxicilina':[{l:'50 mg/mL',c:50.0},{l:'80 mg/mL',c:80.0}],
+  'amox-clav':[{l:'Susp 50 mg/mL (amox)',c:50},{l:'Susp 80 mg/mL (amox)',c:80}],
+  'azitromicina':[{l:'40 mg/mL',c:40.0}],
+  'cefalexina':[{l:'50 mg/mL',c:50.0},{l:'25 mg/mL',c:25.0}],
+  'cefuroxima':[{l:'25 mg/mL',c:25.0},{l:'50 mg/mL',c:50.0}],
+  'claritromicina':[{l:'25 mg/mL',c:25.0},{l:'50 mg/mL',c:50.0}],
+  'clindamicina-vo':[{l:'15 mg/mL',c:15.0}],
+  'smx-tmp':[{l:'Susp 8 mg/mL (TMP)',c:8}],
+  'nitrofurantoina':[{l:'5 mg/mL',c:5.0}],
+  'metronidazol':[{l:'40 mg/mL',c:40.0}],
+  'albendazol':[{l:'40 mg/mL',c:40.0}],
+  'mebendazol':[{l:'20 mg/mL',c:20.0}],
+  'nitazoxanida':[{l:'20 mg/mL',c:20.0}],
+  'nimesulida':[{l:'10 mg/mL',c:10.0}],
+  'loratadina':[{l:'1 mg/mL',c:1.0}],
+  'cetirizina':[{l:'1 mg/mL',c:1.0}],
+  'dexclorfeniramina':[{l:'0,4 mg/mL',c:0.4}],
+  'hidroxizina':[{l:'2 mg/mL',c:2.0}],
+  'metoclopramida':[{l:'4 mg/mL',c:4.0}],
+  'bromoprida':[{l:'4 mg/mL',c:4.0}],
+  'dimenidrinato':[{l:'1,67 mg/mL',c:1.67}],
+  'prednisolona':[{l:'1 mg/mL',c:1.0},{l:'3 mg/mL',c:3.0}],
+  'aciclovir':[{l:'40 mg/mL',c:40.0}],
+  'oseltamivir':[{l:'12 mg/mL',c:12.0}],
+  'fluconazol':[{l:'40 mg/mL',c:40.0}],
+  'sulfato-ferroso':[{l:'5 mg/mL',c:5.0}],
+  'codeina':[{l:'3 mg/mL',c:3.0}],
+  'tramadol':[{l:'100 mg/mL',c:100.0}],
+  'ambroxol':[{l:'3 mg/mL',c:3.0},{l:'6 mg/mL',c:6.0}],
+  'nac-oral':[{l:'20 mg/mL',c:20.0},{l:'40 mg/mL',c:40.0}],
+  'bromexina':[{l:'0,8 mg/mL',c:0.8},{l:'1,6 mg/mL',c:1.6}],
+  'levodropropizina':[{l:'6 mg/mL',c:6.0},{l:'60 mg/mL',c:60.0}],
+  'desloratadina':[{l:'0,5 mg/mL',c:0.5}],
+  'carbocisteina':[{l:'20 mg/mL',c:20.0},{l:'50 mg/mL',c:50.0}],
+  'levetiracetam':[{l:'100 mg/mL',c:100.0}],
+  'acido-valproico':[{l:'50 mg/mL',c:50.0}],
+  'furosemida':[{l:'10 mg/mL',c:10.0}],
+  'espironolactona':[{l:'5 mg/mL',c:5.0}],
+  'captopril':[{l:'1 mg/mL',c:1.0}],
+  'doxiciclina':[{l:'25 mg/mL',c:25.0}],
+  'fluoxetina':[{l:'4 mg/mL',c:4.0}],
+  'risperidona':[{l:'1 mg/mL',c:1.0}],
+  'valproato-vo':[{l:'50 mg/mL',c:50.0}],
+  'carbamazepina':[{l:'20 mg/mL',c:20.0}],
+  'oxcarbazepina':[{l:'60 mg/mL',c:60.0}],
+  'oxibutinina':[{l:'1 mg/mL',c:1.0}],
+  'domperidona':[{l:'1 mg/mL',c:1.0}],
+  'secnidazol':[{l:'30 mg/mL',c:30.0}],
+  'penicilina-v':[{l:'50 mg/mL',c:50.0}],
+  'cefadroxila':[{l:'50 mg/mL',c:50.0}],
+  'eritromicina':[{l:'50 mg/mL',c:50.0}],
+  'tinidazol':[{l:'20 mg/mL',c:20.0}],
+  'aciclovir-vo':[{l:'40 mg/mL',c:40.0},{l:'80 mg/mL',c:80.0}],
+  'amoxi-dose-alta':[{l:'50 mg/mL',c:50.0},{l:'80 mg/mL',c:80.0}],
+  'midazolam-bucal':[{l:'5 mg/mL',c:5.0},{l:'1 mg/mL',c:1.0}],
+  'pamoato-pirantel':[{l:'50 mg/mL',c:50.0}],
+  'acido-folico':[{l:'0,2 mg/mL',c:0.2}],
+  'vitamina-k':[{l:'2 mg/mL',c:2.0}],
+};
+function calcVolumeML(medId, ind, perDoseMg) {
+  const cs = CONC_LIQ[medId];
+  if (!cs || perDoseMg == null) return null;
+  if (!/vo|oral/i.test(ind.via || '')) return null;        // só via oral
+  const un = (ind.unidade || '');
+  if (!/mg|mcg/i.test(un)) return null;                      // dose precisa estar em mg/mcg
+  const mg = /mcg/i.test(un) ? perDoseMg / 1000 : perDoseMg; // mcg → mg
+  return cs.map(c => {
+    const ml = mg / c.c;
+    return `${c.l}: <b>${fmtML(ml)} mL</b>`;
+  });
+}
+function fmtML(n) {
+  // arredonda para 0,1 mL (precisão de seringa); <0,1 mostra 2 casas
+  if (n < 0.1) return String(Math.round(n * 100) / 100).replace('.', ',');
+  return String(Math.round(n * 10) / 10).replace('.', ',');
+}
+
 function renderCalcs() {
   const c = $('calcs-content');
   if (!estado.peso && !estado.idade) {
@@ -1487,10 +1570,17 @@ function renderMed(m) {
         if (gLin) {
           gotasHtml = `<div class="ind-gotas"><span class="ind-frac-lbl">💧 gotas/dose →</span><span class="frac-gtt">${gLin.join(' &nbsp;·&nbsp; ')}</span></div>`;
         }
+        // VOLUME mL — para suspensão/solução/xarope oral, converte a dose por tomada em mL
+        let mlHtml = '';
+        const mlLin = calcVolumeML(m.id, ind, perDoseRef);
+        if (mlLin) {
+          mlHtml = `<div class="ind-ml"><span class="ind-frac-lbl">🥄 volume/dose →</span><span class="frac-ml">${mlLin.join(' &nbsp;·&nbsp; ')}</span></div>`;
+        }
         html += `<div class="ind-calc">
           <div class="lbl">Para ${estado.peso} kg →</div>
           <div class="val">${String(calc.valor).replace('.', ',')} ${esc(unidLimpa)}${calc.capped ? '<span class="capped">(dose máx atingida)</span>' : ''}</div>
           ${fracHtml}
+          ${mlHtml}
           ${gotasHtml}
         </div>`;
       }
@@ -14035,6 +14125,9 @@ main{max-width:1180px!important;margin:0 auto;padding:0 22px 44px!important}
 .ind-gotas{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-top:7px;padding-top:7px;border-top:1px dashed color-mix(in srgb,var(--info) 40%,transparent)}
 .frac-gtt{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
 .frac-gtt b{color:var(--info);font-weight:700}
+.ind-ml{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-top:7px;padding-top:7px;border-top:1px dashed color-mix(in srgb,var(--warn) 40%,transparent)}
+.frac-ml{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
+.frac-ml b{color:var(--warn);font-weight:700}
 .frac-op{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
 .frac-op b{color:var(--sig-ink);font-weight:700}
 .ind-extra{color:var(--ink2)!important;font-family:var(--f-mono)!important;font-size:11.5px!important}

@@ -1421,10 +1421,7 @@ function calcVolumeML(medId, ind, perDoseMg) {
   const un = (ind.unidade || '');
   if (!/mg|mcg/i.test(un)) return null;                      // dose precisa estar em mg/mcg
   const mg = /mcg/i.test(un) ? perDoseMg / 1000 : perDoseMg; // mcg → mg
-  return cs.map(c => {
-    const ml = mg / c.c;
-    return `${c.l}: <b>${fmtML(ml)} mL</b>`;
-  });
+  return cs.map(c => ({ ml: fmtML(mg / c.c), conc: c.l }));
 }
 function fmtML(n) {
   // arredonda para 0,1 mL (precisão de seringa); <0,1 mostra 2 casas
@@ -1570,17 +1567,19 @@ function renderMed(m) {
         if (gLin) {
           gotasHtml = `<div class="ind-gotas"><span class="ind-frac-lbl">💧 gotas/dose →</span><span class="frac-gtt">${gLin.join(' &nbsp;·&nbsp; ')}</span></div>`;
         }
-        // VOLUME mL — para suspensão/solução/xarope oral, converte a dose por tomada em mL
+        // VOLUME mL — EM DESTAQUE, logo abaixo do total (é o que se prescreve/administra)
         let mlHtml = '';
-        const mlLin = calcVolumeML(m.id, ind, perDoseRef);
-        if (mlLin) {
-          mlHtml = `<div class="ind-ml"><span class="ind-frac-lbl">🥄 volume/dose →</span><span class="frac-ml">${mlLin.join(' &nbsp;·&nbsp; ')}</span></div>`;
+        const mlArr = calcVolumeML(m.id, ind, perDoseRef);
+        if (mlArr) {
+          const ivNota = (ehDiaria && ops && ops.length) ? ops[0].rotulo : '';
+          const chips = mlArr.map(x => `<span class="vol-one"><b>${x.ml} mL</b><i>${esc(x.conc)}</i></span>`).join('');
+          mlHtml = `<div class="ind-vol"><span class="vol-ic">🥄</span><span class="vol-list">${chips}</span><span class="vol-tag">por dose${ivNota?' · '+ivNota:''}</span></div>`;
         }
         html += `<div class="ind-calc">
           <div class="lbl">Para ${estado.peso} kg →</div>
           <div class="val">${String(calc.valor).replace('.', ',')} ${esc(unidLimpa)}${calc.capped ? '<span class="capped">(dose máx atingida)</span>' : ''}</div>
-          ${fracHtml}
           ${mlHtml}
+          ${fracHtml}
           ${gotasHtml}
         </div>`;
       }
@@ -14125,9 +14124,13 @@ main{max-width:1180px!important;margin:0 auto;padding:0 22px 44px!important}
 .ind-gotas{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-top:7px;padding-top:7px;border-top:1px dashed color-mix(in srgb,var(--info) 40%,transparent)}
 .frac-gtt{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
 .frac-gtt b{color:var(--info);font-weight:700}
-.ind-ml{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-top:7px;padding-top:7px;border-top:1px dashed color-mix(in srgb,var(--warn) 40%,transparent)}
-.frac-ml{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
-.frac-ml b{color:var(--warn);font-weight:700}
+.ind-vol{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-top:9px}
+.vol-ic{font-size:17px;line-height:1}
+.vol-list{display:flex;gap:18px;flex-wrap:wrap}
+.vol-one{display:flex;flex-direction:column;line-height:1.02}
+.vol-one b{font-family:var(--f-mono);font-size:21px;font-weight:700;color:var(--warn);letter-spacing:-.01em}
+.vol-one i{font-family:var(--f-mono);font-size:9px;font-style:normal;color:var(--ink3);letter-spacing:.06em;margin-top:3px;text-transform:uppercase}
+.vol-tag{font-family:var(--f-mono);font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink4);align-self:center}
 .frac-op{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
 .frac-op b{color:var(--sig-ink);font-weight:700}
 .ind-extra{color:var(--ink2)!important;font-family:var(--f-mono)!important;font-size:11.5px!important}
